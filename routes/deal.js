@@ -162,7 +162,7 @@ function checkAuthenticated(req, res, next) {
   
   // Non-production test & preview support
   if (process.env.NODE_ENV !== 'production') {
-    if (req.query.mockUser === 'writer' || req.query.mockUser === '1') {
+    if (req.query.mockUser === 'writer') {
       req.user = {
         _id: new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9c0d1'),
         name: 'Dr. Eleanor Vance',
@@ -193,9 +193,11 @@ function checkAuthenticated(req, res, next) {
       return next();
     }
     if (req.headers['x-mock-user']) {
+      const rawUser = req.headers['x-mock-user'];
+      const isHex = typeof rawUser === 'string' && /^[0-9a-fA-F]{24}$/.test(rawUser);
       req.user = {
-        _id: new mongoose.Types.ObjectId(req.headers['x-mock-user']),
-        name: req.headers['x-mock-name'] || 'QA Mock User',
+        _id: isHex ? new mongoose.Types.ObjectId(rawUser) : new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9c0d9'),
+        name: req.headers['x-mock-name'] || 'Aditi Student',
         email: req.headers['x-mock-email'] || 'qa@example.com',
         role: req.headers['x-mock-role'] || 'user',
         pricePerPage: req.headers['x-mock-rate'] ? Number(req.headers['x-mock-rate']) : 0
