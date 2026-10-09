@@ -1,3 +1,5 @@
+import dns from 'node:dns';
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -170,118 +172,16 @@ app.use('/dashboard', dashboardRoutes); // /dashboard view
 app.use('/writers', writerRoutes); // /writers (writer-specific routes)
 app.use('/profile', profile);      // /profile/:id (writer profile)
 app.use('/about', about);          // /about
-app.use('/profile1', profile1); 
+app.use('/profile1', profile1);
 
 // Default Route - Directly renders home page to eliminate artificial delay and improve LCP
 app.use('/', homeRoutes);
 
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error('❌ Unhandled error:', err.message);
-  console.error(err.stack);
-  
-  // Handle different types of errors
-  if (err.name === 'ValidationError') {
-    return res.status(400).json({ error: 'Validation Error', details: err.message });
-  }
-  
-  if (err.name === 'CastError') {
-    return res.status(400).json({ error: 'Invalid ID format' });
-  }
-  
-  if (err.name === 'MongoError' || err.name === 'MongooseError') {
-    return res.status(503).json({ 
-      error: 'Database Error', 
-      message: 'Please try again later. If the problem persists, check your internet connection.' 
-    });
-  }
-  
-  // Default error response
-  const statusCode = err.statusCode || 500;
-  const message = process.env.NODE_ENV === 'production' 
-    ? 'Something went wrong!' 
-    : err.message;
-    
-  res.status(statusCode).json({ error: message });
-});
-
-// Handle 404 routes
-app.use((req, res) => {
-  res.status(404).json({ error: 'Page not found' });
-});
-
-// Start Server
-const startServer = async () => {
-  try {
-    console.log('🚀 Starting server...');
-    
-    // Try to connect to database
-    try {
-      await connectDB();
-      console.log('✅ Database connection successful');
-      
-      // Start database monitoring after successful initial connection
-      startDatabaseMonitor();
-    } catch (dbError) {
-      console.error('❌ Database connection failed:', dbError.message);
-      console.warn('⚠️ Server will start without database connection');
-      console.warn('⚠️ Some features requiring database may not work');
-      
-      // Don't exit - allow server to start without DB for basic functionality
-    }
-    
-    // Start the server regardless of DB connection status
-    const server = app.listen(port, () => {
-      console.log(`🚀 Server running at http://localhost:${port}`);
-      console.log('✅ Server started successfully');
-    });
-    
-    // Handle server errors
-    server.on('error', (error) => {
-      if (error.code === 'EADDRINUSE') {
-        console.error(`❌ Port ${port} is already in use`);
-        console.error('Please close other applications using this port or use a different port');
-      } else {
-        console.error('❌ Server error:', error.message);
-      }
-      process.exit(1);
-    });
-    
-    // Graceful shutdown
-    process.on('SIGTERM', () => {
-      console.log('🛑 SIGTERM received, shutting down gracefully');
-      server.close(() => {
-        console.log('✅ Server closed');
-        mongoose.connection.close(false, () => {
-          console.log('✅ Database connection closed');
-          process.exit(0);
-        });
-      });
-    });
-    
-    process.on('SIGINT', () => {
-      console.log('🛑 SIGINT received, shutting down gracefully');
-      server.close(() => {
-        console.log('✅ Server closed');
-        mongoose.connection.close(false, () => {
-          console.log('✅ Database connection closed');
-          process.exit(0);
-        });
-      });
-    });
-    
-  } catch (err) {
-    console.error('❌ Server failed to start:', err.message);
-    console.error(err.stack);
-    process.exit(1);
-  }
-};
-
-
+// Test API endpoint
 app.get('/api/test', (req, res) => {
   try {
-    res.status(200).json({ 
-      message: 'Hello from Express!', 
+    res.status(200).json({
+      message: 'Hello from Express!',
       status: 'Server is running',
       timestamp: new Date().toISOString(),
       database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected'
@@ -305,18 +205,119 @@ app.get('/health', (req, res) => {
       memory: process.memoryUsage(),
       version: process.version
     };
-    
+
     const statusCode = dbHealth.isHealthy ? 200 : 503;
     res.status(statusCode).json(health);
   } catch (error) {
     console.error('❌ Health check error:', error.message);
-    res.status(500).json({ 
-      status: 'ERROR', 
+    res.status(500).json({
+      status: 'ERROR',
       message: 'Health check failed',
       timestamp: new Date().toISOString()
     });
   }
 });
 
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('❌ Unhandled error:', err.message);
+  console.error(err.stack);
+
+  // Handle different types of errors
+  if (err.name === 'ValidationError') {
+    return res.status(400).json({ error: 'Validation Error', details: err.message });
+  }
+
+  if (err.name === 'CastError') {
+    return res.status(400).json({ error: 'Invalid ID format' });
+  }
+
+  if (err.name === 'MongoError' || err.name === 'MongooseError') {
+    return res.status(503).json({
+      error: 'Database Error',
+      message: 'Please try again later. If the problem persists, check your internet connection.'
+    });
+  }
+
+  // Default error response
+  const statusCode = err.statusCode || 500;
+  const message = process.env.NODE_ENV === 'production'
+    ? 'Something went wrong!'
+    : err.message;
+
+  res.status(statusCode).json({ error: message });
+});
+
+// Handle 404 routes
+app.use((req, res) => {
+  res.status(404).json({ error: 'Page not found' });
+});
+
+// Start Server
+const startServer = async () => {
+  try {
+    console.log('🚀 Starting server...');
+
+    // Try to connect to database
+    try {
+      await connectDB();
+      console.log('✅ Database connection successful');
+
+      // Start database monitoring after successful initial connection
+      startDatabaseMonitor();
+    } catch (dbError) {
+      console.error('❌ Database connection failed:', dbError.message);
+      console.warn('⚠️ Server will start without database connection');
+      console.warn('⚠️ Some features requiring database may not work');
+
+      // Don't exit - allow server to start without DB for basic functionality
+    }
+
+    // Start the server regardless of DB connection status
+    const server = app.listen(port, () => {
+      console.log(`🚀 Server running at http://localhost:${port}`);
+      console.log('✅ Server started successfully');
+    });
+
+    // Handle server errors
+    server.on('error', (error) => {
+      if (error.code === 'EADDRINUSE') {
+        console.error(`❌ Port ${port} is already in use`);
+        console.error('Please close other applications using this port or use a different port');
+      } else {
+        console.error('❌ Server error:', error.message);
+      }
+      process.exit(1);
+    });
+
+    // Graceful shutdown
+    process.on('SIGTERM', () => {
+      console.log('🛑 SIGTERM received, shutting down gracefully');
+      server.close(() => {
+        console.log('✅ Server closed');
+        mongoose.connection.close(false, () => {
+          console.log('✅ Database connection closed');
+          process.exit(0);
+        });
+      });
+    });
+
+    process.on('SIGINT', () => {
+      console.log('🛑 SIGINT received, shutting down gracefully');
+      server.close(() => {
+        console.log('✅ Server closed');
+        mongoose.connection.close(false, () => {
+          console.log('✅ Database connection closed');
+          process.exit(0);
+        });
+      });
+    });
+
+  } catch (err) {
+    console.error('❌ Server failed to start:', err.message);
+    console.error(err.stack);
+    process.exit(1);
+  }
+};
 
 startServer();
