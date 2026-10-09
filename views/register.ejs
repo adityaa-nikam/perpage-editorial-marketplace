@@ -1,0 +1,102 @@
+<%- include('partials/head', { pageTitle: 'Create an Account — PerPage', metaDescription: 'Register for a PerPage academic collaboration account.' }) %>
+<%- include('partials/navbar') %>
+
+<main id="main-content" class="flex-1 flex items-center justify-center py-12 px-4 sm:px-6">
+  <div class="card max-w-lg w-full p-8 space-y-6">
+    <div class="text-center space-y-1">
+      <span class="type-eyebrow">Get Started</span>
+      <h1 class="type-h2">Create your account</h1>
+      <p class="text-xs text-[var(--text-muted)]">Join students and verified academic writers on PerPage</p>
+    </div>
+
+    <!-- Registration Form -->
+    <form action="/register" method="POST" class="space-y-4">
+      <div>
+        <label for="name" class="form-label">Full Name</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          placeholder="e.g. Aditi Sharma" 
+          required 
+          autocomplete="name"
+          class="form-input"
+        >
+      </div>
+
+      <div>
+        <label for="email" class="form-label">Email Address</label>
+        <input 
+          type="email" 
+          id="email" 
+          name="email" 
+          placeholder="name@university.edu" 
+          required 
+          autocomplete="email"
+          class="form-input"
+        >
+      </div>
+
+      <div>
+        <label for="password" class="form-label">Password (min 6 characters)</label>
+        <input 
+          type="password" 
+          id="password" 
+          name="password" 
+          placeholder="••••••••" 
+          required 
+          minlength="6"
+          autocomplete="new-password"
+          class="form-input"
+        >
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="role" class="form-label">Account Role</label>
+          <select id="role" name="role" class="form-select">
+            <option value="user" selected>Student / Client</option>
+            <option value="writer">Academic Writer</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="address" class="form-label">Location / University</label>
+          <input 
+            type="text" 
+            id="address" 
+            name="address" 
+            placeholder="e.g. Mumbai University"
+            class="form-input"
+          >
+        </div>
+      </div>
+
+      <div>
+        <label for="bio" class="form-label">Bio (Optional)</label>
+        <textarea 
+          id="bio" 
+          name="bio" 
+          placeholder="Tell other students or writers about your academic focus or areas of study..."
+          class="form-textarea"
+          rows="3"
+        ></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-md w-full">
+        Create Account
+        <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+      </button>
+    </form>
+
+    <!-- Login Redirect -->
+    <div class="text-center pt-2 border-t border-[var(--border-color)]">
+      <a href="/login" class="text-xs text-[var(--accent)] hover:underline">
+        Already have an account? Sign in here
+      </a>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

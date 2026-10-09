@@ -1,0 +1,39 @@
+<%- include('partials/head', { 
+  pageTitle: pageTitle || 'Writer Not Found — PerPage', 
+  metaDescription: 'The requested academic writer profile could not be found on PerPage.',
+  noindex: true 
+}) %>
+<%- include('partials/navbar') %>
+
+<main id="main-content" class="py-16 sm:py-24">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    
+    <div class="empty-state p-8 sm:p-12 space-y-5">
+      <div class="w-12 h-12 mx-auto rounded-full bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-muted)]">
+        <%- icon('user-x', { class: 'w-6 h-6' }) %>
+      </div>
+
+      <div class="space-y-2">
+        <span class="type-eyebrow">404 Error</span>
+        <h1 class="type-h2">Writer Profile Not Found</h1>
+        <p class="type-body text-sm text-[var(--text-muted)] max-w-md mx-auto">
+          The writer profile you are looking for does not exist, has been removed, or is not an active academic author.
+        </p>
+      </div>
+
+      <div class="pt-4 flex items-center justify-center gap-3">
+        <a href="/writers" class="btn btn-primary btn-md">
+          <%- icon('arrow-left', { class: 'w-4 h-4 mr-1.5' }) %>
+          Browse all writers
+        </a>
+        <a href="/home" class="btn btn-secondary btn-md">
+          Go to home
+        </a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

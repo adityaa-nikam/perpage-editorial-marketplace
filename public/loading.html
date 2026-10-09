@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PerPage </title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      background-color: #000;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+    }
+
+    /* Loader Container */
+    #loader {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      background-color: #000;
+    }
+
+    /* Logo Animation */
+    .logo {
+      font-size: 60px;
+      font-weight: bold;
+      color: #2196f3;
+      opacity: 0;
+      animation: fadeInLogo 2s ease forwards;
+      text-shadow: 0 0 20px rgba(33, 150, 243, 0.5);
+    }
+
+    @keyframes fadeInLogo {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      60% {
+        transform: scale(1.2);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Tagline Typing Effect */
+    .tagline {
+      color: #fff;
+      font-size: 22px;
+      margin-top: 20px;
+      border-right: 2px solid #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 0;
+      opacity: 0;
+      animation: typeTagline 2s steps(24) 2s forwards, blinkCursor 0.7s step-end infinite;
+    }
+
+    @keyframes typeTagline {
+      from {
+        width: 0;
+        opacity: 1;
+      }
+      to {
+        width: 24ch;
+        opacity: 1;
+      }
+    }
+
+    @keyframes blinkCursor {
+      50% {
+        border-color: transparent;
+      }
+    }
+
+    /* Fade Out Loader */
+    .hide-loader {
+      animation: fadeOut 1s ease forwards;
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        visibility: hidden;
+      }
+    }
+
+    /* Main Content */
+    #main-content {
+      display: none;
+      padding-top: 100px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loader Screen -->
+<div id="loader">
+  <img src="logo.png" alt="PerPage Logo" class="logo-img" style="width:280px; height:280px; margin-bottom: 26px; animation: fadeInLogo 2s ease forwards;">
+  <!-- <div class="logo" style="font-size:90px; margin-top:0; ">Perpage</div> -->
+  <!-- <div class="tagline">Your Assignment Partner</div> -->
+</div>
+
+<!-- Main Website Content -->
+<div id="main-content">
+  <h1>Welcome to PerPage</h1>
+  <p>This is your main content after the cinematic loader.</p>
+</div>
+
+<script>
+  window.addEventListener("load", () => {
+    // Wait for full logo + tagline animation, then fade loader and show content
+    setTimeout(() => {
+      document.getElementById("loader").classList.add("hide-loader");
+    }, 3000); // 2s (logo) + 2s (typing) + 1.5s buffer
+
+    setTimeout(() => {
+      document.getElementById("main-content").style.display = "block";
+    }, 6500);
+  });
+
+  setTimeout(function() {
+    window.location.href = '/home';
+  }, 1000); // 2 seconds
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<%- include('partials/head', { 
+  pageTitle: 'Dashboard Error — PerPage', 
+  metaDescription: 'An unexpected issue occurred while loading your assignment dashboard.',
+  robots: 'noindex, nofollow'
+}) %>
+<%- include('partials/navbar') %>
+
+<main id="main-content" class="py-16 sm:py-24">
+  <div class="max-w-xl mx-auto px-4 sm:px-6 text-center space-y-6">
+    <div class="empty-state py-12 space-y-4">
+      <div class="w-12 h-12 mx-auto rounded-full bg-[var(--semantic-danger-bg)] border border-[var(--semantic-danger-border)] flex items-center justify-center text-[var(--semantic-danger-text)]" aria-hidden="true">
+        <%- icon('alert-circle', { class: 'w-6 h-6' }) %>
+      </div>
+
+      <div class="space-y-2">
+        <h1 class="type-h2">Unable to load dashboard</h1>
+        <p class="type-body text-sm text-[var(--text-muted)] max-w-md mx-auto">
+          We encountered an unexpected error while retrieving your assignment records.
+        </p>
+      </div>
+
+      <div class="pt-4 flex items-center justify-center gap-3">
+        <a href="/dashboard" class="btn btn-primary btn-md">
+          <%- icon('loader', { class: 'w-4 h-4' }) %>
+          Try again
+        </a>
+        <a href="/home" class="btn btn-secondary btn-md">
+          Back to home
+        </a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

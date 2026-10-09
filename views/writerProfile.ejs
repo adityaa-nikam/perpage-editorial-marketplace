@@ -1,0 +1,330 @@
+<%- include('partials/head', { 
+  pageTitle: pageTitle || (writer.name + ' — Academic Writer | PerPage'), 
+  metaDescription: metaDescription || ('Academic writer profile for ' + writer.name + ' on PerPage.'),
+  canonical: canonical 
+}) %>
+<%- include('partials/navbar') %>
+
+<% 
+  const initials = (writer.name || 'W').split(' ').map(n => n.charAt(0)).slice(0, 2).join('').toUpperCase();
+  const nameParts = (writer.name || 'this writer').replace(/^(Dr\.|Prof\.|Mr\.|Ms\.|Mrs\.)\s+/i, '').split(' ');
+  const firstName = nameParts[0] || writer.name;
+  const isOwnProfile = Boolean(user && user._id && user._id.toString() === writer._id.toString());
+  const hasRate = Boolean(writer.pricePerPage && writer.pricePerPage > 0);
+  const rate = writer.pricePerPage || 0;
+
+  let memberSince = '';
+  if (writer.createdAt) {
+    const d = new Date(writer.createdAt);
+    memberSince = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  }
+%>
+
+<main id="main-content" class="py-10 sm:py-14">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-[var(--text-muted)]" aria-label="Breadcrumb">
+      <a href="/writers" class="hover:text-[var(--text-ink)] transition-colors">Writers</a>
+      <span aria-hidden="true">/</span>
+      <span class="text-[var(--text-ink)] font-medium" aria-current="page"><%= writer.name %></span>
+    </nav>
+
+    <!-- Two-Column Desktop Grid / Single-Column Mobile -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Left Column: Profile Details & Workflow -->
+      <div class="lg:col-span-8 space-y-8">
+
+        <!-- Writer Header Card -->
+        <div class="card p-6 sm:p-8 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center gap-5">
+            <div class="avatar avatar-xl flex-shrink-0" aria-hidden="true">
+              <% if (writer.profilePic) { %>
+                <img src="<%= writer.profilePic %>" alt="<%= writer.name %>">
+              <% } else { %>
+                <span><%= initials %></span>
+              <% } %>
+            </div>
+
+            <div class="space-y-1.5 min-w-0">
+              <div class="flex flex-wrap items-center gap-2.5">
+                <h1 class="type-h2"><%= writer.name %></h1>
+                <span class="badge badge-neutral text-xs">Writer</span>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-3 text-xs text-[var(--text-muted)]">
+                <% if (memberSince) { %>
+                  <span>Member since <%= memberSince %></span>
+                  <span aria-hidden="true">&bull;</span>
+                <% } %>
+
+                <% if (completedCount > 0) { %>
+                  <span class="font-medium text-[var(--text-ink)]">
+                    <%= completedCount %> completed <%= completedCount === 1 ? 'deal' : 'deals' %>
+                  </span>
+                <% } else { %>
+                  <span>New on PerPage</span>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile-Only Order Card (Shown after header on mobile, hidden on desktop) -->
+        <div class="block lg:hidden">
+          <div class="card p-6 space-y-5" x-data="{ pages: 1, rate: <%= rate %> }">
+            <div class="border-b border-[var(--border-color)] pb-4 space-y-1">
+              <span class="text-xs text-[var(--text-muted)]">Rate per page</span>
+              <% if (hasRate) { %>
+                <div class="font-serif-display text-3xl font-normal text-[var(--text-ink)]">
+                  ₹<%= rate %>
+                </div>
+              <% } else { %>
+                <div>
+                  <span class="badge badge-neutral text-xs">Rate not set</span>
+                  <p class="text-xs text-[var(--text-muted)] mt-1.5">
+                    This writer has not set a per-page rate yet.
+                  </p>
+                </div>
+              <% } %>
+            </div>
+
+            <% if (isOwnProfile) { %>
+              <div class="space-y-3">
+                <p class="text-xs text-[var(--text-muted)]">
+                  This is your public writer profile as seen by students.
+                </p>
+                <a href="/profile/<%= writer._id %>" class="btn btn-secondary btn-md w-full justify-center">
+                  Edit your profile
+                </a>
+              </div>
+            <% } else if (!hasRate) { %>
+              <div>
+                <button type="button" disabled class="btn btn-primary btn-md w-full opacity-50 cursor-not-allowed justify-center">
+                  Create a deal
+                </button>
+                <p class="text-xs text-[var(--text-muted)] mt-2">
+                  Deals cannot be created until the writer sets their rate.
+                </p>
+              </div>
+            <% } else { %>
+              <!-- Alpine Interactive Price Estimator -->
+              <div class="space-y-3 pt-1">
+                <div class="space-y-1.5">
+                  <label for="pages-estimator-mobile" class="form-label text-xs">Number of pages</label>
+                  <input 
+                    type="number" 
+                    id="pages-estimator-mobile" 
+                    min="1" 
+                    max="500" 
+                    x-model.number="pages"
+                    class="form-input text-sm w-full"
+                  >
+                </div>
+
+                <div class="card-muted p-3 space-y-1">
+                  <div class="flex items-center justify-between text-xs text-[var(--text-muted)]">
+                    <span>Estimated total</span>
+                    <span class="text-sm font-semibold text-[var(--text-ink)]" x-text="'₹' + new Intl.NumberFormat('en-IN').format(Math.max(1, Math.min(500, pages || 1)) * rate)">
+                      ₹<%= rate %>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-[var(--text-muted)] leading-tight">
+                    Estimate. The final total is confirmed when you create the deal.
+                  </p>
+                </div>
+
+                <div class="pt-2">
+                  <% if (user) { %>
+                    <a href="/deal?writerId=<%= writer._id %>" class="btn btn-primary btn-md w-full justify-center">
+                      Create a deal
+                      <%- icon('arrow-right', { class: 'w-4 h-4 ml-1.5' }) %>
+                    </a>
+                  <% } else { %>
+                    <a href="/login?returnTo=<%= encodeURIComponent('/deal?writerId=' + writer._id) %>" class="btn btn-primary btn-md w-full justify-center">
+                      Log in to create a deal
+                    </a>
+                    <p class="text-[11px] text-[var(--text-muted)] text-center mt-1.5">
+                      Log in or register to commission an assignment.
+                    </p>
+                  <% } %>
+                </div>
+
+                <p class="text-[11px] text-[var(--text-muted)] text-center leading-normal pt-1">
+                  Files are stored privately and shared through time-limited links.
+                </p>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="card p-6 sm:p-8 space-y-4">
+          <h2 class="type-h3 text-lg">About</h2>
+          <% if (writer.bio && writer.bio.trim()) { %>
+            <div class="type-body text-sm text-[var(--text-muted)] leading-relaxed whitespace-pre-line">
+              <%= writer.bio.trim() %>
+            </div>
+          <% } else { %>
+            <p class="type-body text-sm text-[var(--text-muted)] italic">
+              This writer has not added a bio yet.
+            </p>
+          <% } %>
+        </div>
+
+        <!-- How Working with Writer Works Timeline/Stepper -->
+        <div class="card p-6 sm:p-8 space-y-6">
+          <div class="space-y-1">
+            <h2 class="type-h3 text-lg">How working with <%= firstName %> works</h2>
+            <p class="type-body text-xs text-[var(--text-muted)]">
+              PerPage uses a transparent, step-by-step workflow for academic assignments.
+            </p>
+          </div>
+
+          <div class="stepper space-y-6">
+            <!-- Step 1 -->
+            <div class="stepper-step">
+              <div class="stepper-marker">1</div>
+              <div class="stepper-content space-y-1">
+                <h3 class="text-sm font-semibold text-[var(--text-ink)]">Create a deal</h3>
+                <p class="text-xs text-[var(--text-muted)] leading-relaxed">
+                  Provide your page count, instructions, and upload your brief document directly to <%= firstName %>.
+                </p>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="stepper-step">
+              <div class="stepper-marker">2</div>
+              <div class="stepper-content space-y-1">
+                <h3 class="text-sm font-semibold text-[var(--text-ink)]">Writer accepts or declines</h3>
+                <p class="text-xs text-[var(--text-muted)] leading-relaxed">
+                  <%= firstName %> reviews your assignment details and accepts or declines based on current availability.
+                </p>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="stepper-step">
+              <div class="stepper-marker">3</div>
+              <div class="stepper-content space-y-1">
+                <h3 class="text-sm font-semibold text-[var(--text-ink)]">Final file delivered</h3>
+                <p class="text-xs text-[var(--text-muted)] leading-relaxed">
+                  Once completed, the writer uploads the completed paper through the secure platform.
+                </p>
+              </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="stepper-step">
+              <div class="stepper-marker">4</div>
+              <div class="stepper-content space-y-1">
+                <h3 class="text-sm font-semibold text-[var(--text-ink)]">Download from your dashboard</h3>
+                <p class="text-xs text-[var(--text-muted)] leading-relaxed">
+                  Access and download your final work anytime directly from your PerPage student dashboard.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Desktop Sticky Order Card -->
+      <aside class="hidden lg:block lg:col-span-4 sticky top-6">
+        <div class="card p-6 space-y-5" x-data="{ pages: 1, rate: <%= rate %> }">
+          
+          <div class="border-b border-[var(--border-color)] pb-4 space-y-1">
+            <span class="text-xs text-[var(--text-muted)]">Rate per page</span>
+            <% if (hasRate) { %>
+              <div class="font-serif-display text-3xl font-normal text-[var(--text-ink)]">
+                ₹<%= rate %>
+              </div>
+            <% } else { %>
+              <div>
+                <span class="badge badge-neutral text-xs">Rate not set</span>
+                <p class="text-xs text-[var(--text-muted)] mt-1.5">
+                  This writer has not set a per-page rate yet.
+                </p>
+              </div>
+            <% } %>
+          </div>
+
+          <% if (isOwnProfile) { %>
+            <div class="space-y-3">
+              <p class="text-xs text-[var(--text-muted)]">
+                This is your public writer profile as seen by students.
+              </p>
+              <a href="/profile/<%= writer._id %>" class="btn btn-secondary btn-md w-full justify-center">
+                Edit your profile
+              </a>
+            </div>
+          <% } else if (!hasRate) { %>
+            <div>
+              <button type="button" disabled class="btn btn-primary btn-md w-full opacity-50 cursor-not-allowed justify-center">
+                Create a deal
+              </button>
+              <p class="text-xs text-[var(--text-muted)] mt-2">
+                Deals cannot be created until the writer sets their rate.
+              </p>
+            </div>
+          <% } else { %>
+            <!-- Estimator -->
+            <div class="space-y-3 pt-1">
+              <div class="space-y-1.5">
+                <label for="pages-estimator-desktop" class="form-label text-xs">Number of pages</label>
+                <input 
+                  type="number" 
+                  id="pages-estimator-desktop" 
+                  min="1" 
+                  max="500" 
+                  x-model.number="pages"
+                  class="form-input text-sm w-full"
+                >
+              </div>
+
+              <div class="card-muted p-3 space-y-1">
+                <div class="flex items-center justify-between text-xs text-[var(--text-muted)]">
+                  <span>Estimated total</span>
+                  <span class="text-sm font-semibold text-[var(--text-ink)]" x-text="'₹' + new Intl.NumberFormat('en-IN').format(Math.max(1, Math.min(500, pages || 1)) * rate)">
+                    ₹<%= rate %>
+                  </span>
+                </div>
+                <p class="text-[11px] text-[var(--text-muted)] leading-tight">
+                  Estimate. The final total is confirmed when you create the deal.
+                </p>
+              </div>
+
+              <div class="pt-2">
+                <% if (user) { %>
+                  <a href="/deal?writerId=<%= writer._id %>" class="btn btn-primary btn-md w-full justify-center">
+                    Create a deal
+                    <%- icon('arrow-right', { class: 'w-4 h-4 ml-1.5' }) %>
+                  </a>
+                <% } else { %>
+                  <a href="/login?returnTo=<%= encodeURIComponent('/deal?writerId=' + writer._id) %>" class="btn btn-primary btn-md w-full justify-center">
+                    Log in to create a deal
+                  </a>
+                  <p class="text-[11px] text-[var(--text-muted)] text-center mt-1.5">
+                    Log in or register to commission an assignment.
+                  </p>
+                <% } %>
+              </div>
+
+              <p class="text-[11px] text-[var(--text-muted)] text-center leading-normal pt-1">
+                Files are stored privately and shared through time-limited links.
+              </p>
+            </div>
+          <% } %>
+
+        </div>
+      </aside>
+
+    </div>
+
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

@@ -1,0 +1,5 @@
+<%
+  const iconName = typeof name !== 'undefined' ? name : 'info';
+  const iconClass = typeof className !== 'undefined' ? className : (typeof cls !== 'undefined' ? cls : (typeof clazz !== 'undefined' ? clazz : (locals.class || 'w-4 h-4')));
+  const iconSize = typeof size !== 'undefined' ? size : '';
+%><%- icon(iconName, { class: iconClass, size: iconSize }) %>

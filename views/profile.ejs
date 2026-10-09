@@ -1,0 +1,254 @@
+<%- include('partials/head', { 
+  pageTitle: pageTitle || 'My Profile — PerPage', 
+  metaDescription: 'Manage your PerPage account settings, profile biography, and writing rates.',
+  noindex: true 
+}) %>
+<%- include('partials/navbar') %>
+
+<% 
+  const profile = typeof userProfile !== 'undefined' ? userProfile : (typeof writer !== 'undefined' ? writer : user);
+  const isWriter = profile.role === 'writer';
+  const hasUnsetRate = isWriter && (!profile.pricePerPage || profile.pricePerPage === 0);
+  const initials = (profile.name || 'U').split(' ').map(n => n.charAt(0)).slice(0, 2).join('').toUpperCase();
+%>
+
+<main id="main-content" class="py-10 sm:py-14" x-data="{ submitting: false, bioCount: <%= (profile.bio || '').length %> }">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+
+    <!-- Breadcrumb & Page Header -->
+    <div class="space-y-2 border-b border-[var(--border-color)] pb-6">
+      <nav class="flex items-center gap-2 text-xs text-[var(--text-muted)]" aria-label="Breadcrumb">
+        <a href="/dashboard" class="hover:text-[var(--text-ink)] transition-colors">Dashboard</a>
+        <span aria-hidden="true">/</span>
+        <span class="text-[var(--text-ink)] font-medium" aria-current="page">Account Settings</span>
+      </nav>
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+        <div>
+          <h1 class="type-h1">Account Settings</h1>
+          <p class="type-body text-sm text-[var(--text-muted)] mt-1">
+            Manage your personal profile, biography, and academic writing preferences.
+          </p>
+        </div>
+        <% if (isWriter) { %>
+          <a href="/writers/<%= profile._id %>" class="btn btn-secondary btn-sm self-start sm:self-auto">
+            <%- icon('external-link', { class: 'w-3.5 h-3.5 mr-1.5' }) %>
+            View public profile
+          </a>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Success Message Alert -->
+    <% if (typeof success !== 'undefined' && success) { %>
+      <div class="alert alert-success" role="status">
+        <div class="flex items-center gap-3">
+          <%- icon('check-circle', { class: 'w-5 h-5 flex-shrink-0' }) %>
+          <div class="text-xs sm:text-sm font-medium">
+            <%= success %>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Unset Rate Info Alert (Writers only) -->
+    <% if (hasUnsetRate) { %>
+      <div class="alert alert-info" role="status">
+        <div class="flex items-start gap-3">
+          <%- icon('info', { class: 'w-5 h-5 flex-shrink-0 mt-0.5' }) %>
+          <div class="space-y-1">
+            <h2 class="text-sm font-semibold text-[var(--text-ink)]">Set your rate per page</h2>
+            <p class="text-xs text-[var(--text-muted)]">
+              Set your rate so students can create deals with you. Without a rate, deals cannot be commissioned.
+            </p>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Settings Form -->
+    <form 
+      action="/profile/<%= profile._id %>/edit" 
+      method="POST" 
+      @submit="submitting = true"
+      class="space-y-8"
+    >
+      
+      <!-- Section 1: Profile Details -->
+      <section class="card p-6 sm:p-8 space-y-6" aria-labelledby="section-profile-heading">
+        <div class="border-b border-[var(--border-color)] pb-4">
+          <h2 id="section-profile-heading" class="type-h3 text-base font-semibold">Profile Information</h2>
+          <p class="type-body text-xs text-[var(--text-muted)] mt-0.5">
+            Your name and biography visible to clients and colleagues on the platform.
+          </p>
+        </div>
+
+        <!-- Avatar Preview -->
+        <div class="flex items-center gap-4">
+          <div class="avatar avatar-lg flex-shrink-0" aria-hidden="true">
+            <% if (profile.profilePic) { %>
+              <img src="<%= profile.profilePic %>" alt="<%= profile.name %>">
+            <% } else { %>
+              <span><%= initials %></span>
+            <% } %>
+          </div>
+          <div>
+            <span class="text-xs font-medium text-[var(--text-ink)]">Account Avatar</span>
+            <p class="text-xs text-[var(--text-muted)] mt-0.5">
+              Derived from your profile initials or linked account.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-5">
+          <!-- Full Name -->
+          <div class="space-y-1.5">
+            <label for="name" class="form-label text-xs">Full Name <span class="text-[var(--danger)]">*</span></label>
+            <input 
+              type="text" 
+              id="name" 
+              name="name" 
+              value="<%= profile.name || '' %>" 
+              required 
+              class="form-input text-sm w-full max-w-lg"
+            >
+          </div>
+
+          <!-- Biography with Live Character Counter -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between max-w-2xl">
+              <label for="bio" class="form-label text-xs">Academic Biography</label>
+              <span class="text-[11px] text-[var(--text-muted)]" x-text="bioCount + ' characters'">
+                <%= (profile.bio || '').length %> characters
+              </span>
+            </div>
+            <textarea 
+              id="bio" 
+              name="bio" 
+              rows="4" 
+              @input="bioCount = $el.value.length"
+              placeholder="Describe your academic disciplines, research methodology, and writing expertise..."
+              class="form-textarea text-sm w-full max-w-2xl leading-relaxed"
+            ><%= profile.bio || '' %></textarea>
+            <p class="text-[11px] text-[var(--text-muted)]">
+              Preserves line breaks when displayed on your public profile.
+            </p>
+          </div>
+
+          <!-- Private Address (Displayed to owner only) -->
+          <div class="space-y-1.5">
+            <label for="address" class="form-label text-xs">Billing / Postal Address</label>
+            <input 
+              type="text" 
+              id="address" 
+              name="address" 
+              value="<%= profile.address || '' %>" 
+              placeholder="City, Country"
+              class="form-input text-sm w-full max-w-lg"
+            >
+            <p class="text-[11px] text-[var(--text-muted)]">
+              Private information. This is never displayed publicly on writer profiles or directories.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Rates (Writers Only) -->
+      <% if (isWriter) { %>
+        <section class="card p-6 sm:p-8 space-y-6" aria-labelledby="section-rates-heading">
+          <div class="border-b border-[var(--border-color)] pb-4">
+            <h2 id="section-rates-heading" class="type-h3 text-base font-semibold">Pricing &amp; Rates</h2>
+            <p class="type-body text-xs text-[var(--text-muted)] mt-0.5">
+              Transparent upfront pricing charged to students for assignment work.
+            </p>
+          </div>
+
+          <div class="space-y-2 max-w-xs">
+            <label for="pricePerPage" class="form-label text-xs">Price per page</label>
+            <div class="input-group">
+              <span class="input-group-addon font-semibold">₹</span>
+              <input 
+                type="number" 
+                id="pricePerPage" 
+                name="pricePerPage" 
+                value="<%= profile.pricePerPage || 0 %>" 
+                min="0" 
+                step="1"
+                class="form-input text-sm text-right"
+              >
+              <span class="input-group-addon text-[var(--text-muted)] text-xs">per page</span>
+            </div>
+            <p class="text-[11px] text-[var(--text-muted)]">
+              Students see this rate and pay pages &times; rate. Set to 0 to mark rate as unset.
+            </p>
+          </div>
+        </section>
+      <% } else { %>
+        <!-- Hidden input for non-writers to preserve value -->
+        <input type="hidden" name="pricePerPage" value="<%= profile.pricePerPage || 0 %>">
+      <% } %>
+
+      <!-- Section 3: Account & Credentials -->
+      <section class="card p-6 sm:p-8 space-y-6" aria-labelledby="section-account-heading">
+        <div class="border-b border-[var(--border-color)] pb-4">
+          <h2 id="section-account-heading" class="type-h3 text-base font-semibold">Account Information</h2>
+          <p class="type-body text-xs text-[var(--text-muted)] mt-0.5">
+            Internal identification and system credentials.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl">
+          <!-- Email (Read-only) -->
+          <div class="space-y-1.5">
+            <label class="form-label text-xs">Email Address</label>
+            <input 
+              type="email" 
+              value="<%= profile.email || '' %>" 
+              readonly 
+              class="form-input text-sm bg-[var(--bg-surface-muted)] text-[var(--text-muted)] cursor-not-allowed"
+            >
+            <p class="text-[11px] text-[var(--text-muted)]">Email address is managed by authentication provider.</p>
+          </div>
+
+          <!-- Role -->
+          <div class="space-y-1.5">
+            <label for="role" class="form-label text-xs">Platform Role</label>
+            <select id="role" name="role" class="form-select text-sm w-full">
+              <option value="writer" <%= profile.role === 'writer' ? 'selected' : '' %>>Writer</option>
+              <option value="user" <%= profile.role === 'user' ? 'selected' : '' %>>Student / User</option>
+            </select>
+            <p class="text-[11px] text-[var(--text-muted)]">Determines whether you can be commissioned or place orders.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Save Button with Loading State -->
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <a href="/dashboard" class="btn btn-secondary btn-md">
+          Cancel
+        </a>
+        <button 
+          type="submit" 
+          :disabled="submitting" 
+          :class="{ 'opacity-75 cursor-wait': submitting }"
+          class="btn btn-primary btn-md min-w-[140px] justify-center"
+        >
+          <span x-show="!submitting" class="flex items-center">
+            Save Changes
+          </span>
+          <span x-show="submitting" class="flex items-center gap-2" style="display: none;">
+            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Saving...
+          </span>
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

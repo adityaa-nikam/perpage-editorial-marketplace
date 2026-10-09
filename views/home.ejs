@@ -1,0 +1,837 @@
+<%- include('partials/head', { 
+  pageTitle: 'PerPage — Academic Writing & Assignment Marketplace',
+  metaDescription: 'Browse freelance academic writers, calculate rates upfront per page, and coordinate assignments privately.',
+  canonical: 'https://perpage.onrender.com/'
+}) %>
+<%- include('partials/navbar') %>
+
+<% 
+  function getInitials(name) {
+    if (!name) return 'W';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+%>
+
+<main id="main-content" class="space-y-24 sm:space-y-32 py-12 sm:py-20">
+
+  <!-- =========================================================================
+       1. HERO SECTION
+       ========================================================================= -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
+      
+      <!-- Left Column: Copy & Actions -->
+      <div class="lg:col-span-7 space-y-6">
+        <div>
+          <span class="badge badge-neutral">Academic writing marketplace</span>
+        </div>
+
+        <h1 class="type-display text-[var(--text-ink)]">
+          Find a writer. Agree a price. Get it delivered.
+        </h1>
+
+        <p class="type-body text-[var(--text-muted)] max-w-xl text-base sm:text-lg">
+          Browse freelance academic authors, set your page count with transparent upfront pricing, and track each assignment through structured delivery.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <% if (locals.user) { %>
+            <a href="/dashboard" class="btn btn-primary btn-lg">
+              Go to dashboard
+              <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+            </a>
+            <a href="/writers" class="btn btn-secondary btn-lg">
+              Browse writers
+            </a>
+          <% } else { %>
+            <a href="/writers" class="btn btn-primary btn-lg">
+              Browse writers
+              <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+            </a>
+            <a href="/register" class="btn btn-secondary btn-lg">
+              Become a writer
+            </a>
+          <% } %>
+        </div>
+
+        <!-- Fact Strip (Verified against codebase reality) -->
+        <div class="pt-6 border-t border-[var(--border-color)] grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl">
+          <div class="flex items-start gap-2.5">
+            <span class="text-[var(--accent)] mt-0.5 shrink-0">
+              <%- icon('check', { class: 'w-4 h-4' }) %>
+            </span>
+            <span class="text-xs text-[var(--text-muted)] font-medium leading-snug">
+              Pay per page, priced upfront
+            </span>
+          </div>
+
+          <div class="flex items-start gap-2.5">
+            <span class="text-[var(--accent)] mt-0.5 shrink-0">
+              <%- icon('shield-check', { class: 'w-4 h-4' }) %>
+            </span>
+            <span class="text-xs text-[var(--text-muted)] font-medium leading-snug">
+              Files stored privately on S3
+            </span>
+          </div>
+
+          <div class="flex items-start gap-2.5">
+            <span class="text-[var(--accent)] mt-0.5 shrink-0">
+              <%- icon('clock', { class: 'w-4 h-4' }) %>
+            </span>
+            <span class="text-xs text-[var(--text-muted)] font-medium leading-snug">
+              Writer accepts before work starts
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Coded Product Mockup (Deal Card) -->
+      <div 
+        class="lg:col-span-5"
+        x-data="{ currentStep: 2 }"
+        x-init="if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          setInterval(() => {
+            currentStep = (currentStep % 4) + 1;
+          }, 3600);
+        }"
+      >
+        <div class="card p-6 sm:p-7 space-y-5 bg-[var(--bg-surface)] shadow-sm relative">
+          <!-- Card Header & Badge -->
+          <div class="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[var(--accent)]"></span>
+              <span class="text-xs font-semibold text-[var(--text-ink)]">Assignment Deal No. 1042</span>
+            </div>
+            <span class="badge badge-neutral text-[10px]">Sample</span>
+          </div>
+
+          <!-- Assignment Details -->
+          <div class="space-y-1">
+            <h2 class="type-h4 text-base font-semibold text-[var(--text-ink)]">
+              Behavioral Economics Literature Review
+            </h2>
+            <div class="flex items-center gap-3 text-xs text-[var(--text-muted)]">
+              <span>6 Pages</span>
+              <span>•</span>
+              <span>₹150 / page</span>
+              <span>•</span>
+              <span class="font-semibold text-[var(--text-ink)]">Total: ₹900</span>
+            </div>
+          </div>
+
+          <!-- Writer Row -->
+          <div class="p-3 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="avatar avatar-sm">
+                <span>AS</span>
+              </div>
+              <div>
+                <div class="text-xs font-medium text-[var(--text-ink)]">Aditi Sharma</div>
+                <div class="text-[11px] text-[var(--text-muted)]">Assigned Author</div>
+              </div>
+            </div>
+            <span 
+              class="badge"
+              :class="{
+                'badge-neutral': currentStep === 1,
+                'badge-accent': currentStep === 2 || currentStep === 3,
+                'badge-success': currentStep === 4
+              }"
+              x-text="currentStep === 1 ? 'Pending' : (currentStep === 2 ? 'Accepted' : (currentStep === 3 ? 'In Progress' : 'Completed'))"
+            >
+              In Progress
+            </span>
+          </div>
+
+          <!-- Attached Brief File -->
+          <div class="flex items-center justify-between p-2.5 rounded-md border border-[var(--border-color)] text-xs">
+            <div class="flex items-center gap-2 text-[var(--text-ink)] truncate mr-2">
+              <%- icon('file-text', { class: 'w-4 h-4 text-[var(--text-muted)] shrink-0' }) %>
+              <span class="truncate font-mono text-[11px]">assignment-brief.pdf</span>
+            </div>
+            <span class="text-[11px] text-[var(--text-muted)] shrink-0">1.8 MB</span>
+          </div>
+
+          <!-- Interactive Timeline Stepper -->
+          <div class="pt-2">
+            <div class="text-[11px] font-medium text-[var(--text-muted)] mb-2.5">Pipeline Status</div>
+            <div class="timeline-stepper">
+              <!-- Step 1: Created -->
+              <div class="stepper-step" :class="currentStep >= 1 ? 'is-complete' : ''">
+                <div class="stepper-indicator text-[11px]">
+                  <%- icon('check', { class: 'w-3 h-3' }) %>
+                </div>
+                <div class="stepper-line"></div>
+              </div>
+
+              <!-- Step 2: Accepted -->
+              <div class="stepper-step" :class="currentStep > 2 ? 'is-complete' : (currentStep === 2 ? 'is-current' : '')">
+                <div class="stepper-indicator text-[11px]">
+                  <template x-if="currentStep > 2">
+                    <%- icon('check', { class: 'w-3 h-3' }) %>
+                  </template>
+                  <template x-if="currentStep <= 2">
+                    <span>2</span>
+                  </template>
+                </div>
+                <div class="stepper-line"></div>
+              </div>
+
+              <!-- Step 3: In Progress -->
+              <div class="stepper-step" :class="currentStep > 3 ? 'is-complete' : (currentStep === 3 ? 'is-current' : '')">
+                <div class="stepper-indicator text-[11px]">
+                  <template x-if="currentStep > 3">
+                    <%- icon('check', { class: 'w-3 h-3' }) %>
+                  </template>
+                  <template x-if="currentStep <= 3">
+                    <span>3</span>
+                  </template>
+                </div>
+                <div class="stepper-line"></div>
+              </div>
+
+              <!-- Step 4: Completed -->
+              <div class="stepper-step" :class="currentStep === 4 ? 'is-complete' : ''">
+                <div class="stepper-indicator text-[11px]">4</div>
+              </div>
+            </div>
+
+            <div class="flex justify-between text-[10px] text-[var(--text-muted)] mt-2">
+              <span>Created</span>
+              <span>Accepted</span>
+              <span>Writing</span>
+              <span>Delivered</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- =========================================================================
+       2. HOW IT WORKS SECTION
+       ========================================================================= -->
+  <section id="how-it-works" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
+    <div class="section-header max-w-2xl">
+      <div class="type-eyebrow">The Process</div>
+      <h2 class="type-h2">How PerPage Works</h2>
+      <p class="type-body text-[var(--text-muted)]">
+        A structured, milestone-based collaboration from initial brief to final draft.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      
+      <!-- Step 01 -->
+      <div class="card p-6 sm:p-7 space-y-5 flex flex-col justify-between">
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="step-numeral">01</span>
+            <span class="badge badge-neutral">Step 1</span>
+          </div>
+          <h3 class="type-h3 text-lg">Browse writers</h3>
+          <p class="type-small text-[var(--text-muted)] leading-relaxed">
+            Compare author profiles, subject bios, and per-page rates to find the right specialist for your academic paper.
+          </p>
+        </div>
+
+        <!-- Step 1 Vignette: Mini Author Row -->
+        <div class="p-3 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <div class="avatar avatar-sm">DR</div>
+            <div>
+              <div class="text-xs font-medium text-[var(--text-ink)]">Dr. J. Doe</div>
+              <div class="text-[11px] text-[var(--text-muted)]">₹150 / page</div>
+            </div>
+          </div>
+          <span class="text-xs text-[var(--accent)] font-medium">Profile</span>
+        </div>
+      </div>
+
+      <!-- Step 02 -->
+      <div class="card p-6 sm:p-7 space-y-5 flex flex-col justify-between">
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="step-numeral">02</span>
+            <span class="badge badge-neutral">Step 2</span>
+          </div>
+          <h3 class="type-h3 text-lg">Create a deal</h3>
+          <p class="type-small text-[var(--text-muted)] leading-relaxed">
+            Specify your required page count, include assignment instructions, and upload your prompt document in PDF format.
+          </p>
+        </div>
+
+        <!-- Step 2 Vignette: Mini Upload Dropzone -->
+        <div class="p-3 rounded-lg bg-[var(--bg-surface-muted)] border border-dashed border-[var(--border-color)] flex items-center justify-between text-xs">
+          <div class="flex items-center gap-2 text-[var(--text-ink)] truncate">
+            <%- icon('upload', { class: 'w-4 h-4 text-[var(--accent)] shrink-0' }) %>
+            <span class="truncate font-mono text-[11px]">brief.pdf</span>
+          </div>
+          <span class="text-[11px] font-medium text-[var(--text-muted)]">4 pgs • ₹600</span>
+        </div>
+      </div>
+
+      <!-- Step 03 -->
+      <div class="card p-6 sm:p-7 space-y-5 flex flex-col justify-between">
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="step-numeral">03</span>
+            <span class="badge badge-neutral">Step 3</span>
+          </div>
+          <h3 class="type-h3 text-lg">Track to delivery</h3>
+          <p class="type-small text-[var(--text-muted)] leading-relaxed">
+            The writer accepts or declines before work begins. Once finalized, download your completed draft securely from your dashboard.
+          </p>
+        </div>
+
+        <!-- Step 3 Vignette: Mini Status & Download -->
+        <div class="p-3 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-[var(--semantic-success-text)]">
+              <%- icon('check', { class: 'w-4 h-4' }) %>
+            </span>
+            <span class="text-xs font-medium text-[var(--text-ink)]">Draft Ready</span>
+          </div>
+          <span class="badge badge-success text-[10px]">Download</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- =========================================================================
+       3. WHY PERPAGE (BENTO GRID)
+       ========================================================================= -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
+    <div class="section-header max-w-2xl">
+      <div class="type-eyebrow">Platform Architecture</div>
+      <h2 class="type-h2">Designed for Trust and Clarity</h2>
+      <p class="type-body text-[var(--text-muted)]">
+        Every feature is backed directly by our database schema and security model.
+      </p>
+    </div>
+
+    <!-- Asymmetric Bento Grid (2x3 on desktop) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <!-- Bento Card 1: Transparent Pricing (Span 2 on desktop) -->
+      <div class="bento-card lg:col-span-2">
+        <div class="space-y-3">
+          <div class="w-9 h-9 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]">
+            <%- icon('file-text', { class: 'w-4 h-4' }) %>
+          </div>
+          <h3 class="type-h3 text-lg">Transparent per-page pricing</h3>
+          <p class="type-small text-[var(--text-muted)] max-w-xl leading-relaxed">
+            You know the exact total before commissioning. Price is calculated simply as requested page count multiplied by the author's fixed rate per page, with no bidding wars or unexpected fees.
+          </p>
+        </div>
+        <div class="pt-6 flex items-center gap-3 text-xs text-[var(--text-muted)] font-mono">
+          <span class="badge badge-neutral">Formula</span>
+          <span>totalPages × pricePerPage = totalPrice</span>
+        </div>
+      </div>
+
+      <!-- Bento Card 2: Private S3 Storage -->
+      <div class="bento-card">
+        <div class="space-y-3">
+          <div class="w-9 h-9 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]">
+            <%- icon('shield-check', { class: 'w-4 h-4' }) %>
+          </div>
+          <h3 class="type-h3 text-lg">Private file storage</h3>
+          <p class="type-small text-[var(--text-muted)] leading-relaxed">
+            Assignment instructions and finalized drafts are securely stored in Amazon S3 and accessed exclusively via authenticated, time-limited presigned URLs.
+          </p>
+        </div>
+        <div class="pt-6 text-xs text-[var(--text-muted)]">
+          <span class="badge badge-neutral">Amazon S3 Presigned</span>
+        </div>
+      </div>
+
+      <!-- Bento Card 3: Pre-work acceptance -->
+      <div class="bento-card">
+        <div class="space-y-3">
+          <div class="w-9 h-9 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]">
+            <%- icon('clock', { class: 'w-4 h-4' }) %>
+          </div>
+          <h3 class="type-h3 text-lg">Author review before work starts</h3>
+          <p class="type-small text-[var(--text-muted)] leading-relaxed">
+            Deals begin in a pending state. Writers review your prompt instructions and deadline, deciding to accept or decline before starting work.
+          </p>
+        </div>
+        <div class="pt-6 text-xs text-[var(--text-muted)]">
+          <span class="badge badge-neutral">Author Decision Flow</span>
+        </div>
+      </div>
+
+      <!-- Bento Card 4: Status tracking -->
+      <div class="bento-card">
+        <div class="space-y-3">
+          <div class="w-9 h-9 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]">
+            <%- icon('layout-dashboard', { class: 'w-4 h-4' }) %>
+          </div>
+          <h3 class="type-h3 text-lg">End-to-end status tracking</h3>
+          <p class="type-small text-[var(--text-muted)] leading-relaxed">
+            Both parties monitor clear deal statuses: pending, accepted, in-progress, submitted, and completed directly inside their accounts.
+          </p>
+        </div>
+        <div class="pt-6 text-xs text-[var(--text-muted)]">
+          <span class="badge badge-neutral">Milestone Pipeline</span>
+        </div>
+      </div>
+
+      <!-- Bento Card 5: Dedicated Dashboards -->
+      <div class="bento-card">
+        <div class="space-y-3">
+          <div class="w-9 h-9 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]">
+            <%- icon('user', { class: 'w-4 h-4' }) %>
+          </div>
+          <h3 class="type-h3 text-lg">Dedicated dual dashboards</h3>
+          <p class="type-small text-[var(--text-muted)] leading-relaxed">
+            Separate, purpose-built interfaces for student clients tracking orders and authors managing assignments and final deliveries.
+          </p>
+        </div>
+        <div class="pt-6 text-xs text-[var(--text-muted)]">
+          <span class="badge badge-neutral">Client &amp; Writer Portals</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- =========================================================================
+       4. FEATURED WRITERS SECTION
+       ========================================================================= -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+      <div class="section-header mb-0 max-w-xl">
+        <div class="type-eyebrow">Academic Authors</div>
+        <h2 class="type-h2">Featured Writers</h2>
+        <p class="type-body text-[var(--text-muted)]">
+          Academic authors currently open for research and writing commissions.
+        </p>
+      </div>
+
+      <a href="/writers" class="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent)] hover:underline shrink-0">
+        <span>View all writers</span>
+        <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+      </a>
+    </div>
+
+    <% if (locals.featuredWriters && featuredWriters.length > 0) { %>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <% featuredWriters.forEach(function(writer) { %>
+          <div class="card p-6 flex flex-col justify-between space-y-5 hover:border-[var(--border-strong)] transition-colors duration-150">
+            <div class="space-y-4">
+              <!-- Author Header -->
+              <div class="flex items-center gap-3">
+                <div class="avatar avatar-md">
+                  <% if (writer.profilePic) { %>
+                    <img src="<%= writer.profilePic %>" alt="<%= writer.name || 'Author' %>" class="w-full h-full object-cover">
+                  <% } else { %>
+                    <span><%= getInitials(writer.name) %></span>
+                  <% } %>
+                </div>
+                <div>
+                  <h3 class="type-h4 text-base text-[var(--text-ink)]"><%= writer.name || 'Academic Writer' %></h3>
+                  <div class="text-xs text-[var(--text-muted)]">Academic Author</div>
+                </div>
+              </div>
+
+              <!-- Author Bio (2-line clamped) -->
+              <p class="type-small text-[var(--text-muted)] line-clamp-2 leading-relaxed">
+                <%= writer.bio || 'Experienced academic author specializing in structured research papers, literature reviews, and formatted references.' %>
+              </p>
+            </div>
+
+            <!-- Rate & Action -->
+            <div class="pt-4 border-t border-[var(--border-color)] flex items-center justify-between">
+              <div>
+                <span class="text-xs text-[var(--text-muted)] block">Rate</span>
+                <span class="text-sm font-semibold text-[var(--text-ink)]">
+                  <%= writer.pricePerPage ? ('₹' + writer.pricePerPage + ' / page') : 'Rates on profile' %>
+                </span>
+              </div>
+              <a href="/writers/<%= writer._id %>" class="btn btn-secondary btn-sm">
+                View profile
+                <%- icon('arrow-right', { class: 'w-3.5 h-3.5' }) %>
+              </a>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <!-- Empty State Fallback -->
+      <div class="empty-state">
+        <div class="max-w-md mx-auto space-y-3">
+          <div class="w-10 h-10 rounded-full bg-[var(--bg-surface)] border border-[var(--border-color)] mx-auto flex items-center justify-center text-[var(--text-muted)]">
+            <%- icon('user', { class: 'w-5 h-5' }) %>
+          </div>
+          <h3 class="type-h4 text-base">No authors registered yet</h3>
+          <p class="type-small text-[var(--text-muted)]">
+            Be the first academic writer to join PerPage, establish your per-page rate, and receive assignment commissions.
+          </p>
+          <div class="pt-2">
+            <a href="/register" class="btn btn-primary btn-sm">
+              Become the first writer
+              <%- icon('arrow-right', { class: 'w-3.5 h-3.5' }) %>
+            </a>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </section>
+
+
+  <!-- =========================================================================
+       5. FOR WRITERS (SPLIT SECTION)
+       ========================================================================= -->
+  <section class="bg-[var(--bg-surface-muted)] py-16 sm:py-24 border-y border-[var(--border-color)] reveal-on-scroll">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left: Copy & Checklist -->
+        <div class="lg:col-span-6 space-y-6">
+          <div class="type-eyebrow">For Academic Authors</div>
+          
+          <h2 class="type-h2">Set your rates. Choose your projects.</h2>
+          
+          <p class="type-body text-[var(--text-muted)] text-base sm:text-lg">
+            PerPage gives academic freelance writers full autonomy over pricing and commitments. Review incoming briefs, coordinate directly, and upload final drafts through your dashboard.
+          </p>
+
+          <ul class="space-y-3 pt-2">
+            <li class="flex items-start gap-3">
+              <span class="text-[var(--accent)] mt-0.5 shrink-0">
+                <%- icon('check', { class: 'w-4 h-4' }) %>
+              </span>
+              <span class="type-small text-[var(--text-ink)]">
+                Set your own per-page price with complete rate autonomy
+              </span>
+            </li>
+
+            <li class="flex items-start gap-3">
+              <span class="text-[var(--accent)] mt-0.5 shrink-0">
+                <%- icon('check', { class: 'w-4 h-4' }) %>
+              </span>
+              <span class="type-small text-[var(--text-ink)]">
+                Review assignment briefs and accept or decline before starting
+              </span>
+            </li>
+
+            <li class="flex items-start gap-3">
+              <span class="text-[var(--accent)] mt-0.5 shrink-0">
+                <%- icon('check', { class: 'w-4 h-4' }) %>
+              </span>
+              <span class="type-small text-[var(--text-ink)]">
+                Upload finalized PDF deliverables directly through your author portal
+              </span>
+            </li>
+          </ul>
+
+          <div class="pt-4">
+            <a href="/register" class="btn btn-primary btn-md">
+              Join as a writer
+              <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: Coded Mini Mockup (Writer Dashboard Row) -->
+        <div class="lg:col-span-6">
+          <div class="card p-6 sm:p-7 space-y-4 bg-[var(--bg-surface)] shadow-sm">
+            <div class="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
+              <span class="text-xs font-semibold text-[var(--text-ink)]">Author Portal • Incoming Request</span>
+              <span class="badge badge-neutral text-[10px]">Sample</span>
+            </div>
+
+            <!-- Client Info Row -->
+            <div class="flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2.5">
+                <div class="avatar avatar-sm">RT</div>
+                <div>
+                  <div class="font-medium text-[var(--text-ink)]">Rahul T.</div>
+                  <div class="text-[11px] text-[var(--text-muted)]">Student Client</div>
+                </div>
+              </div>
+              <span class="badge badge-neutral text-[10px]">Awaiting Decision</span>
+            </div>
+
+            <!-- Deal Scope -->
+            <div class="p-3.5 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] space-y-1.5">
+              <div class="text-xs font-semibold text-[var(--text-ink)]">Literature Review on Renewable Grid Integration</div>
+              <div class="flex items-center justify-between text-xs text-[var(--text-muted)]">
+                <span>Scope: 5 Pages</span>
+                <span class="font-semibold text-[var(--text-ink)]">Earnings: ₹750 (₹150/pg)</span>
+              </div>
+            </div>
+
+            <!-- Attached Prompt File -->
+            <div class="flex items-center justify-between p-2 rounded-md border border-[var(--border-color)] text-xs">
+              <div class="flex items-center gap-2 truncate mr-2">
+                <%- icon('file-text', { class: 'w-3.5 h-3.5 text-[var(--text-muted)] shrink-0' }) %>
+                <span class="truncate font-mono text-[11px]">rubric-and-notes.pdf</span>
+              </div>
+              <span class="text-[11px] text-[var(--accent)] font-medium">Download</span>
+            </div>
+
+            <!-- Decision Action Buttons -->
+            <div class="pt-2 flex items-center gap-3">
+              <button type="button" class="btn btn-primary btn-sm flex-1 cursor-not-allowed opacity-90">
+                Accept Deal
+              </button>
+              <button type="button" class="btn btn-ghost btn-sm flex-1 cursor-not-allowed opacity-75">
+                Decline
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =========================================================================
+       6. FAQ SECTION (ACCESSIBLE ALPINE ACCORDION)
+       ========================================================================= -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
+    <div class="section-header text-center max-w-xl mx-auto mb-10">
+      <div class="type-eyebrow">Common Questions</div>
+      <h2 class="type-h2">Frequently Asked Questions</h2>
+      <p class="type-body text-[var(--text-muted)]">
+        Clear answers on pricing, file formats, and platform mechanics.
+      </p>
+    </div>
+
+    <div x-data="{ active: null }" class="accordion">
+      
+      <!-- FAQ 1 -->
+      <div class="accordion-item">
+        <button 
+          type="button"
+          @click="active = (active === 1 ? null : 1)"
+          :aria-expanded="(active === 1).toString()"
+          aria-controls="faq-ans-1"
+          id="faq-btn-1"
+          class="accordion-trigger"
+        >
+          <span>How is pricing calculated for an assignment?</span>
+          <span :class="active === 1 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
+            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
+          </span>
+        </button>
+        <div 
+          x-show="active === 1" 
+          x-transition:enter="transition ease-out duration-150"
+          x-transition:enter-start="opacity-0 -translate-y-1"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          id="faq-ans-1"
+          role="region"
+          aria-labelledby="faq-btn-1"
+          class="accordion-content"
+          style="display: none;"
+        >
+          Pricing is calculated upfront based on the assigned writer's agreed per-page rate multiplied by the total page count you request (Pages × Rate per Page). You review the exact total before confirming the deal.
+        </div>
+      </div>
+
+      <!-- FAQ 2 -->
+      <div class="accordion-item">
+        <button 
+          type="button"
+          @click="active = (active === 2 ? null : 2)"
+          :aria-expanded="(active === 2).toString()"
+          aria-controls="faq-ans-2"
+          id="faq-btn-2"
+          class="accordion-trigger"
+        >
+          <span>What file types can I upload with my brief?</span>
+          <span :class="active === 2 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
+            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
+          </span>
+        </button>
+        <div 
+          x-show="active === 2" 
+          x-transition:enter="transition ease-out duration-150"
+          x-transition:enter-start="opacity-0 -translate-y-1"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          id="faq-ans-2"
+          role="region"
+          aria-labelledby="faq-btn-2"
+          class="accordion-content"
+          style="display: none;"
+        >
+          You can upload assignment rubrics, prompt instructions, and formatting notes in PDF format (up to 10MB) directly through the commission form.
+        </div>
+      </div>
+
+      <!-- FAQ 3 -->
+      <div class="accordion-item">
+        <button 
+          type="button"
+          @click="active = (active === 3 ? null : 3)"
+          :aria-expanded="(active === 3).toString()"
+          aria-controls="faq-ans-3"
+          id="faq-btn-3"
+          class="accordion-trigger"
+        >
+          <span>Can an author decline an assignment request?</span>
+          <span :class="active === 3 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
+            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
+          </span>
+        </button>
+        <div 
+          x-show="active === 3" 
+          x-transition:enter="transition ease-out duration-150"
+          x-transition:enter-start="opacity-0 -translate-y-1"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          id="faq-ans-3"
+          role="region"
+          aria-labelledby="faq-btn-3"
+          class="accordion-content"
+          style="display: none;"
+        >
+          Yes. All commissions initially enter a pending review state. Authors review the subject requirements and timeline to accept or decline before committing to the work.
+        </div>
+      </div>
+
+      <!-- FAQ 4 -->
+      <div class="accordion-item">
+        <button 
+          type="button"
+          @click="active = (active === 4 ? null : 4)"
+          :aria-expanded="(active === 4).toString()"
+          aria-controls="faq-ans-4"
+          id="faq-btn-4"
+          class="accordion-trigger"
+        >
+          <span>How do I receive and download my completed draft?</span>
+          <span :class="active === 4 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
+            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
+          </span>
+        </button>
+        <div 
+          x-show="active === 4" 
+          x-transition:enter="transition ease-out duration-150"
+          x-transition:enter-start="opacity-0 -translate-y-1"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          id="faq-ans-4"
+          role="region"
+          aria-labelledby="faq-btn-4"
+          class="accordion-content"
+          style="display: none;"
+        >
+          When the author finishes writing, they upload the final document through their writer portal. You can securely download the file from your dashboard via authenticated, time-limited Amazon S3 presigned links.
+        </div>
+      </div>
+
+      <!-- FAQ 5 -->
+      <div class="accordion-item">
+        <button 
+          type="button"
+          @click="active = (active === 5 ? null : 5)"
+          :aria-expanded="(active === 5).toString()"
+          aria-controls="faq-ans-5"
+          id="faq-btn-5"
+          class="accordion-trigger"
+        >
+          <span>What authentication methods are available?</span>
+          <span :class="active === 5 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
+            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
+          </span>
+        </button>
+        <div 
+          x-show="active === 5" 
+          x-transition:enter="transition ease-out duration-150"
+          x-transition:enter-start="opacity-0 -translate-y-1"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          id="faq-ans-5"
+          role="region"
+          aria-labelledby="faq-btn-5"
+          class="accordion-content"
+          style="display: none;"
+        >
+          You can register and sign in using a standard email address and password (secured via bcrypt hashing) or authenticate via Google or GitHub OAuth.
+        </div>
+      </div>
+
+      <!-- FAQ 6: Honest Academic Disclaimer -->
+      <div class="accordion-item">
+        <button 
+          type="button"
+          @click="active = (active === 6 ? null : 6)"
+          :aria-expanded="(active === 6).toString()"
+          aria-controls="faq-ans-6"
+          id="faq-btn-6"
+          class="accordion-trigger"
+        >
+          <span>Is PerPage a live commercial service?</span>
+          <span :class="active === 6 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
+            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
+          </span>
+        </button>
+        <div 
+          x-show="active === 6" 
+          x-transition:enter="transition ease-out duration-150"
+          x-transition:enter-start="opacity-0 -translate-y-1"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          id="faq-ans-6"
+          role="region"
+          aria-labelledby="faq-btn-6"
+          class="accordion-content"
+          style="display: none;"
+        >
+          No. PerPage is an academic software demonstration project built to demonstrate full-stack architecture with Express, EJS, and MongoDB. No real monetary transactions or commercial payments are processed.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- =========================================================================
+       7. FINAL CTA BAND (SOLID FULL-WIDTH)
+       ========================================================================= -->
+  <section class="w-full bg-[var(--text-ink)] text-[var(--bg-background)] dark:bg-[var(--bg-surface)] dark:text-[var(--text-ink)] dark:border-y dark:border-[var(--border-color)] py-16 sm:py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+      <h2 class="type-h2 text-current text-2xl sm:text-4xl">
+        Ready to start your next paper?
+      </h2>
+
+      <p class="type-body opacity-80 max-w-xl mx-auto text-sm sm:text-base text-current">
+        Browse freelance academic authors, calculate your upfront rate, and submit your prompt in minutes.
+      </p>
+
+      <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+        <% if (locals.user) { %>
+          <a href="/dashboard" class="btn btn-primary btn-lg">
+            Go to dashboard
+            <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+          </a>
+          <a href="/writers" class="btn btn-secondary btn-lg bg-transparent text-current border-current/25 hover:bg-white/10">
+            Browse writers
+          </a>
+        <% } else { %>
+          <a href="/writers" class="btn btn-primary btn-lg">
+            Browse writers
+            <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+          </a>
+          <a href="/register" class="btn btn-secondary btn-lg bg-transparent text-current border-current/25 hover:bg-white/10">
+            Create an account
+          </a>
+        <% } %>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

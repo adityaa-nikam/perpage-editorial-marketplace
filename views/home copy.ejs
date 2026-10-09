@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PerPage - Assignment Help Platform</title>
+  <!-- Public Sans Font -->
+  <link rel="stylesheet" href="/css/app.css">
+  <style>
+    .animated-link { position: relative; }
+    .animated-link::after {
+      content: "";
+      position: absolute;
+      left: 0; bottom: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, #2563eb, #0ea5e9);
+      transform: scaleX(0);
+      transition: transform 0.3s;
+    }
+    .animated-link:hover::after { transform: scaleX(1); }
+    .fade-in { animation: fadeIn 1.2s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: none;} }
+  </style>
+</head>
+<body class="bg-black antialiased" style="font-family: BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;">
+  <!-- Navbar -->
+  <header class="fixed top-0 left-0 right-0 z-50 bg-black shadow-lg py-1 border-b border-gray-800">
+    <div class="container mx-auto px-6 h-14 flex items-center">
+      <!-- Left: Logo and Text -->
+      <div class="flex items-center gap-3 flex-shrink-0">
+        <a href="#" class="flex items-center gap-3 group" aria-label="PerPage Home">
+          <div class="img">
+            <img src="image.png" alt="PerPage Logo" class="w-8 h-8 rounded-lg border border-blue-700 shadow">
+          </div>
+          <span class="text-xl text-white tracking-tight drop-shadow-lg" style="font-family: BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;">PerPage</span>
+        </a>
+      </div>
+      <!-- Center: Nav Links -->
+      <nav class="hidden md:flex flex-1 items-center justify-center space-x-8">
+        <a href="#" class="text-white animated-link py-2 px-2 rounded hover:bg-blue-700 transition">Home</a>
+        <a href="#about" class="text-white animated-link py-2 px-2 rounded hover:bg-blue-700 transition">About Us</a>
+        <a href="#dashboard" class="text-white animated-link py-2 px-2 rounded hover:bg-blue-700 transition">Dashboard</a>
+        <a href="#writers" class="text-white animated-link py-2 px-2 rounded hover:bg-blue-700 transition">Writers</a>
+        <a href="#terms" class="text-white animated-link py-2 px-2 rounded hover:bg-blue-700 transition">Terms</a>
+      </nav>
+      <!-- Right: Login/Sign Up -->
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <button class="px-5 py-2 rounded-full bg-blue-700 text-white tracking-wide shadow-lg border border-blue-800 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-700 transition-all duration-200">Login</button>
+        <button class="px-5 py-2 rounded-full bg-white text-blue-700 tracking-wide shadow-lg border border-blue-700 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200">Sign Up</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="relative min-h-[700px] pt-20 pb-16 overflow-hidden" style="background: linear-gradient(135deg, #000000 0%, #18181b 55%, #232329 100%);">
+    <div class="absolute inset-0 z-0" style="background: linear-gradient(135deg, #000000 0%, #18181b 55%, #232329 100%);"></div>
+    <div class="container mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center justify-center min-h-[600px]">
+      <div class="flex-1 flex flex-col justify-center items-start md:pr-12 fade-in">
+        <div class="mb-6">
+          <span class="inline-block px-4 py-2 rounded-lg bg-gray-900 text-white text-sm mb-6 shadow">Student Assignment Help Platform</span>
+        </div>
+        <h1 class="text-5xl text-white leading-tight mb-4 drop-shadow-xl">
+          Get Assignments Done.<br>
+          <span class="text-blue-500">Use your time where it counts.</span>
+        </h1>
+        <p class="text-lg text-gray-200 mb-10 max-w-lg">Get your assignments done with the help of student writers—simple, fast, and stress-free collaboration.</p>
+        <div class="flex gap-4">
+          <button class="px-6 py-3 rounded-lg bg-gray-900 text-white text-base shadow-lg border border-gray-800 hover:bg-gray-800 transition">Post Assignment</button>
+          <button class="px-6 py-3 rounded-lg bg-black text-white text-base border border-gray-800 shadow-lg hover:bg-gray-900 transition">Join as Writer</button>
+        </div>
+      </div>
+      <div class="flex-1 flex justify-center items-center mt-10 md:mt-0 fade-in">
+        <img src="student.jpg" alt="Student working" class="shadow-2xl w-[500px] h-[500px] object-cover border-4 border-gray-900" />
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="py-20 bg-black">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12 fade-in">
+        <h2 class="text-4xl font-bold text-white mb-4">How It Works</h2>
+        <p class="text-lg text-gray-300">PerPage makes assignment help simple, secure, and student-friendly.</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8 fade-in">
+        <!-- Step 1 -->
+        <div class="bg-black rounded-xl shadow-xl p-8 border border-gray-800 hover:shadow-2xl transition-all duration-300">
+          <div class="flex items-center justify-center mb-4">
+            <span class="inline-block w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-2xl">1</span>
+          </div>
+          <h3 class="text-xl font-semibold text-white mb-2 text-center">Submit Assignment</h3>
+          <p class="text-gray-300 text-center mb-2">Upload your assignment details, files (PDFs), number of pages, and set your due date.</p>
+          <div class="flex justify-center mt-2">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 12h8M12 8v8"/></svg>
+          </div>
+        </div>
+        <!-- Step 2 -->
+        <div class="bg-black rounded-xl shadow-xl p-8 border border-gray-800 hover:shadow-2xl transition-all duration-300">
+          <div class="flex items-center justify-center mb-4">
+            <span class="inline-block w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-2xl">2</span>
+          </div>
+          <h3 class="text-xl font-semibold text-white mb-2 text-center">Get Matched</h3>
+          <p class="text-gray-300 text-center mb-2">Our platform matches your order with expert writers who accept and complete your assignment.</p>
+          <div class="flex justify-center mt-2">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20v-6M12 14l-4-4m4 4l4-4"/><circle cx="12" cy="8" r="4"/></svg>
+          </div>
+        </div>
+        <!-- Step 3 -->
+        <div class="bg-black rounded-xl shadow-xl p-8 border border-gray-800 hover:shadow-2xl transition-all duration-300">
+          <div class="flex items-center justify-center mb-4">
+            <span class="inline-block w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-2xl">3</span>
+          </div>
+          <h3 class="text-xl font-semibold text-white mb-2 text-center">Track & Review</h3>
+          <p class="text-gray-300 text-center mb-2">Track your order status, communicate with writers, and rate your experience anonymously.</p>
+          <div class="flex justify-center mt-2">
+            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Stats Section -->
+  <section id="stats" class="py-20 bg-black">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12 fade-in">
+        <h2 class="text-4xl font-bold text-white mb-4">PerPage Impact</h2>
+        <p class="text-lg text-gray-300">Our platform is helping students and writers achieve more every day.</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 fade-in">
+        <div class="bg-black rounded-xl shadow-xl p-10 border border-gray-800 flex flex-col items-center">
+          <span class="text-5xl text-blue-500 font-bold" id="studentsCount">0</span>
+          <span class="text-lg text-white mt-2">Students Benefitted</span>
+        </div>
+        <div class="bg-black rounded-xl shadow-xl p-10 border border-gray-800 flex flex-col items-center">
+          <span class="text-5xl text-blue-500 font-bold" id="writersCount">0</span>
+          <span class="text-lg text-white mt-2">Writers Benefitted</span>
+        </div>
+        <div class="bg-black rounded-xl shadow-xl p-10 border border-gray-800 flex flex-col items-center">
+          <span class="text-5xl text-blue-500 font-bold" id="assignmentsCount">0</span>
+          <span class="text-lg text-white mt-2">Assignments Completed</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Student Reviews Section -->
+  <section id="reviews" class="py-20 bg-black">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12 fade-in">
+        <h2 class="text-4xl font-bold text-white mb-4">Student Reviews</h2>
+        <p class="text-lg text-gray-300">See what students say about PerPage and our expert writers.</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8 fade-in">
+        <div class="bg-black rounded-xl shadow-xl p-6 border border-gray-800 hover:shadow-2xl transition-all duration-300">
+          <div class="flex items-center mb-4">
+          <span class="inline-block w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold text-xl">A</span>
+          <span class="ml-3 font-semibold text-white">Aditi S.</span>
+        </div>
+        <p class="text-gray-300 mb-2">“PerPage helped me finish my research paper on time. The writer was super professional and the dashboard made tracking easy!”</p>
+        <div class="text-xs text-gray-400">BSc Student, Mumbai</div>
+        </div>
+        <div class="bg-black rounded-xl shadow-xl p-6 border border-gray-800 hover:shadow-2xl transition-all duration-300">
+          <div class="flex items-center mb-4">
+          <span class="inline-block w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold text-xl">R</span>
+          <span class="ml-3 font-semibold text-white">Rahul T.</span>
+        </div>
+        <p class="text-gray-300 mb-2">“Uploading my assignment PDF was simple. I could set the due date and get updates. Highly recommend PerPage for students!”</p>
+        <div class="text-xs text-gray-400">Engineering, Pune</div>
+        </div>
+        <div class="bg-black rounded-xl shadow-xl p-6 border border-gray-800 hover:shadow-2xl transition-all duration-300">
+          <div class="flex items-center mb-4">
+          <span class="inline-block w-10 h-10 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold text-xl">S</span>
+          <span class="ml-3 font-semibold text-white">Sneha M.</span>
+        </div>
+        <p class="text-gray-300 mb-2">“The writer dashboard is awesome! I accepted orders, tracked my earnings, and got rated anonymously. Great for freelance writers.”</p>
+        <div class="text-xs text-gray-400">Writer, Delhi</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Terms and Conditions Section -->
+  <section id="terms" class="py-16 bg-black">
+    <div class="container mx-auto px-4 flex justify-center fade-in">
+      <div class="w-full max-w-2xl bg-black rounded-2xl shadow-2xl border border-gray-800 p-10">
+        <h2 class="text-3xl text-white mb-6 text-center">Terms and Conditions</h2>
+        <ul class="list-disc pl-6 text-gray-300 space-y-4 text-lg">
+          <li>This platform is for academic demonstration only. No real user data or payments are processed.</li>
+          <li>All assignment submissions and writer orders are for learning purposes.</li>
+          <li>Writers are rated anonymously and earnings are simulated.</li>
+          <li>By using PerPage, you agree to our academic and non-commercial use policy.</li>
+          <li>Contact us for any queries or feedback regarding the platform.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer class="bg-black pt-12 pb-6 relative z-10">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center mb-8">
+        <div class="flex items-center gap-3 mb-4 md:mb-0">
+          <span class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="4" fill="white"/><rect x="7" y="6" width="10" height="12" rx="2" fill="none" stroke="#111" stroke-width="2"/><polyline points="13,6 13,10 17,10" fill="none" stroke="#111" stroke-width="2"/></svg>
+          </span>
+          <span class="text-xl text-white tracking-tight" style="font-family: BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;">PerPage</span>
+        </div>
+        <div class="flex gap-6">
+          <a href="#" class="text-white hover:text-blue-400 transition-colors duration-200">Home</a>
+          <a href="#about" class="text-white hover:text-blue-400 transition-colors duration-200">About Us</a>
+          <a href="#reviews" class="text-white hover:text-blue-400 transition-colors duration-200">Student Reviews</a>
+          <a href="#dashboard" class="text-white hover:text-blue-400 transition-colors duration-200">Dashboard</a>
+          <a href="#writers" class="text-white hover:text-blue-400 transition-colors duration-200">Writers</a>
+          <a href="#terms" class="text-white hover:text-blue-400 transition-colors duration-200">Terms</a>
+        </div>
+      </div>
+      <div class="border-t border-gray-800 pt-6 mt-6 text-center">
+        <p class="text-sm text-gray-400">&copy; 2025 PerPage. Academic project for demonstration only.</p>
+        <div class="flex flex-wrap justify-center gap-4 mt-2">
+          <span class="text-xs text-gray-500">Made with <svg class="w-3 h-3 text-blue-600 inline" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.8 6.6c-1.1-2.1-3.6-2.6-5.2-1.1l-1.6 1.5-1.6-1.5c-1.6-1.5-4.1-1-5.2 1.1-1.1 2.1-0.2 4.3 1.2 5.7l5.6 5.5 5.6-5.5c1.4-1.4 2.3-3.6 1.2-5.7z"/></svg> for students</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+<script>
+// Animated Counter Section
+function animateCount(id, target, duration) {
+  const el = document.getElementById(id);
+  let start = 0;
+  const increment = target / (duration / 16);
+  function update() {
+    start += increment;
+    if (start < target) {
+      el.textContent = Math.floor(start);
+      requestAnimationFrame(update);
+    } else {
+      el.textContent = target;
+    }
+  }
+  update();
+}
+
+let statsAnimated = false;
+function handleStatsAnimation(entries) {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !statsAnimated) {
+      animateCount('studentsCount', 1000,2000);
+      animateCount('writersCount', 50, 2000);
+      animateCount('assignmentsCount', 1358, 2000);
+      statsAnimated = true;
+    }
+
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const statsSection = document.getElementById('stats');
+  if (statsSection) {
+    const observer = new window.IntersectionObserver(handleStatsAnimation, { threshold: 0.3 });
+    observer.observe(statsSection);
+  }
+});
+</script>
+</body>
+</html>
+

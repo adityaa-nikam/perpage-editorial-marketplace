@@ -1,0 +1,841 @@
+<%- include('partials/head', { 
+  pageTitle: 'Dashboard | PerPage', 
+  metaDescription: 'Manage your commissioned academic writing projects, review requests, and download completed papers.',
+  robots: 'noindex, nofollow'
+}) %>
+<%- include('partials/navbar') %>
+
+<% 
+  const isWriter = user && user.role === 'writer';
+  const firstName = user && user.name ? user.name.split(' ')[0] : 'User';
+  const safeCounts = locals.counts || { all: 0, pending: 0, active: 0, delivered: 0, completed: 0, declined: 0 };
+  const safeDeals = locals.deals || [];
+  const safeNotice = locals.notice || null;
+  const safeStatus = locals.currentStatus || 'all';
+  const safeView = locals.currentView || (isWriter ? 'incoming' : 'orders');
+  const maxMb = locals.FILE_MAX_MB || 10;
+%>
+
+<main id="main-content" class="py-10 sm:py-14" x-data="dashboardApp()">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+
+    <!-- Header Section -->
+    <div class="space-y-2 border-b border-[var(--border-color)] pb-6">
+      <div class="flex items-center gap-2">
+        <span class="type-eyebrow">Dashboard</span>
+        <% if (isWriter) { %>
+          <span class="badge badge-accent">
+            <%- icon('user', { class: 'w-3 h-3' }) %>
+            Academic Writer
+          </span>
+        <% } else { %>
+          <span class="badge badge-neutral">
+            <%- icon('user', { class: 'w-3 h-3' }) %>
+            Student Client
+          </span>
+        <% } %>
+      </div>
+
+      <h1 class="type-h1">Welcome back, <%= firstName %></h1>
+      <p class="type-body text-sm text-[var(--text-muted)]">
+        <%= isWriter ? 'Your requests from students' : 'Your deals with writers' %>
+      </p>
+    </div>
+
+    <!-- Writer-only Rate Notice -->
+    <% if (isWriter && (!user.pricePerPage || user.pricePerPage <= 0)) { %>
+      <div class="alert alert-info" role="region" aria-label="Rate notice">
+        <%- icon('info', { class: 'w-4 h-4 shrink-0' }) %>
+        <div class="flex-1 text-xs sm:text-sm">
+          <span>Set your rate so students can create deals with you.</span>
+          <a href="/profile/<%= user._id %>" class="font-medium underline ml-1 hover:text-[var(--text-ink)]">
+            Update profile &rarr;
+          </a>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Server Static Notice (No-JS fallback) -->
+    <% if (safeNotice) { %>
+      <noscript>
+        <div class="alert <%= safeNotice.type === 'success' ? 'alert-success' : 'alert-danger' %>" role="<%= safeNotice.type === 'success' ? 'status' : 'alert' %>">
+          <%- icon(safeNotice.type === 'success' ? 'check' : 'alert-circle', { class: 'w-4 h-4 shrink-0' }) %>
+          <span class="text-xs sm:text-sm"><%= safeNotice.text %></span>
+        </div>
+      </noscript>
+    <% } %>
+
+    <!-- Alpine Toast Notification -->
+    <% if (safeNotice) { %>
+      <div 
+        x-show="toastOpen" 
+        x-cloak
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 translate-y-3"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 translate-y-3"
+        class="toast-container"
+        role="<%= safeNotice.type === 'success' ? 'status' : 'alert' %>"
+        aria-live="polite"
+      >
+        <div class="toast border-[var(--<%= safeNotice.type === 'success' ? 'semantic-success-border' : 'semantic-danger-border' %>)] bg-[var(--bg-surface)]">
+          <span class="text-[var(--<%= safeNotice.type === 'success' ? 'semantic-success-text' : 'semantic-danger-text' %>)]">
+            <%- icon(safeNotice.type === 'success' ? 'check' : 'alert-circle', { class: 'w-4 h-4' }) %>
+          </span>
+          <span class="text-xs font-medium text-[var(--<%= safeNotice.type === 'success' ? 'semantic-success-text' : 'semantic-danger-text' %>)]">
+            <%= safeNotice.text %>
+          </span>
+          <button type="button" @click="toastOpen = false" class="ml-2 text-[var(--text-muted)] hover:text-[var(--text-ink)] cursor-pointer" aria-label="Dismiss notification">
+            <%- icon('x', { class: 'w-3.5 h-3.5' }) %>
+          </button>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Stat Blocks Row -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <a href="/dashboard?status=pending<%= locals.hasBothViews ? '&view=' + safeView : '' %>" class="card p-4 hover:border-[var(--border-strong)] transition-colors group">
+        <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] group-hover:text-[var(--text-ink)]">Pending</div>
+        <div class="text-2xl font-semibold mt-1 font-mono text-[var(--text-ink)]"><%= safeCounts.pending %></div>
+      </a>
+      <a href="/dashboard?status=active<%= locals.hasBothViews ? '&view=' + safeView : '' %>" class="card p-4 hover:border-[var(--border-strong)] transition-colors group">
+        <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] group-hover:text-[var(--text-ink)]">Active</div>
+        <div class="text-2xl font-semibold mt-1 font-mono text-[var(--text-ink)]"><%= safeCounts.active %></div>
+      </a>
+      <a href="/dashboard?status=delivered<%= locals.hasBothViews ? '&view=' + safeView : '' %>" class="card p-4 hover:border-[var(--border-strong)] transition-colors group">
+        <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] group-hover:text-[var(--text-ink)]">Delivered</div>
+        <div class="text-2xl font-semibold mt-1 font-mono text-[var(--text-ink)]"><%= safeCounts.delivered %></div>
+      </a>
+      <a href="/dashboard?status=completed<%= locals.hasBothViews ? '&view=' + safeView : '' %>" class="card p-4 hover:border-[var(--border-strong)] transition-colors group">
+        <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] group-hover:text-[var(--text-ink)]">Completed</div>
+        <div class="text-2xl font-semibold mt-1 font-mono text-[var(--text-ink)]"><%= safeCounts.completed %></div>
+      </a>
+    </div>
+
+    <!-- Toolbar (Tabs + Status Filter Pills) -->
+    <div class="space-y-4">
+      <!-- Tabs Control (Only if user has both incoming and own-order deals) -->
+      <% if (locals.hasBothViews) { %>
+        <nav class="flex border-b border-[var(--border-color)] gap-6" aria-label="Dashboard views">
+          <a 
+            href="/dashboard?view=incoming<%= safeStatus !== 'all' ? '&status=' + safeStatus : '' %>" 
+            class="py-3 text-sm font-medium border-b-2 transition-colors <%= safeView === 'incoming' ? 'border-[var(--accent)] text-[var(--accent)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-ink)]' %>"
+            <%= safeView === 'incoming' ? 'aria-current="page"' : '' %>
+          >
+            Incoming requests
+          </a>
+          <a 
+            href="/dashboard?view=orders<%= safeStatus !== 'all' ? '&status=' + safeStatus : '' %>" 
+            class="py-3 text-sm font-medium border-b-2 transition-colors <%= safeView === 'orders' ? 'border-[var(--accent)] text-[var(--accent)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-ink)]' %>"
+            <%= safeView === 'orders' ? 'aria-current="page"' : '' %>
+          >
+            My orders
+          </a>
+        </nav>
+      <% } %>
+
+      <!-- Filter Pills (Horizontally scrollable on mobile) -->
+      <div class="flex items-center justify-between gap-4 overflow-x-auto pb-1 pt-1 no-scrollbar">
+        <div class="flex items-center gap-2 shrink-0">
+          <% 
+            const statuses = [
+              { key: 'all', label: 'All', count: safeCounts.all },
+              { key: 'pending', label: 'Pending', count: safeCounts.pending },
+              { key: 'active', label: 'Active', count: safeCounts.active },
+              { key: 'delivered', label: 'Delivered', count: safeCounts.delivered },
+              { key: 'completed', label: 'Completed', count: safeCounts.completed },
+              { key: 'declined', label: 'Declined', count: safeCounts.declined }
+            ];
+          %>
+          <% statuses.forEach(st => { %>
+            <a 
+              href="/dashboard?status=<%= st.key %><%= locals.hasBothViews ? '&view=' + safeView : '' %>"
+              class="chip <%= safeStatus === st.key ? 'bg-[var(--accent-subtle)] text-[var(--accent)] border-[var(--accent-subtle-border)]' : 'hover:border-[var(--border-strong)]' %>"
+              <%= safeStatus === st.key ? 'aria-current="page"' : '' %>
+            >
+              <%= st.label %>
+              <span class="text-[10px] font-mono px-1 py-0.2 rounded-full bg-[var(--bg-surface-muted)] text-[var(--text-muted)] ml-1">
+                <%= st.count %>
+              </span>
+            </a>
+          <% }) %>
+        </div>
+
+        <div class="text-xs text-[var(--text-muted)] shrink-0 hidden sm:block">
+          <%= locals.totalFiltered || 0 %> <%= (locals.totalFiltered === 1) ? 'deal' : 'deals' %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deals Listing (Stacked Cards, 1px border, 12px radius) -->
+    <% if (safeDeals.length > 0) { %>
+      <div class="space-y-4">
+        <% safeDeals.forEach((deal, index) => { %>
+          <% 
+            const isIncoming = safeView === 'incoming';
+            const counterpart = isIncoming ? (deal.userId || {}) : (deal.writerId || {});
+            const counterpartName = counterpart.name || (isIncoming ? 'Student Client' : 'Academic Writer');
+            const counterpartInitials = counterpartName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U';
+            const dealIdShort = deal._id ? deal._id.toString().slice(-6).toUpperCase() : '000000';
+            const dateStr = deal.createdAt ? new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium' }).format(new Date(deal.createdAt)) : '';
+            const isDeclined = deal.status === 'rejected';
+            const isPending = deal.status === 'pending';
+            const hasFinal = Boolean(deal.freshFinalLink || deal.finalFileLink);
+            const isAccepted = ['accepted', 'in-progress'].includes(deal.status);
+            const ratePerPage = (deal.pages && deal.totalPrice) ? Math.round(deal.totalPrice / deal.pages) : null;
+          %>
+
+          <article class="card p-5 sm:p-6 space-y-5" x-data="{ expanded: false }">
+            
+            <!-- Header Row -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-4">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="avatar avatar-md shrink-0" aria-hidden="true">
+                  <% if (counterpart.profilePic) { %>
+                    <img src="<%= counterpart.profilePic %>" alt="<%= counterpartName %>">
+                  <% } else { %>
+                    <span><%= counterpartInitials %></span>
+                  <% } %>
+                </div>
+
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2">
+                    <% if (!isIncoming && counterpart._id) { %>
+                      <a href="/writers/<%= counterpart._id %>" class="text-sm font-semibold text-[var(--text-ink)] hover:text-[var(--accent)] truncate">
+                        <%= counterpartName %>
+                      </a>
+                    <% } else { %>
+                      <span class="text-sm font-semibold text-[var(--text-ink)] truncate">
+                        <%= counterpartName %>
+                      </span>
+                    <% } %>
+                    <span class="text-xs text-[var(--text-muted)] font-mono">#<%= dealIdShort %></span>
+                  </div>
+                  <time datetime="<%= deal.createdAt ? new Date(deal.createdAt).toISOString() : '' %>" class="text-xs text-[var(--text-muted)]">
+                    Created <%= dateStr %>
+                  </time>
+                </div>
+              </div>
+
+              <!-- Status Badge -->
+              <div class="shrink-0">
+                <% if (isDeclined) { %>
+                  <span class="badge badge-danger">
+                    <%- icon('x', { class: 'w-3 h-3' }) %>
+                    Declined
+                  </span>
+                <% } else if (isPending) { %>
+                  <span class="badge badge-warning">
+                    <%- icon('clock', { class: 'w-3 h-3' }) %>
+                    Pending
+                  </span>
+                <% } else if (hasFinal || deal.status === 'submitted') { %>
+                  <span class="badge badge-success">
+                    <%- icon('check', { class: 'w-3 h-3' }) %>
+                    Delivered
+                  </span>
+                <% } else if (deal.status === 'completed') { %>
+                  <span class="badge badge-success">
+                    <%- icon('shield-check', { class: 'w-3 h-3' }) %>
+                    Completed
+                  </span>
+                <% } else { %>
+                  <span class="badge badge-accent">
+                    <%- icon('loader', { class: 'w-3 h-3' }) %>
+                    Accepted
+                  </span>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Facts Row -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <span class="text-[var(--text-muted)] block">Pages</span>
+                <span class="font-medium font-mono text-[var(--text-ink)]"><%= deal.pages %> pages</span>
+              </div>
+              <% if (ratePerPage) { %>
+                <div>
+                  <span class="text-[var(--text-muted)] block">Rate</span>
+                  <span class="font-medium font-mono text-[var(--text-ink)]">₹<%= ratePerPage %> / page</span>
+                </div>
+              <% } %>
+              <div>
+                <span class="text-[var(--text-muted)] block">Total</span>
+                <span class="font-semibold font-mono text-[var(--text-ink)]">₹<%= Number(deal.totalPrice || 0).toLocaleString('en-IN') %></span>
+              </div>
+            </div>
+
+            <!-- Compact Stepper (Reachable Flow: Pending -> Accepted -> Delivered) -->
+            <div class="pt-2">
+              <% if (isDeclined) { %>
+                <div class="flex items-center gap-2 text-xs text-[var(--semantic-danger-text)] bg-[var(--semantic-danger-bg)] p-2.5 rounded-md border border-[var(--semantic-danger-border)]">
+                  <%- icon('alert-circle', { class: 'w-3.5 h-3.5 shrink-0' }) %>
+                  <span>This assignment request was declined.</span>
+                </div>
+              <% } else { %>
+                <div class="timeline-stepper py-1" aria-label="Progress">
+                  <!-- Step 1: Pending -->
+                  <div class="stepper-step <%= isPending ? 'is-current' : 'is-complete' %>" <%= isPending ? 'aria-current="step"' : '' %>>
+                    <div class="stepper-indicator">
+                      <% if (isPending) { %>1<% } else { %><%- icon('check', { class: 'w-3 h-3' }) %><% } %>
+                    </div>
+                    <div class="stepper-label text-[11px] mt-1">Pending</div>
+                    <div class="stepper-line"></div>
+                  </div>
+
+                  <!-- Step 2: Accepted -->
+                  <div class="stepper-step <%= (isAccepted && !hasFinal) ? 'is-current' : (hasFinal || deal.status === 'completed' ? 'is-complete' : '') %>" <%= (isAccepted && !hasFinal) ? 'aria-current="step"' : '' %>>
+                    <div class="stepper-indicator">
+                      <% if (hasFinal || deal.status === 'completed') { %><%- icon('check', { class: 'w-3 h-3' }) %><% } else { %>2<% } %>
+                    </div>
+                    <div class="stepper-label text-[11px] mt-1">Accepted</div>
+                    <div class="stepper-line"></div>
+                  </div>
+
+                  <!-- Step 3: Delivered -->
+                  <div class="stepper-step <%= hasFinal ? 'is-current is-complete' : '' %>" <%= hasFinal ? 'aria-current="step"' : '' %>>
+                    <div class="stepper-indicator">
+                      <% if (hasFinal) { %><%- icon('check', { class: 'w-3 h-3' }) %><% } else { %>3<% } %>
+                    </div>
+                    <div class="stepper-label text-[11px] mt-1">Delivered</div>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+
+            <!-- Expandable Details (Alpine Disclosure) -->
+            <div class="pt-2 border-t border-[var(--border-color)]">
+              <button 
+                type="button" 
+                @click="expanded = !expanded" 
+                :aria-expanded="expanded.toString()"
+                aria-controls="details-<%= deal._id %>"
+                class="flex items-center justify-between w-full text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-ink)] py-1"
+              >
+                <span>Assignment Details &amp; Brief Files</span>
+                <span :class="expanded ? 'rotate-180' : ''" class="transition-transform duration-150">
+                  <%- icon('chevron-down', { class: 'w-3.5 h-3.5' }) %>
+                </span>
+              </button>
+
+              <div 
+                id="details-<%= deal._id %>" 
+                x-show="expanded" 
+                x-cloak 
+                class="mt-3 pt-3 border-t border-[var(--border-color)] space-y-3 text-xs"
+              >
+                <!-- Assignment Notes -->
+                <div>
+                  <span class="font-medium text-[var(--text-ink)] block mb-1">Student Notes:</span>
+                  <% if (deal.userNotes && deal.userNotes.trim()) { %>
+                    <p class="p-2.5 rounded bg-[var(--bg-surface-muted)] text-[var(--text-ink)] whitespace-pre-wrap"><%= deal.userNotes %></p>
+                  <% } else { %>
+                    <p class="text-[var(--text-muted)] italic">No specific notes provided.</p>
+                  <% } %>
+                </div>
+
+                <!-- Brief Files -->
+                <div>
+                  <span class="font-medium text-[var(--text-ink)] block mb-1">Brief Documents:</span>
+                  <% if (deal.briefLinks && deal.briefLinks.length > 0) { %>
+                    <div class="space-y-1.5">
+                      <% deal.briefLinks.forEach(b => { %>
+                        <div class="flex items-center justify-between p-2 rounded bg-[var(--bg-surface-muted)]">
+                          <div class="flex items-center gap-2 truncate min-w-0">
+                            <%- icon('file-text', { class: 'w-3.5 h-3.5 shrink-0 text-[var(--accent)]' }) %>
+                            <span class="truncate" title="<%= b.filename %>"><%= b.filename %></span>
+                          </div>
+                          <% if (b.url) { %>
+                            <a href="<%= b.url %>" target="_blank" download class="btn btn-ghost btn-sm text-xs shrink-0">
+                              <%- icon('download', { class: 'w-3 h-3 mr-1' }) %>
+                              Download
+                            </a>
+                          <% } else { %>
+                            <span class="text-[11px] text-[var(--text-muted)] italic">Download link unavailable</span>
+                          <% } %>
+                        </div>
+                      <% }) %>
+                    </div>
+                  <% } else { %>
+                    <p class="text-[var(--text-muted)] italic">No initial brief attached.</p>
+                  <% } %>
+                </div>
+
+                <!-- Final Deliverable File (if available) -->
+                <% if (hasFinal) { %>
+                  <div>
+                    <span class="font-medium text-[var(--text-ink)] block mb-1">Delivered Document:</span>
+                    <div class="flex items-center justify-between p-2 rounded bg-[var(--semantic-success-bg)] border border-[var(--semantic-success-border)] text-[var(--semantic-success-text)]">
+                      <div class="flex items-center gap-2 truncate min-w-0">
+                        <%- icon('file-text', { class: 'w-3.5 h-3.5 shrink-0' }) %>
+                        <span class="truncate font-medium" title="<%= deal.finalFilename %>"><%= deal.finalFilename %></span>
+                      </div>
+                      <% if (deal.freshFinalLink) { %>
+                        <a href="<%= deal.freshFinalLink %>" target="_blank" download class="btn btn-secondary btn-sm text-xs shrink-0 bg-[var(--bg-surface)]">
+                          <%- icon('download', { class: 'w-3 h-3 mr-1' }) %>
+                          Download
+                        </a>
+                      <% } else { %>
+                        <span class="text-[11px] text-[var(--text-muted)] italic">Download link unavailable</span>
+                      <% } %>
+                    </div>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+
+            <!-- Actions Area (Right on desktop, stacked on mobile) -->
+            <div class="pt-3 border-t border-[var(--border-color)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <p class="text-[11px] text-[var(--text-muted)]">
+                Files are stored privately and shared through time-limited links. No real payments are processed in this demo.
+              </p>
+
+              <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                <!-- STUDENT VIEW ACTIONS -->
+                <% if (!isIncoming) { %>
+                  <% if (hasFinal && deal.freshFinalLink) { %>
+                    <div class="text-right">
+                      <a href="<%= deal.freshFinalLink %>" target="_blank" download class="btn btn-primary btn-sm">
+                        <%- icon('download', { class: 'w-3.5 h-3.5' }) %>
+                        Download final file
+                      </a>
+                      <span class="block text-[10px] text-[var(--text-muted)] mt-1">
+                        Download links are time-limited and refreshed each time you open this page.
+                      </span>
+                    </div>
+                  <% } else if (isPending) { %>
+                    <span class="text-xs text-[var(--text-muted)] italic">
+                      Waiting for the writer to respond.
+                    </span>
+                  <% } else if (isAccepted) { %>
+                    <span class="text-xs text-[var(--text-muted)] italic">
+                      Writer is preparing your final draft.
+                    </span>
+                  <% } else if (isDeclined) { %>
+                    <span class="text-xs text-[var(--semantic-danger-text)] italic">
+                      This request was declined.
+                    </span>
+                  <% } %>
+
+                  <% if (counterpart._id) { %>
+                    <a href="/writers/<%= counterpart._id %>" class="btn btn-ghost btn-sm text-xs">
+                      View writer profile &nearr;
+                    </a>
+                  <% } %>
+
+                <!-- WRITER VIEW ACTIONS -->
+                <% } else { %>
+                  <!-- 1. Pending: Accept / Decline -->
+                  <% if (isPending) { %>
+                    <form action="/deal/accept/<%= deal._id %>" method="POST" class="inline" @submit="submitAccept($event)">
+                      <button type="submit" class="btn btn-primary btn-sm">
+                        <%- icon('check', { class: 'w-3.5 h-3.5' }) %>
+                        Accept
+                      </button>
+                    </form>
+
+                    <!-- Decline Button: Triggers Alpine confirmation modal -->
+                    <button 
+                      type="button" 
+                      @click="openDeclineModal('<%= deal._id %>')" 
+                      class="btn btn-secondary btn-sm text-[var(--semantic-danger-text)] hover:bg-[var(--semantic-danger-bg)]"
+                      id="decline-btn-<%= deal._id %>"
+                    >
+                      <%- icon('x', { class: 'w-3.5 h-3.5' }) %>
+                      Decline
+                    </button>
+
+                  <!-- 2. Accepted: Inline File Upload Drop-Zone -->
+                  <% } else if (isAccepted && !hasFinal) { %>
+                    <div class="w-full sm:max-w-md pt-2" x-data="finalUploadWidget({ dealId: '<%= deal._id %>', maxMb: <%= maxMb %> })">
+                      <form 
+                        action="/deal/upload-final" 
+                        method="POST" 
+                        enctype="multipart/form-data" 
+                        class="space-y-3"
+                        @submit="handleFinalSubmit($event)"
+                      >
+                        <input type="hidden" name="dealId" value="<%= deal._id %>">
+
+                        <div 
+                          class="file-dropzone py-3 px-4 relative transition-colors"
+                          :class="{ 'border-[var(--accent)] bg-[var(--accent-subtle)]': isDragging, 'border-[var(--semantic-danger-border)]': clientError }"
+                          @dragover.prevent="isDragging = true"
+                          @dragleave.prevent="isDragging = false"
+                          @drop.prevent="handleDrop($event)"
+                        >
+                          <!-- Empty Prompt -->
+                          <div x-show="!selectedFile" class="space-y-1.5 text-center">
+                            <p class="text-xs font-medium text-[var(--text-ink)]">
+                              Upload final paper as PDF, up to <%= maxMb %> MB.
+                            </p>
+                            <input 
+                              type="file" 
+                              name="finalPdf" 
+                              accept="application/pdf,.pdf" 
+                              required 
+                              x-ref="finalInput"
+                              @change="handleFileChange($event)"
+                              class="block w-full text-xs text-[var(--text-muted)] file:mr-2 file:py-1 file:px-2.5 file:rounded file:border file:border-[var(--border-color)] file:text-xs file:bg-[var(--bg-surface)] file:text-[var(--text-ink)] cursor-pointer"
+                            >
+                          </div>
+
+                          <!-- Selected File Row -->
+                          <div x-show="selectedFile" x-cloak class="flex items-center justify-between gap-2 p-2 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded text-left">
+                            <div class="flex items-center gap-2 min-w-0">
+                              <%- icon('file-text', { class: 'w-3.5 h-3.5 shrink-0 text-[var(--accent)]' }) %>
+                              <span class="text-xs truncate max-w-[160px]" :title="selectedFile?.name" x-text="selectedFile?.name"></span>
+                            </div>
+                            <button type="button" @click="clearFile()" class="btn btn-ghost btn-sm text-[var(--semantic-danger-text)] text-xs">
+                              Remove
+                            </button>
+                          </div>
+                        </div>
+
+                        <!-- Client Validation Error -->
+                        <template x-if="clientError">
+                          <p class="text-xs text-[var(--semantic-danger-text)] flex items-center gap-1">
+                            <%- icon('alert-circle', { class: 'w-3.5 h-3.5' }) %>
+                            <span x-text="clientError"></span>
+                          </p>
+                        </template>
+
+                        <div class="flex items-center justify-between gap-2">
+                          <span class="text-[11px] text-[var(--text-muted)]" x-show="isUploading" x-cloak>
+                            Keep this page open until the upload finishes.
+                          </span>
+                          <button 
+                            type="submit" 
+                            class="btn btn-primary btn-sm ml-auto"
+                            :disabled="isUploading"
+                            :aria-busy="isUploading ? 'true' : 'false'"
+                          >
+                            <span x-show="!isUploading" class="flex items-center gap-1.5">
+                              <%- icon('upload', { class: 'w-3.5 h-3.5' }) %>
+                              Upload final file
+                            </span>
+                            <span x-show="isUploading" x-cloak class="flex items-center gap-1.5">
+                              <%- icon('loader', { class: 'w-3.5 h-3.5 animate-spin' }) %>
+                              Uploading
+                            </span>
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+
+                  <!-- 3. Delivered or Completed -->
+                  <% } else if (hasFinal) { %>
+                    <% if (deal.freshFinalLink) { %>
+                      <a href="<%= deal.freshFinalLink %>" target="_blank" download class="btn btn-secondary btn-sm">
+                        <%- icon('download', { class: 'w-3.5 h-3.5' }) %>
+                        Download delivered draft
+                      </a>
+                    <% } else { %>
+                      <span class="text-xs text-[var(--text-muted)] italic">Download link unavailable</span>
+                    <% } %>
+                  <% } %>
+                <% } %>
+              </div>
+            </div>
+
+          </article>
+        <% }) %>
+      </div>
+
+      <!-- Server-side Pagination -->
+      <% if (locals.totalPages > 1) { %>
+        <nav class="pagination pt-4" aria-label="Dashboard pagination">
+          <% if (locals.page > 1) { %>
+            <a 
+              href="/dashboard?page=<%= locals.page - 1 %><%= safeStatus !== 'all' ? '&status=' + safeStatus : '' %><%= locals.hasBothViews ? '&view=' + safeView : '' %>" 
+              class="pagination-link"
+              aria-label="Previous page"
+            >
+              <%- icon('chevron-left', { class: 'w-4 h-4' }) %>
+            </a>
+          <% } %>
+
+          <% for (let p = 1; p <= locals.totalPages; p++) { %>
+            <a 
+              href="/dashboard?page=<%= p %><%= safeStatus !== 'all' ? '&status=' + safeStatus : '' %><%= locals.hasBothViews ? '&view=' + safeView : '' %>" 
+              class="pagination-link <%= p === locals.page ? 'is-active' : '' %>"
+              <%= p === locals.page ? 'aria-current="page"' : '' %>
+            >
+              <%= p %>
+            </a>
+          <% } %>
+
+          <% if (locals.page < locals.totalPages) { %>
+            <a 
+              href="/dashboard?page=<%= locals.page + 1 %><%= safeStatus !== 'all' ? '&status=' + safeStatus : '' %><%= locals.hasBothViews ? '&view=' + safeView : '' %>" 
+              class="pagination-link"
+              aria-label="Next page"
+            >
+              <%- icon('chevron-right', { class: 'w-4 h-4' }) %>
+            </a>
+          <% } %>
+        </nav>
+      <% } %>
+
+    <!-- Empty States -->
+    <% } else { %>
+      <div class="card p-10 sm:p-14 text-center space-y-4">
+        <% if (safeStatus !== 'all') { %>
+          <div class="w-10 h-10 mx-auto rounded-full bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-muted)]" aria-hidden="true">
+            <%- icon('search', { class: 'w-5 h-5' }) %>
+          </div>
+          <h2 class="type-h3 text-base">No deals match this filter</h2>
+          <p class="text-xs sm:text-sm text-[var(--text-muted)] max-w-sm mx-auto">
+            There are currently no deals matching the "<%= safeStatus %>" status in your <%= safeView %> list.
+          </p>
+          <div class="pt-2">
+            <a href="/dashboard<%= locals.hasBothViews ? '?view=' + safeView : '' %>" class="btn btn-secondary btn-sm">
+              Clear filter
+            </a>
+          </div>
+
+        <% } else if (isWriter) { %>
+          <div class="w-10 h-10 mx-auto rounded-full bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]" aria-hidden="true">
+            <%- icon('layout-dashboard', { class: 'w-5 h-5' }) %>
+          </div>
+          <h2 class="type-h3 text-base">No requests yet</h2>
+          <p class="text-xs sm:text-sm text-[var(--text-muted)] max-w-sm mx-auto">
+            <% if (!user.pricePerPage || user.pricePerPage <= 0) { %>
+              Students will see you once your rate is set.
+            <% } else { %>
+              You haven't received any assignment requests from students yet.
+            <% } %>
+          </p>
+          <div class="pt-2">
+            <a href="/profile/<%= user._id %>" class="btn btn-primary btn-sm">
+              Update rate on profile &rarr;
+            </a>
+          </div>
+
+        <% } else { %>
+          <div class="w-10 h-10 mx-auto rounded-full bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]" aria-hidden="true">
+            <%- icon('file-text', { class: 'w-5 h-5' }) %>
+          </div>
+          <h2 class="type-h3 text-base">No deals yet</h2>
+          <p class="text-xs sm:text-sm text-[var(--text-muted)] max-w-sm mx-auto">
+            You haven't commissioned any academic writing assignments yet. Browse academic writers and calculate transparent rates upfront.
+          </p>
+          <div class="pt-2">
+            <a href="/writers" class="btn btn-primary btn-sm">
+              Browse writers
+            </a>
+          </div>
+        <% } %>
+      </div>
+    <% } %>
+
+  </div>
+
+  <!-- Accessible Decline Modal Dialog (Alpine) -->
+  <div 
+    x-show="declineModalOpen" 
+    x-cloak
+    @keydown.escape.window="closeDeclineModal()"
+    x-transition:enter="transition ease-out duration-150"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-100"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="modal-backdrop"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="decline-modal-title"
+  >
+    <div 
+      @click.away="closeDeclineModal()" 
+      x-transition:enter="transition ease-out duration-150"
+      x-transition:enter-start="transform opacity-0 scale-95"
+      x-transition:enter-end="transform opacity-100 scale-100"
+      x-transition:leave="transition ease-in duration-100"
+      x-transition:leave-start="transform opacity-100 scale-100"
+      x-transition:leave-end="transform opacity-0 scale-95"
+      class="modal-dialog"
+      x-ref="declineDialog"
+    >
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
+        <h2 id="decline-modal-title" class="type-h4">Decline this request?</h2>
+        <button type="button" @click="closeDeclineModal()" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] cursor-pointer" aria-label="Close dialog">
+          <%- icon('x', { class: 'w-4 h-4' }) %>
+        </button>
+      </div>
+
+      <div class="py-4 space-y-3">
+        <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+          The student will see this deal as declined. This cannot be undone.
+        </p>
+      </div>
+
+      <div class="pt-3 border-t border-[var(--border-color)] flex items-center justify-end gap-2">
+        <button type="button" @click="closeDeclineModal()" class="btn btn-secondary btn-sm" x-ref="cancelDeclineBtn">
+          Cancel
+        </button>
+        <form :action="'/deal/reject/' + activeDeclineId" method="POST" class="inline" @submit="isDeclining = true">
+          <button 
+            type="submit" 
+            class="btn btn-danger btn-sm"
+            :disabled="isDeclining"
+            :aria-busy="isDeclining ? 'true' : 'false'"
+          >
+            <span x-show="!isDeclining">Decline request</span>
+            <span x-show="isDeclining" x-cloak class="flex items-center gap-1.5">
+              <%- icon('loader', { class: 'w-3 h-3 animate-spin' }) %>
+              Declining...
+            </span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function dashboardApp() {
+    return {
+      toastOpen: <%= safeNotice ? 'true' : 'false' %>,
+      declineModalOpen: false,
+      activeDeclineId: '',
+      activeTriggerEl: null,
+      isDeclining: false,
+
+      init() {
+        <% if (safeNotice && safeNotice.type === 'success') { %>
+          setTimeout(() => {
+            this.toastOpen = false;
+          }, 6000);
+        <% } %>
+
+        // Clean notice query code from URL with history.replaceState so refresh does not re-trigger
+        <% if (safeNotice) { %>
+          try {
+            const url = new URL(window.location.href);
+            ['created', 'accepted', 'rejected', 'uploaded', 'error'].forEach(k => url.searchParams.delete(k));
+            window.history.replaceState({}, document.title, url.pathname + (url.search ? url.search : ''));
+          } catch (e) {}
+        <% } %>
+      },
+
+      openDeclineModal(dealId) {
+        this.activeDeclineId = dealId;
+        this.activeTriggerEl = document.getElementById('decline-btn-' + dealId);
+        this.declineModalOpen = true;
+        this.isDeclining = false;
+        this.$nextTick(() => {
+          if (this.$refs.cancelDeclineBtn) {
+            this.$refs.cancelDeclineBtn.focus();
+          }
+        });
+      },
+
+      closeDeclineModal() {
+        this.declineModalOpen = false;
+        this.activeDeclineId = '';
+        if (this.activeTriggerEl) {
+          this.activeTriggerEl.focus();
+          this.activeTriggerEl = null;
+        }
+      },
+
+      submitAccept(event) {
+        const btn = event.target.querySelector('button[type="submit"]');
+        if (btn) {
+          btn.disabled = true;
+          btn.setAttribute('aria-busy', 'true');
+        }
+      }
+    };
+  }
+
+  function finalUploadWidget(config) {
+    return {
+      dealId: config.dealId,
+      maxMb: config.maxMb || 10,
+      isDragging: false,
+      selectedFile: null,
+      clientError: '',
+      isUploading: false,
+
+      validateAndSetFile(file) {
+        this.clientError = '';
+        if (!file) {
+          this.selectedFile = null;
+          return;
+        }
+
+        const isPdfMime = file.type === 'application/pdf';
+        const isPdfExt = file.name.toLowerCase().endsWith('.pdf');
+        if (!isPdfMime && !isPdfExt) {
+          this.clientError = 'Only PDF documents are accepted.';
+          this.selectedFile = file;
+          return;
+        }
+
+        const maxBytes = this.maxMb * 1024 * 1024;
+        if (file.size > maxBytes) {
+          this.clientError = 'File exceeds the maximum size of ' + this.maxMb + 'MB.';
+          this.selectedFile = file;
+          return;
+        }
+
+        this.selectedFile = file;
+      },
+
+      handleFileChange(event) {
+        const file = event.target.files && event.target.files[0];
+        this.validateAndSetFile(file);
+      },
+
+      handleDrop(event) {
+        this.isDragging = false;
+        const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+        if (file) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          this.$refs.finalInput.files = dataTransfer.files;
+          this.validateAndSetFile(file);
+        }
+      },
+
+      clearFile() {
+        if (this.$refs.finalInput) {
+          this.$refs.finalInput.value = '';
+        }
+        this.selectedFile = null;
+        this.clientError = '';
+      },
+
+      handleFinalSubmit(event) {
+        if (this.clientError) {
+          event.preventDefault();
+          return;
+        }
+        if (!this.selectedFile && !this.$refs.finalInput?.files?.length) {
+          event.preventDefault();
+          this.clientError = 'Please select a PDF document to upload.';
+          return;
+        }
+        this.isUploading = true;
+      }
+    };
+  }
+
+  // Reset loading states on pageshow (e.g. Back button)
+  window.addEventListener('pageshow', function() {
+    document.querySelectorAll('[aria-busy="true"]').forEach(function(el) {
+      el.removeAttribute('aria-busy');
+      if (el instanceof HTMLButtonElement) el.disabled = false;
+    });
+  });
+</script>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

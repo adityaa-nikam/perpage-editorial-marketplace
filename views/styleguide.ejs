@@ -1,0 +1,574 @@
+<%- include('partials/head', { pageTitle: 'Design System & Component Styleguide — PerPage', metaDescription: 'Living styleguide for the PerPage Paper & Ink design system.' }) %>
+<%- include('partials/navbar') %>
+
+<main id="main-content" class="py-12 sm:py-16">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+
+    <!-- Hero Header -->
+    <header class="section-header border-b border-[var(--border-color)] pb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <span class="type-eyebrow">Design System &amp; Tooling</span>
+          <h1 class="type-h1 mt-1">Paper &amp; Ink Styleguide</h1>
+          <p class="type-body text-[var(--text-muted)] mt-2 max-w-2xl">
+            A calm, editorial, trustworthy component library designed for the PerPage academic writing marketplace. Built with semantic tokens, typography scales, Alpine.js primitives, and accessible markup.
+          </p>
+        </div>
+        <div class="flex items-center gap-2 self-start sm:self-center">
+          <span class="badge badge-accent">Dev Environment</span>
+          <span class="badge badge-success">Tailwind v4 CLI</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- SECTION 1: DESIGN TOKENS (COLORS) -->
+    <section id="tokens-color" class="space-y-6">
+      <div>
+        <h2 class="type-h2">1. Color Palette Tokens</h2>
+        <p class="text-sm text-[var(--text-muted)]">Warm paper backgrounds, crisp ink typography, and restricted single-purpose accent.</p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+        <!-- Paper Background -->
+        <div class="card p-4 space-y-2">
+          <div class="h-12 w-full rounded-md border border-[var(--border-color)] bg-[#FAFAF7] dark:bg-[#0B0C0E]"></div>
+          <div>
+            <div class="text-xs font-semibold">Background</div>
+            <div class="text-[11px] text-[var(--text-muted)] font-mono">#FAFAF7 / #0B0C0E</div>
+          </div>
+        </div>
+
+        <!-- Surface -->
+        <div class="card p-4 space-y-2">
+          <div class="h-12 w-full rounded-md border border-[var(--border-color)] bg-[#FFFFFF] dark:bg-[#131519]"></div>
+          <div>
+            <div class="text-xs font-semibold">Surface</div>
+            <div class="text-[11px] text-[var(--text-muted)] font-mono">#FFFFFF / #131519</div>
+          </div>
+        </div>
+
+        <!-- Surface Muted -->
+        <div class="card p-4 space-y-2">
+          <div class="h-12 w-full rounded-md border border-[var(--border-color)] bg-[#F3F2EE] dark:bg-[#1A1D22]"></div>
+          <div>
+            <div class="text-xs font-semibold">Surface Muted</div>
+            <div class="text-[11px] text-[var(--text-muted)] font-mono">#F3F2EE / #1A1D22</div>
+          </div>
+        </div>
+
+        <!-- Ink -->
+        <div class="card p-4 space-y-2">
+          <div class="h-12 w-full rounded-md border border-[var(--border-color)] bg-[#0E0F12] dark:bg-[#F2F2EF]"></div>
+          <div>
+            <div class="text-xs font-semibold">Ink (Text)</div>
+            <div class="text-[11px] text-[var(--text-muted)] font-mono">#0E0F12 / #F2F2EF</div>
+          </div>
+        </div>
+
+        <!-- Text Muted -->
+        <div class="card p-4 space-y-2">
+          <div class="h-12 w-full rounded-md border border-[var(--border-color)] bg-[#5B5F68] dark:bg-[#9AA0AA]"></div>
+          <div>
+            <div class="text-xs font-semibold">Text Muted</div>
+            <div class="text-[11px] text-[var(--text-muted)] font-mono">#5B5F68 / #9AA0AA</div>
+          </div>
+        </div>
+
+        <!-- Accent -->
+        <div class="card p-4 space-y-2">
+          <div class="h-12 w-full rounded-md bg-[#3347FF] dark:bg-[#6E7BFF]"></div>
+          <div>
+            <div class="text-xs font-semibold">Accent</div>
+            <div class="text-[11px] text-[var(--text-muted)] font-mono">#3347FF / #6E7BFF</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Semantic Status Badges -->
+      <div class="card p-6 space-y-3">
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Semantic Badges</h3>
+        <div class="flex flex-wrap gap-3">
+          <span class="badge badge-neutral"><%- icon('info', { class: 'w-3 h-3' }) %> Neutral / Draft</span>
+          <span class="badge badge-accent"><%- icon('arrow-right', { class: 'w-3 h-3' }) %> In Progress</span>
+          <span class="badge badge-success"><%- icon('check', { class: 'w-3 h-3' }) %> Completed &amp; Verified</span>
+          <span class="badge badge-warning"><%- icon('clock', { class: 'w-3 h-3' }) %> Awaiting Review</span>
+          <span class="badge badge-danger"><%- icon('alert-circle', { class: 'w-3 h-3' }) %> Rejected / Issue</span>
+          <span class="badge badge-info"><%- icon('shield-check', { class: 'w-3 h-3' }) %> Escrow Held</span>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- SECTION 2: TYPOGRAPHY SCALE -->
+    <section id="tokens-typography" class="space-y-6">
+      <div>
+        <h2 class="type-h2">2. Typography Scale</h2>
+        <p class="text-sm text-[var(--text-muted)]">Instrument Serif for display headings paired with Inter for clean UI and body text.</p>
+      </div>
+
+      <div class="card divide-y divide-[var(--border-color)]">
+        <div class="py-4 first:pt-0 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <span class="text-xs font-mono text-[var(--text-muted)] w-36">Display (Serif)</span>
+          <div class="type-display flex-1">The Craft of Academic Prose</div>
+        </div>
+
+        <div class="py-4 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <span class="text-xs font-mono text-[var(--text-muted)] w-36">Heading 1 (Serif)</span>
+          <div class="type-h1 flex-1">Verified Research Collaboration</div>
+        </div>
+
+        <div class="py-4 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <span class="text-xs font-mono text-[var(--text-muted)] w-36">Heading 2 (Serif)</span>
+          <div class="type-h2 flex-1">Browse Available Subject Experts</div>
+        </div>
+
+        <div class="py-4 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <span class="text-xs font-mono text-[var(--text-muted)] w-36">Heading 3 (Sans)</span>
+          <div class="type-h3 flex-1">Structured Deal Agreement &amp; Milestones</div>
+        </div>
+
+        <div class="py-4 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <span class="text-xs font-mono text-[var(--text-muted)] w-36">Heading 4 (Sans)</span>
+          <div class="type-h4 flex-1">Assignment Deliverable Guidelines</div>
+        </div>
+
+        <div class="py-4 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <span class="text-xs font-mono text-[var(--text-muted)] w-36">Body (Sans)</span>
+          <div class="type-body flex-1 max-w-2xl">
+            Students and writers collaborate directly through milestone-based deals. Transparent page rates, secure AWS document storage, and peer evaluations ensure high-integrity academic assistance.
+          </div>
+        </div>
+
+        <div class="py-4 flex flex-col md:flex-row md:items-baseline justify-between gap-4">
+          <span class="text-xs font-mono text-[var(--text-muted)] w-36">Small &amp; Caption</span>
+          <div class="space-y-1 flex-1">
+            <p class="type-small text-[var(--text-ink)]">Small text: 14px comfortable note text.</p>
+            <p class="type-caption text-[var(--text-muted)]">Caption: 12px uppercase timestamp or micro metadata.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- SECTION 3: BUTTONS -->
+    <section id="components-buttons" class="space-y-6">
+      <div>
+        <h2 class="type-h2">3. Button Primitives</h2>
+        <p class="text-sm text-[var(--text-muted)]">Variants, sizes, icon-left/right configurations, and loading state.</p>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Variants -->
+        <div class="card p-6 space-y-3">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Variants</h3>
+          <div class="flex flex-wrap items-center gap-3">
+            <button type="button" class="btn btn-primary btn-md">
+              Primary Action
+            </button>
+            <button type="button" class="btn btn-secondary btn-md">
+              Secondary Action
+            </button>
+            <button type="button" class="btn btn-ghost btn-md">
+              Ghost Action
+            </button>
+            <button type="button" class="btn btn-danger btn-md">
+              Reject Deal
+            </button>
+            <button type="button" class="btn btn-primary btn-md is-loading">
+              Loading
+            </button>
+            <button type="button" class="btn btn-secondary btn-md" disabled>
+              Disabled
+            </button>
+          </div>
+        </div>
+
+        <!-- Sizes & Icons -->
+        <div class="card p-6 space-y-3">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Sizes &amp; Icons</h3>
+          <div class="flex flex-wrap items-center gap-3">
+            <button type="button" class="btn btn-primary btn-sm">
+              <%- icon('upload', { class: 'w-3.5 h-3.5' }) %>
+              Small with Icon
+            </button>
+            <button type="button" class="btn btn-secondary btn-md">
+              <%- icon('download', { class: 'w-4 h-4' }) %>
+              Medium Action
+              <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+            </button>
+            <button type="button" class="btn btn-primary btn-lg">
+              Large Primary CTA
+              <%- icon('arrow-up-right', { class: 'w-4 h-4' }) %>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- SECTION 4: FORM CONTROLS -->
+    <section id="components-forms" class="space-y-6">
+      <div>
+        <h2 class="type-h2">4. Form Controls &amp; Inputs</h2>
+        <p class="text-sm text-[var(--text-muted)]">Input fields, labels, textareas, selects, checkboxes, and file drop-zones.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Text & Textarea -->
+        <div class="card p-6 space-y-4">
+          <div>
+            <label for="example-input" class="form-label">Full Name</label>
+            <input type="text" id="example-input" class="form-input" placeholder="e.g. Dr. Eleanor Vance" value="Kapil Kor">
+            <p class="form-hint">Displayed on public writer directory and deal contracts.</p>
+          </div>
+
+          <div>
+            <label for="example-error-input" class="form-label">Email Address (Error State)</label>
+            <input type="email" id="example-error-input" class="form-input border-[var(--semantic-danger-border)] focus:border-[var(--semantic-danger-text)]" value="invalid-email@">
+            <p class="form-error">
+              <%- icon('alert-circle', { class: 'w-3 h-3' }) %>
+              Please provide a valid institutional or personal email address.
+            </p>
+          </div>
+
+          <div>
+            <label for="example-textarea" class="form-label">Assignment Notes &amp; Rubric</label>
+            <textarea id="example-textarea" class="form-textarea" placeholder="Include assignment prompt, formatting style (APA/MLA), and citation constraints..."></textarea>
+          </div>
+        </div>
+
+        <!-- Select, Checkbox, Dropzone -->
+        <div class="card p-6 space-y-4">
+          <div>
+            <label for="example-select" class="form-label">Assignment Status</label>
+            <select id="example-select" class="form-select">
+              <option value="pending">Pending Writer Acceptance</option>
+              <option value="accepted" selected>Accepted by Writer</option>
+              <option value="in-progress">In Progress</option>
+              <option value="submitted">Final Draft Submitted</option>
+            </select>
+          </div>
+
+          <div class="space-y-2 pt-2">
+            <span class="form-label">Notification Preferences</span>
+            <label class="flex items-center gap-2 cursor-pointer text-sm">
+              <input type="checkbox" class="form-checkbox" checked>
+              <span>Email notification when writer uploads draft</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-sm">
+              <input type="radio" name="delivery-speed" class="form-radio" checked>
+              <span>Standard Academic Turnaround (3–5 Days)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-sm">
+              <input type="radio" name="delivery-speed" class="form-radio">
+              <span>Urgent Express Turnaround (24 Hours)</span>
+            </label>
+          </div>
+
+          <div>
+            <span class="form-label">Document Attachment Dropzone</span>
+            <div class="file-dropzone">
+              <%- icon('upload', { class: 'w-6 h-6 mx-auto text-[var(--accent)] mb-2' }) %>
+              <p class="text-xs font-medium text-[var(--text-ink)]">Click to upload or drag assignment prompt (PDF)</p>
+              <p class="text-[11px] text-[var(--text-muted)] mt-1">Maximum file size: 10MB</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- SECTION 5: INTERACTIVE COMPONENTS (ALPINE.JS) -->
+    <section id="components-interactive" class="space-y-6" x-data="{ modalOpen: false, activeTab: 'overview' }">
+      <div>
+        <h2 class="type-h2">5. Interactive Primitives (Alpine.js)</h2>
+        <p class="text-sm text-[var(--text-muted)]">Tabs, dropdowns, and accessible modal dialogs without bulky frontend frameworks.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Tabs Demo -->
+        <div class="card p-6 space-y-4 lg:col-span-2">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Tabs Primitive</h3>
+          <div class="tab-list">
+            <button type="button" @click="activeTab = 'overview'" :class="{ 'is-active': activeTab === 'overview' }" class="tab-button">
+              Assignment Overview
+            </button>
+            <button type="button" @click="activeTab = 'requirements'" :class="{ 'is-active': activeTab === 'requirements' }" class="tab-button">
+              Rubric &amp; Files
+            </button>
+            <button type="button" @click="activeTab = 'timeline'" :class="{ 'is-active': activeTab === 'timeline' }" class="tab-button">
+              Activity History
+            </button>
+          </div>
+
+          <div class="pt-2">
+            <div x-show="activeTab === 'overview'" class="text-sm text-[var(--text-muted)] leading-relaxed">
+              Overview tab content: 12-page research synthesis on behavioral economics. Assigned to verified academic author with agreed rate of ₹120 per page.
+            </div>
+            <div x-show="activeTab === 'requirements'" class="text-sm text-[var(--text-muted)] leading-relaxed" style="display: none;">
+              Requirements tab: IEEE format, minimum 15 peer-reviewed sources, plagiarism report required upon submission.
+            </div>
+            <div x-show="activeTab === 'timeline'" class="text-sm text-[var(--text-muted)] leading-relaxed" style="display: none;">
+              Timeline history: Created on Oct 8, accepted by writer on Oct 9. In progress.
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Trigger Demo -->
+        <div class="card p-6 flex flex-col justify-between space-y-4">
+          <div>
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Modal Primitive</h3>
+            <p class="text-xs text-[var(--text-muted)] mt-1">Focus-trapped dialog with Escape key listener and backdrop blur.</p>
+          </div>
+          <button type="button" @click="modalOpen = true" class="btn btn-secondary btn-md w-full">
+            <%- icon('file-text', { class: 'w-4 h-4' }) %>
+            Preview Modal Dialog
+          </button>
+        </div>
+      </div>
+
+      <!-- Accessible Modal Dialog -->
+      <div 
+        x-show="modalOpen" 
+        @keydown.escape.window="modalOpen = false"
+        x-transition:enter="transition ease-out duration-150"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-100"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="modal-backdrop"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        style="display: none;"
+      >
+        <div 
+          @click.away="modalOpen = false" 
+          x-transition:enter="transition ease-out duration-150"
+          x-transition:enter-start="transform opacity-0 scale-95"
+          x-transition:enter-end="transform opacity-100 scale-100"
+          x-transition:leave="transition ease-in duration-100"
+          x-transition:leave-start="transform opacity-100 scale-100"
+          x-transition:leave-end="transform opacity-0 scale-95"
+          class="modal-dialog"
+        >
+          <div class="flex items-center justify-between pb-4 border-b border-[var(--border-color)]">
+            <h3 id="modal-title" class="type-h3">Upload Completed Work</h3>
+            <button type="button" @click="modalOpen = false" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] cursor-pointer" aria-label="Close dialog">
+              <%- icon('x', { class: 'w-5 h-5' }) %>
+            </button>
+          </div>
+
+          <div class="py-4 space-y-4">
+            <p class="text-sm text-[var(--text-muted)]">
+              Submit your final academic PDF deliverable. Once submitted, a secure presigned download link is generated for the student.
+            </p>
+            <div class="file-dropzone py-6">
+              <%- icon('upload', { class: 'w-5 h-5 mx-auto text-[var(--accent)] mb-1' }) %>
+              <span class="text-xs font-medium">Select Final PDF Document</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-[var(--border-color)]">
+            <button type="button" @click="modalOpen = false" class="btn btn-secondary btn-sm">
+              Cancel
+            </button>
+            <button type="button" @click="modalOpen = false" class="btn btn-primary btn-sm">
+              Confirm Submission
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- SECTION 6: DATA DISPLAY, TABLES & STEPPERS -->
+    <section id="components-data" class="space-y-6">
+      <div>
+        <h2 class="type-h2">6. Data Display, Tables &amp; Status Stepper</h2>
+        <p class="text-sm text-[var(--text-muted)]">Clean, high-density data representation for deal tracking.</p>
+      </div>
+
+      <!-- Stepper / Pipeline -->
+      <div class="card p-6 space-y-4">
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Deal Status Pipeline</h3>
+        <div class="timeline-stepper max-w-3xl mx-auto py-2">
+          <div class="stepper-step is-complete">
+            <div class="stepper-indicator"><%- icon('check', { class: 'w-3.5 h-3.5' }) %></div>
+            <div class="stepper-line"></div>
+          </div>
+          <div class="stepper-step is-complete">
+            <div class="stepper-indicator"><%- icon('check', { class: 'w-3.5 h-3.5' }) %></div>
+            <div class="stepper-line"></div>
+          </div>
+          <div class="stepper-step is-current">
+            <div class="stepper-indicator">3</div>
+            <div class="stepper-line"></div>
+          </div>
+          <div class="stepper-step">
+            <div class="stepper-indicator">4</div>
+          </div>
+        </div>
+        <div class="flex justify-between text-xs text-[var(--text-muted)] max-w-3xl mx-auto px-1">
+          <span class="text-[var(--text-ink)] font-medium">1. Created</span>
+          <span class="text-[var(--text-ink)] font-medium">2. Accepted</span>
+          <span class="text-[var(--accent)] font-semibold">3. In Progress</span>
+          <span>4. Delivered</span>
+        </div>
+      </div>
+
+      <!-- Table Display -->
+      <div class="table-wrapper">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Writer / Client</th>
+              <th>Assignment Scope</th>
+              <th>Total Rate</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="avatar avatar-sm">AB</div>
+                  <div>
+                    <div class="font-medium text-xs text-[var(--text-ink)]">Aditi Sharma</div>
+                    <div class="text-[11px] text-[var(--text-muted)]">BSc Microbiology</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="font-medium text-xs">8 Pages Research Paper</div>
+                <div class="text-[11px] text-[var(--text-muted)]">APA 7th Edition</div>
+              </td>
+              <td>
+                <span class="font-semibold text-xs">₹960</span>
+                <span class="text-[11px] text-[var(--text-muted)]">(₹120/pg)</span>
+              </td>
+              <td>
+                <span class="badge badge-accent">In Progress</span>
+              </td>
+              <td>
+                <a href="#" class="btn btn-secondary btn-sm">
+                  View Deal
+                  <%- icon('arrow-right', { class: 'w-3 h-3' }) %>
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="avatar avatar-sm">KK</div>
+                  <div>
+                    <div class="font-medium text-xs text-[var(--text-ink)]">Kapil Kor</div>
+                    <div class="text-[11px] text-[var(--text-muted)]">Senior Academic Fellow</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="font-medium text-xs">15 Pages Literature Review</div>
+                <div class="text-[11px] text-[var(--text-muted)]">Harvard Style</div>
+              </td>
+              <td>
+                <span class="font-semibold text-xs">₹2,250</span>
+                <span class="text-[11px] text-[var(--text-muted)]">(₹150/pg)</span>
+              </td>
+              <td>
+                <span class="badge badge-success">Completed</span>
+              </td>
+              <td>
+                <a href="#" class="btn btn-secondary btn-sm">
+                  Download
+                  <%- icon('download', { class: 'w-3 h-3' }) %>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- SECTION 7: STATS & EMPTY STATE & SKELETONS -->
+    <section id="components-feedback" class="space-y-6">
+      <div>
+        <h2 class="type-h2">7. Feedback, Skeletons &amp; Empty States</h2>
+        <p class="text-sm text-[var(--text-muted)]">Editorial stat blocks, graceful skeleton loaders, and empty state cards.</p>
+      </div>
+
+      <!-- Editorial Stat Blocks -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="card p-6 space-y-1">
+          <div class="type-eyebrow">Academic Deliveries</div>
+          <div class="font-serif-display text-4xl text-[var(--text-ink)]">1,480+</div>
+          <p class="text-xs text-[var(--text-muted)]">Peer-reviewed assignments fulfilled with zero plagiarism.</p>
+        </div>
+
+        <div class="card p-6 space-y-1">
+          <div class="type-eyebrow">Verified Writers</div>
+          <div class="font-serif-display text-4xl text-[var(--text-ink)]">85</div>
+          <p class="text-xs text-[var(--text-muted)]">Credential-verified subject experts across STEM &amp; Humanities.</p>
+        </div>
+
+        <div class="card p-6 space-y-1">
+          <div class="type-eyebrow">Average Turnaround</div>
+          <div class="font-serif-display text-4xl text-[var(--text-ink)]">42h</div>
+          <p class="text-xs text-[var(--text-muted)]">From initial prompt upload to final submitted PDF.</p>
+        </div>
+      </div>
+
+      <!-- Skeletons & Empty State -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Skeletons -->
+        <div class="card p-6 space-y-4">
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Skeleton Loading State</h3>
+          <div class="flex items-center gap-3">
+            <div class="skeleton w-10 h-10 rounded-full"></div>
+            <div class="space-y-2 flex-1">
+              <div class="skeleton h-3 w-1/3"></div>
+              <div class="skeleton h-2.5 w-1/2"></div>
+            </div>
+          </div>
+          <div class="space-y-2 pt-2">
+            <div class="skeleton h-3 w-full"></div>
+            <div class="skeleton h-3 w-5/6"></div>
+            <div class="skeleton h-3 w-2/3"></div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state space-y-3">
+          <div class="w-10 h-10 mx-auto rounded-full bg-[var(--bg-surface)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-muted)]">
+            <%- icon('file-text', { class: 'w-5 h-5' }) %>
+          </div>
+          <div>
+            <h4 class="text-sm font-semibold text-[var(--text-ink)]">No assignments in this view</h4>
+            <p class="text-xs text-[var(--text-muted)] max-w-xs mx-auto mt-1">
+              You haven't posted any tasks yet. Explore verified academic writers to get started.
+            </p>
+          </div>
+          <div>
+            <a href="/writers" class="btn btn-secondary btn-sm">
+              <%- icon('search', { class: 'w-3.5 h-3.5' }) %>
+              Browse Writers
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

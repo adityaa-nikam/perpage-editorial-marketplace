@@ -1,0 +1,449 @@
+<%- include('partials/head', { 
+  pageTitle: 'Create a deal | PerPage', 
+  metaDescription: 'Commission an academic writing assignment on PerPage with transparent per-page pricing.',
+  robots: 'noindex, nofollow'
+}) %>
+<%- include('partials/navbar') %>
+
+<main id="main-content" class="py-10 sm:py-14">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs text-[var(--text-muted)]" aria-label="Breadcrumb">
+      <a href="/writers" class="hover:text-[var(--text-ink)] transition-colors">Writers</a>
+      <span aria-hidden="true">/</span>
+      <a href="/writers/<%= writer._id %>" class="hover:text-[var(--text-ink)] transition-colors"><%= writer.name %></a>
+      <span aria-hidden="true">/</span>
+      <span class="text-[var(--text-ink)] font-medium" aria-current="page">Create deal</span>
+    </nav>
+
+    <!-- Header -->
+    <div class="space-y-1.5">
+      <h1 class="type-h1">Create a deal</h1>
+      <p class="type-body text-sm text-[var(--text-muted)]">
+        Choose your page count, add notes, and upload your brief. <%= firstName %> will accept or decline.
+      </p>
+    </div>
+
+    <!-- Error Summary Alert -->
+    <% if (errors && Object.keys(errors).length > 0) { %>
+      <div id="error-summary" role="alert" tabindex="-1" class="alert alert-danger space-y-2 focus:outline-none focus:ring-2 focus:ring-[var(--semantic-danger-border)]">
+        <div class="flex items-center gap-2 font-semibold">
+          <%- icon('alert-circle', { class: 'w-4 h-4 shrink-0' }) %>
+          <span>There was a problem with your submission:</span>
+        </div>
+        <ul class="list-disc list-inside space-y-1 text-xs pl-6">
+          <% if (errors.pages) { %>
+            <li><a href="#pages" class="underline hover:text-[var(--text-ink)]"><%= errors.pages %></a></li>
+          <% } %>
+          <% if (errors.userNotes) { %>
+            <li><a href="#userNotes" class="underline hover:text-[var(--text-ink)]"><%= errors.userNotes %></a></li>
+          <% } %>
+          <% if (errors.file) { %>
+            <li><a href="#file" class="underline hover:text-[var(--text-ink)]"><%= errors.file %></a></li>
+          <% } %>
+          <% if (errors.form) { %>
+            <li><%= errors.form %></li>
+          <% } %>
+        </ul>
+        <p class="text-xs italic pt-1 border-t border-[var(--semantic-danger-border)]">
+          Note: Please select your file again.
+        </p>
+      </div>
+    <% } %>
+
+    <!-- Two-column grid (Desktop: form left, sticky summary right; Mobile: single column with summary after form) -->
+    <div 
+      class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+      x-data="dealForm({ rate: <%= writer.pricePerPage %>, initialPages: <%= values.pages || 1 %>, initialNotes: '<%= (values.userNotes || '').replace(/'/g, "\\'") %>', maxMb: <%= FILE_MAX_MB %> })"
+    >
+      
+      <!-- Left Column: Form -->
+      <div class="lg:col-span-7">
+        <div class="card p-6 sm:p-8">
+          <form 
+            action="/deal" 
+            method="POST" 
+            enctype="multipart/form-data" 
+            class="space-y-6"
+            @submit="handleSubmit($event)"
+          >
+            <!-- Hidden Fields for Backwards Compatibility -->
+            <input type="hidden" name="userId" value="<%= user ? (user._id || user.id) : '' %>">
+            <input type="hidden" name="writerId" value="<%= writer._id %>">
+            <input type="hidden" name="totalPrice" :value="estimatedTotal" value="<%= writer.pricePerPage * (values.pages || 1) %>">
+            <input type="hidden" name="writerNotes" value="">
+            <input type="hidden" name="status" value="pending">
+
+            <!-- Field 1: Page Count -->
+            <div>
+              <label for="pages" class="form-label">Page Count</label>
+              <input 
+                type="number" 
+                id="pages" 
+                name="pages" 
+                min="1" 
+                max="500" 
+                step="1" 
+                inputmode="numeric" 
+                required 
+                x-model.number="pages"
+                value="<%= values.pages || '1' %>"
+                aria-describedby="pages-hint<%= errors.pages ? ' pages-error' : '' %>"
+                class="form-input <%= errors.pages ? 'border-[var(--semantic-danger-border)]' : '' %>"
+              >
+              <p id="pages-hint" class="form-hint">Between 1 and 500 pages.</p>
+              <% if (errors.pages) { %>
+                <p id="pages-error" class="form-error">
+                  <%- icon('alert-circle', { class: 'w-3.5 h-3.5' }) %>
+                  <%= errors.pages %>
+                </p>
+              <% } %>
+            </div>
+
+            <!-- Field 2: Notes (Optional) -->
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label for="userNotes" class="form-label mb-0">Assignment Notes (Optional)</label>
+                <span class="text-[11px] text-[var(--text-muted)]" :class="notesLength > 2000 ? 'text-[var(--semantic-danger-text)] font-semibold' : ''" aria-live="polite">
+                  <span x-text="notesLength"><%= (values.userNotes || '').length %></span>/2000
+                </span>
+              </div>
+              <textarea 
+                id="userNotes" 
+                name="userNotes" 
+                rows="4" 
+                maxlength="2000"
+                x-model="notes"
+                aria-describedby="userNotes-hint<%= errors.userNotes ? ' userNotes-error' : '' %>"
+                placeholder="Topic, referencing style, syllabus criteria, or specific requirements..."
+                class="form-textarea <%= errors.userNotes ? 'border-[var(--semantic-danger-border)]' : '' %>"
+              ><%= values.userNotes || '' %></textarea>
+              <p id="userNotes-hint" class="form-hint">Topic, referencing style, anything the writer should know.</p>
+              <% if (errors.userNotes) { %>
+                <p id="userNotes-error" class="form-error">
+                  <%- icon('alert-circle', { class: 'w-3.5 h-3.5' }) %>
+                  <%= errors.userNotes %>
+                </p>
+              <% } %>
+            </div>
+
+            <!-- Field 3: Brief Upload (File-drop-zone) -->
+            <div>
+              <label for="file" class="form-label">Assignment Brief</label>
+              <div 
+                class="file-dropzone relative transition-colors focus-within:ring-2 focus-within:ring-[var(--accent)] focus-within:ring-offset-2"
+                :class="{ 'border-[var(--accent)] bg-[var(--accent-subtle)]': isDragging, 'border-[var(--semantic-danger-border)]': clientFileError || '<%= errors.file ? '1' : '' %>' }"
+                @dragover.prevent="isDragging = true"
+                @dragleave.prevent="isDragging = false"
+                @drop.prevent="handleDrop($event)"
+              >
+                <!-- Initial State: Upload Prompt -->
+                <div x-show="!selectedFile" class="space-y-3">
+                  <div class="w-10 h-10 mx-auto rounded-full bg-[var(--bg-surface)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]" aria-hidden="true">
+                    <%- icon('upload', { class: 'w-5 h-5' }) %>
+                  </div>
+                  <div>
+                    <p class="text-xs sm:text-sm font-medium text-[var(--text-ink)]">
+                      Upload your brief as a PDF, up to <%= FILE_MAX_MB %> MB.
+                    </p>
+                    <p class="text-xs text-[var(--text-muted)] mt-0.5">
+                      Drag and drop your file here, or select from your device
+                    </p>
+                  </div>
+                  <div class="pt-1">
+                    <input 
+                      type="file" 
+                      name="file" 
+                      id="file" 
+                      accept="application/pdf,.pdf" 
+                      required
+                      x-ref="fileInput"
+                      @change="handleFileChange($event)"
+                      aria-describedby="file-hint<%= errors.file ? ' file-error' : '' %>"
+                      class="block w-full text-xs text-[var(--text-muted)] file:mr-3 file:py-2 file:px-4 file:rounded-md file:border file:border-[var(--border-color)] file:text-xs file:font-medium file:bg-[var(--bg-surface)] file:text-[var(--text-ink)] hover:file:bg-[var(--bg-surface-muted)] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+                    >
+                  </div>
+                </div>
+
+                <!-- Selected File Row (Alpine) -->
+                <div x-show="selectedFile" x-cloak class="flex items-center justify-between gap-3 p-3 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg text-left">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)] shrink-0" aria-hidden="true">
+                      <%- icon('file-text', { class: 'w-4 h-4' }) %>
+                    </div>
+                    <div class="min-w-0">
+                      <p class="text-xs font-medium text-[var(--text-ink)] truncate max-w-[200px] sm:max-w-[280px]" :title="selectedFile?.name" x-text="selectedFile?.name"></p>
+                      <p class="text-[11px] text-[var(--text-muted)]" x-text="formatBytes(selectedFile?.size)"></p>
+                    </div>
+                  </div>
+                  <button 
+                    type="button" 
+                    @click="clearFile()" 
+                    class="btn btn-ghost btn-sm text-[var(--semantic-danger-text)] hover:bg-[var(--semantic-danger-bg)] shrink-0"
+                    aria-label="Remove selected file"
+                  >
+                    <%- icon('x', { class: 'w-3.5 h-3.5 mr-1' }) %>
+                    Remove
+                  </button>
+                </div>
+              </div>
+
+              <!-- Client-side Error Message -->
+              <template x-if="clientFileError">
+                <p class="form-error" aria-live="assertive">
+                  <%- icon('alert-circle', { class: 'w-3.5 h-3.5' }) %>
+                  <span x-text="clientFileError"></span>
+                </p>
+              </template>
+
+              <!-- Server-side Error Message -->
+              <% if (errors.file) { %>
+                <p id="file-error" class="form-error">
+                  <%- icon('alert-circle', { class: 'w-3.5 h-3.5' }) %>
+                  <%= errors.file %>
+                </p>
+              <% } %>
+            </div>
+
+            <!-- Submit Action -->
+            <div class="pt-3 space-y-3 border-t border-[var(--border-color)]">
+              <button 
+                type="submit" 
+                id="submit-deal-btn"
+                class="btn btn-primary btn-md w-full justify-center"
+                :disabled="isSubmitting"
+                :aria-busy="isSubmitting ? 'true' : 'false'"
+              >
+                <span x-show="!isSubmitting" class="flex items-center gap-2">
+                  Create deal
+                  <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+                </span>
+                <span x-show="isSubmitting" x-cloak class="flex items-center gap-2">
+                  <%- icon('loader', { class: 'w-4 h-4 animate-spin' }) %>
+                  Uploading
+                </span>
+              </button>
+              
+              <p x-show="isSubmitting" x-cloak class="text-xs text-[var(--text-muted)] text-center animate-pulse" aria-live="polite">
+                Keep this page open until the upload finishes.
+              </p>
+
+              <p class="text-xs text-[var(--text-muted)] text-center leading-normal pt-1">
+                Files are stored privately and shared through time-limited links. No real payments are processed in this demo.
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Column: Sticky Summary Card -->
+      <aside class="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
+        <div class="card p-6 space-y-6">
+          
+          <!-- Writer Row -->
+          <div class="flex items-center gap-3 pb-5 border-b border-[var(--border-color)]">
+            <div class="avatar avatar-lg shrink-0" aria-hidden="true">
+              <% if (writer.profilePic) { %>
+                <img src="<%= writer.profilePic %>" alt="<%= writer.name %>">
+              <% } else { %>
+                <span><%= initials %></span>
+              <% } %>
+            </div>
+            <div class="min-w-0">
+              <h2 class="type-h3 text-base truncate font-semibold"><%= writer.name %></h2>
+              <a href="/writers/<%= writer._id %>" class="text-xs text-[var(--accent)] hover:underline inline-flex items-center gap-1 mt-0.5">
+                View profile
+                <%- icon('arrow-up-right', { class: 'w-3 h-3' }) %>
+              </a>
+            </div>
+          </div>
+
+          <!-- Price & Page Breakdown -->
+          <div class="space-y-3 text-sm">
+            <div class="flex items-center justify-between text-[var(--text-muted)]">
+              <span>Rate</span>
+              <span class="font-medium text-[var(--text-ink)]">₹<%= writer.pricePerPage %> per page</span>
+            </div>
+
+            <!-- Alpine Dynamic Rows -->
+            <div class="flex items-center justify-between text-[var(--text-muted)]" x-cloak>
+              <span>Pages</span>
+              <span class="font-medium text-[var(--text-ink)]" x-text="pages">1</span>
+            </div>
+
+            <div class="card-muted p-3 space-y-1 rounded-md" x-cloak>
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-[var(--text-muted)]">Estimated total</span>
+                <span class="text-base font-semibold text-[var(--text-ink)]" x-text="'₹' + new Intl.NumberFormat('en-IN').format(estimatedTotal)">
+                  ₹<%= writer.pricePerPage %>
+                </span>
+              </div>
+              <p class="text-[11px] text-[var(--text-muted)] leading-tight">
+                Estimate. The final total is calculated by the server when you create the deal.
+              </p>
+            </div>
+
+            <!-- No-JS Fallback -->
+            <noscript>
+              <div class="card-muted p-3 space-y-1 rounded-md">
+                <div class="flex items-center justify-between text-xs text-[var(--text-muted)]">
+                  <span>Rate: ₹<%= writer.pricePerPage %> per page</span>
+                </div>
+                <p class="text-[11px] text-[var(--text-muted)] leading-tight">
+                  Estimate. The final total is calculated by the server when you create the deal.
+                </p>
+              </div>
+            </noscript>
+          </div>
+
+          <!-- What Happens Next Stepper -->
+          <div class="pt-2 border-t border-[var(--border-color)] space-y-3">
+            <h3 class="type-eyebrow text-[11px]">What happens next</h3>
+            <div class="stepper">
+              <div class="stepper-step">
+                <div class="stepper-marker">1</div>
+                <div class="stepper-content">
+                  <p class="text-xs font-medium text-[var(--text-ink)]">Writer reviews your request</p>
+                  <p class="text-[11px] text-[var(--text-muted)]">Checks your prompt brief and instructions.</p>
+                </div>
+              </div>
+              <div class="stepper-step">
+                <div class="stepper-marker">2</div>
+                <div class="stepper-content">
+                  <p class="text-xs font-medium text-[var(--text-ink)]">Accepts or declines</p>
+                  <p class="text-[11px] text-[var(--text-muted)]">Confirms availability to work on your assignment.</p>
+                </div>
+              </div>
+              <div class="stepper-step">
+                <div class="stepper-marker">3</div>
+                <div class="stepper-content">
+                  <p class="text-xs font-medium text-[var(--text-ink)]">Uploads the final file</p>
+                  <p class="text-[11px] text-[var(--text-muted)]">Submits deliverables upon completion.</p>
+                </div>
+              </div>
+              <div class="stepper-step">
+                <div class="stepper-marker">4</div>
+                <div class="stepper-content">
+                  <p class="text-xs font-medium text-[var(--text-ink)]">You download from dashboard</p>
+                  <p class="text-[11px] text-[var(--text-muted)]">Access your private download link anytime.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </aside>
+
+    </div>
+
+  </div>
+</main>
+
+<script>
+  function dealForm(config) {
+    return {
+      rate: config.rate || 0,
+      maxMb: config.maxMb || 10,
+      pages: config.initialPages || 1,
+      notes: config.initialNotes || '',
+      isDragging: false,
+      selectedFile: null,
+      clientFileError: '',
+      isSubmitting: false,
+
+      get notesLength() {
+        return (this.notes || '').length;
+      },
+
+      get estimatedTotal() {
+        const p = Math.max(1, Math.min(500, parseInt(this.pages, 10) || 1));
+        return p * this.rate;
+      },
+
+      formatBytes(bytes) {
+        if (!bytes || bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      },
+
+      validateAndSetFile(file) {
+        this.clientFileError = '';
+        if (!file) {
+          this.selectedFile = null;
+          return;
+        }
+
+        const isPdfMime = file.type === 'application/pdf';
+        const isPdfExt = file.name.toLowerCase().endsWith('.pdf');
+        if (!isPdfMime && !isPdfExt) {
+          this.clientFileError = 'Only PDF documents are accepted.';
+          this.selectedFile = file;
+          return;
+        }
+
+        const maxBytes = this.maxMb * 1024 * 1024;
+        if (file.size > maxBytes) {
+          this.clientFileError = 'File exceeds the maximum size of ' + this.maxMb + 'MB.';
+          this.selectedFile = file;
+          return;
+        }
+
+        this.selectedFile = file;
+      },
+
+      handleFileChange(event) {
+        const file = event.target.files && event.target.files[0];
+        this.validateAndSetFile(file);
+      },
+
+      handleDrop(event) {
+        this.isDragging = false;
+        const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+        if (file) {
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          this.$refs.fileInput.files = dataTransfer.files;
+          this.validateAndSetFile(file);
+        }
+      },
+
+      clearFile() {
+        if (this.$refs.fileInput) {
+          this.$refs.fileInput.value = '';
+        }
+        this.selectedFile = null;
+        this.clientFileError = '';
+      },
+
+      handleSubmit(event) {
+        if (this.isSubmitting) {
+          event.preventDefault();
+          return;
+        }
+        this.isSubmitting = true;
+      }
+    };
+  }
+
+  // Handle error summary focus
+  document.addEventListener('DOMContentLoaded', function() {
+    var errorSummary = document.getElementById('error-summary');
+    if (errorSummary) {
+      errorSummary.focus();
+    }
+  });
+
+  // Reset loading state on pageshow (e.g. Back button)
+  window.addEventListener('pageshow', function(event) {
+    var formEl = document.querySelector('[x-data]');
+    if (formEl && formEl._x_dataStack && formEl._x_dataStack[0]) {
+      formEl._x_dataStack[0].isSubmitting = false;
+    }
+  });
+</script>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

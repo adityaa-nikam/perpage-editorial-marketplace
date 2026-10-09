@@ -1,0 +1,36 @@
+<%- include('partials/head', { 
+  pageTitle: (typeof pageTitle !== 'undefined' ? pageTitle : 'Deal Error — PerPage'), 
+  metaDescription: 'Deal creation notice on PerPage.',
+  robots: 'noindex, nofollow'
+}) %>
+<%- include('partials/navbar') %>
+
+<main id="main-content" class="py-16 sm:py-24">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    
+    <div class="empty-state p-8 sm:p-12 space-y-5">
+      <div class="w-12 h-12 mx-auto rounded-full bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-muted)]">
+        <%- icon('alert-circle', { class: 'w-6 h-6' }) %>
+      </div>
+
+      <div class="space-y-2">
+        <span class="type-eyebrow"><%= typeof errorCode !== 'undefined' ? errorCode : 'Notice' %></span>
+        <h1 class="type-h2"><%= typeof errorTitle !== 'undefined' ? errorTitle : 'Cannot Create Deal' %></h1>
+        <p class="type-body text-sm text-[var(--text-muted)] max-w-md mx-auto">
+          <%= typeof errorMessage !== 'undefined' ? errorMessage : 'The requested deal could not be initialized.' %>
+        </p>
+      </div>
+
+      <div class="pt-4 flex items-center justify-center gap-3">
+        <a href="/writers" class="btn btn-primary btn-md">
+          <%- icon('arrow-right', { class: 'w-4 h-4 mr-1.5' }) %>
+          Browse writers
+        </a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>
