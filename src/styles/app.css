@@ -122,6 +122,7 @@ body {
   flex-direction: column;
   background-color: var(--bg-background);
   color: var(--text-ink);
+  overflow-wrap: break-word;
   transition: background-color 150ms ease-out, color 150ms ease-out;
 }
 
