@@ -15,7 +15,7 @@ router.get('/register', (req, res) => {
 router.post('/register',
   [
     body('email').isEmail().withMessage('Enter a valid email'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    body('password').isLength({ min: 8, max: 72 }).withMessage('Password must be between 8 and 72 characters'),
     body('name').notEmpty().withMessage('Name is required')
   ],
   async (req, res) => {
@@ -26,7 +26,10 @@ router.post('/register',
       }
 
       const { name, email, password } = req.body;
-      
+      const role = req.body.role === 'writer' ? 'writer' : 'user'; // Whitelist role: never admin
+      const bio = typeof req.body.bio === 'string' ? req.body.bio.trim().slice(0, 1000) : '';
+      const address = typeof req.body.address === 'string' ? req.body.address.trim().slice(0, 200) : '';
+
       // Check if user exists
       const exists = await User.findOne({ email });
       if (exists) {
@@ -34,7 +37,7 @@ router.post('/register',
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = new User({ name, email, password: hashedPassword });
+      const newUser = new User({ name, email, password: hashedPassword, role, bio, address });
       await newUser.save();
 
       res.redirect('/login');

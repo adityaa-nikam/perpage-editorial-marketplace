@@ -38,14 +38,15 @@
       </div>
 
       <div>
-        <label for="password" class="form-label">Password (min 6 characters)</label>
+        <label for="password" class="form-label">Password (8–72 characters)</label>
         <input 
           type="password" 
           id="password" 
           name="password" 
           placeholder="••••••••" 
           required 
-          minlength="6"
+          minlength="8"
+          maxlength="72"
           autocomplete="new-password"
           class="form-input"
         >
