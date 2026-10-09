@@ -731,47 +731,8 @@ router.post('/', checkAuthenticated, dealMulterMiddleware, async (req, res) => {
 });
 
 // --------------------------------------------------------------------------
-// UNTOUCHED EXISTING ROUTES: /deal/upload-final, /accept/:id, /reject/:id
+// DEAL ACTION ROUTES: /accept/:id, /reject/:id
 // --------------------------------------------------------------------------
-
-// 📤 POST /deal/upload-final - Upload final file by writer
-router.post('/upload-final', checkAuthenticated, upload.single('finalPdf'), async (req, res) => {
-  try {
-    const { dealId } = req.body;
-    const file = req.file;
-
-    if (!file || !dealId) {
-      return res.status(400).send('Missing file or deal ID');
-    }
-
-    const deal = await Deal.findById(dealId);
-    if (!deal) return res.status(404).send('Deal not found');
-
-    const finalFileKey = `finals/${Date.now()}_${file.originalname}`;
-    const command = new PutObjectCommand({
-      Bucket: bucketName,
-      Key: finalFileKey,
-      Body: file.buffer,
-      ContentType: file.mimetype,
-    });
-    await s3Client.send(command);
-
-    // 🔗 Generate signed download URL valid for 7 days
-    const signedUrl = await getSignedUrl(
-      s3Client,
-      new GetObjectCommand({ Bucket: bucketName, Key: finalFileKey }),
-      { expiresIn: 60 * 60 * 24 * 7 }
-    );
-
-    deal.finalFileLink = signedUrl;
-    await deal.save();
-
-    res.redirect('/dashboard');
-  } catch (err) {
-    console.error('Final file upload error:', err.message);
-    res.status(500).send('Error uploading final file');
-  }
-});
 
 // ✅ Accept deal
 router.post('/accept/:id', checkAuthenticated, async (req, res) => {
