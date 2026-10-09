@@ -154,6 +154,12 @@ if (process.env.NODE_ENV !== 'production') {
     }
     res.render('styleguide');
   });
+
+  app.get('/mock-download/:key', (req, res) => {
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="document.pdf"');
+    res.send(Buffer.from('%PDF-1.4\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF\n'));
+  });
 }
 
 // Route Mounting
