@@ -5,7 +5,6 @@ import {asyncWrap} from '../utils/wrapAsync.js';
 const connectDB = async () => {
   try {
     console.log('Attempting to connect to MongoDB...');
-    console.log(process.env.MONGO_URL);
     
     // Set connection timeout and retry options
     const conn = await mongoose.connect(process.env.MONGO_URL, {
