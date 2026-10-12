@@ -5,85 +5,24 @@ import { User } from '../models/User.js';
 
 const router = express.Router();
 
-const defaultTopRatedWriters = [
-  {
-    _id: '64f1a2b3c4d5e6f7a8b9c0d1',
-    name: 'Ananya Sharma',
-    bio: 'Specializing in academic papers, thesis formatting, clarity polish, and reference standards.',
-    pricePerPage: 45,
-    averageRating: 5.0,
-    reviewCount: 28,
-    profilePic: ''
-  },
-  {
-    _id: '64f1a2b3c4d5e6f7a8b9c0d2',
-    name: 'Rohan Verma',
-    bio: 'Reviews manuscript flow, sentence structure, and technical argument readability.',
-    pricePerPage: 35,
-    averageRating: 4.9,
-    reviewCount: 19,
-    profilePic: ''
-  },
-  {
-    _id: '64f1a2b3c4d5e6f7a8b9c0d3',
-    name: 'Priya Nair',
-    bio: 'Provides in-depth line editing, tone consistency, and detailed structural feedback.',
-    pricePerPage: 50,
-    averageRating: 5.0,
-    reviewCount: 24,
-    profilePic: ''
-  }
-];
-
 const renderHome = async (req, res) => {
   let featuredWriters = [];
   const isDbConnected = mongoose.connection.readyState === 1;
 
   if (isDbConnected) {
     try {
-      // 1. Fetch top rated writers with per-page rate set
-      const dbWriters = await User.find({
-        role: 'writer',
-        pricePerPage: { $gt: 0 }
+      // Fetch only real registered writers from MongoDB, prioritizing those with ratings and rates
+      featuredWriters = await User.find({
+        role: 'writer'
       })
         .sort({ averageRating: -1, reviewCount: -1, createdAt: -1 })
         .limit(3)
         .select('name bio pricePerPage profilePic averageRating reviewCount createdAt _id')
         .lean();
-
-      featuredWriters = dbWriters || [];
-
-      // 2. If fewer than 3, check other writers with role writer
-      if (featuredWriters.length < 3) {
-        const existingIds = featuredWriters.map(w => w._id.toString());
-        const extraDbWriters = await User.find({
-          role: 'writer',
-          _id: { $nin: existingIds }
-        })
-          .sort({ averageRating: -1, reviewCount: -1, createdAt: -1 })
-          .limit(3 - featuredWriters.length)
-          .select('name bio pricePerPage profilePic averageRating reviewCount createdAt _id')
-          .lean();
-
-        featuredWriters = featuredWriters.concat(extraDbWriters);
-      }
-
-      // 3. If still fewer than 3 total writers in DB, seamlessly backfill remaining slots with top-rated curated editors
-      if (featuredWriters.length < 3 && (!req.query || req.query.empty !== '1')) {
-        for (const defaultWriter of defaultTopRatedWriters) {
-          if (featuredWriters.length >= 3) break;
-          const alreadyExists = featuredWriters.some(w => w.name && w.name.toLowerCase() === defaultWriter.name.toLowerCase());
-          if (!alreadyExists) {
-            featuredWriters.push({ ...defaultWriter });
-          }
-        }
-      }
     } catch (err) {
       console.warn('⚠️ Could not fetch featured writers (DB error):', err.message);
-      featuredWriters = [...defaultTopRatedWriters];
+      featuredWriters = [];
     }
-  } else {
-    featuredWriters = [...defaultTopRatedWriters];
   }
 
   // Development environment previews for acceptance testing
@@ -100,8 +39,6 @@ const renderHome = async (req, res) => {
     }
     if (req.query.empty === '1') {
       featuredWriters = [];
-    } else if (req.query.mockWriters === '1') {
-      featuredWriters = [...defaultTopRatedWriters];
     }
   }
 
