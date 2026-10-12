@@ -87,7 +87,7 @@ router.get('/', async (req, res) => {
   const q = rawQ.slice(0, 80); // Cap length at 80
   const hasRate = req.query.hasRate === '1' || req.query.hasRate === 'true';
 
-  const validSorts = ['newest', 'price_asc', 'price_desc', 'completed'];
+  const validSorts = ['newest', 'rating', 'price_asc', 'price_desc', 'completed'];
   const sort = validSorts.includes(req.query.sort) ? req.query.sort : 'newest';
 
   let page = parseInt(req.query.page, 10);
@@ -114,6 +114,7 @@ router.get('/', async (req, res) => {
     // 3. Sorting configuration
     const sortOptions = {
       newest: { createdAt: -1 },
+      rating: { averageRating: -1, reviewCount: -1, createdAt: -1 },
       price_asc: { pricePerPage: 1, createdAt: -1 },
       price_desc: { pricePerPage: -1, createdAt: -1 }
     };

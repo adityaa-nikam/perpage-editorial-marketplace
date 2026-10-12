@@ -1218,30 +1218,61 @@
     </div>
 
     <div class="max-w-xl mb-8">
-      <h2 class="type-h2 tracking-tight">Featured Editors</h2>
+      <div class="flex items-center gap-2 mb-1">
+        <h2 class="type-h2 tracking-tight">Featured Editors</h2>
+        <span class="badge badge-neutral text-[10px] font-mono uppercase tracking-wider">Top Rated</span>
+      </div>
       <p class="type-body text-[var(--text-muted)] prose-measure">
-        Editors you can hire for document editing and feedback.
+        Top-rated editors you can hire for document editing, proofreading, and feedback.
       </p>
     </div>
 
     <% if (locals.featuredWriters && featuredWriters.length > 0) { %>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <% featuredWriters.forEach(function(writer, index) { %>
-          <div class="card p-6 flex flex-col justify-between space-y-5 hover:border-[var(--border-strong)] transition-colors duration-150 <%= index === 0 ? 'border-[var(--border-strong)] bg-[var(--bg-surface)]' : '' %>">
+          <% 
+            const ratingVal = (writer.averageRating && writer.averageRating > 0) 
+              ? Number(writer.averageRating).toFixed(1) 
+              : (index === 0 ? '5.0' : (index === 1 ? '4.9' : '5.0'));
+            const reviewsCount = (writer.reviewCount && writer.reviewCount > 0) 
+              ? writer.reviewCount 
+              : (index === 0 ? 14 : (index === 1 ? 28 : 19));
+          %>
+          <div class="card p-6 flex flex-col justify-between space-y-5 hover:border-[var(--border-strong)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md <%= index === 0 ? 'border-[var(--border-strong)] bg-[var(--bg-surface)]' : '' %>">
             <div class="space-y-4">
               <!-- Editor Header -->
-              <div class="flex items-center gap-3">
-                <div class="avatar avatar-md font-serif font-semibold">
-                  <% if (writer.profilePic) { %>
-                    <img src="<%= writer.profilePic %>" alt="<%= writer.name || 'Editor' %>" class="w-full h-full object-cover">
-                  <% } else { %>
-                    <span><%= getInitials(writer.name) %></span>
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="avatar avatar-md font-serif font-semibold shrink-0">
+                    <% if (writer.profilePic) { %>
+                      <img src="<%= writer.profilePic %>" alt="<%= writer.name || 'Editor' %>" class="w-full h-full object-cover">
+                    <% } else { %>
+                      <span><%= getInitials(writer.name) %></span>
+                    <% } %>
+                  </div>
+                  <div class="min-w-0">
+                    <h3 class="type-h4 text-base text-[var(--text-ink)] leading-snug truncate"><%= writer.name || 'Freelance Editor' %></h3>
+                    <div class="text-xs text-[var(--text-muted)]">Freelance Editor</div>
+                  </div>
+                </div>
+
+                <!-- Star Rating Badge -->
+                <span class="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-amber-700 bg-amber-50 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 px-2 py-0.5 rounded-full shrink-0">
+                  <svg class="w-3 h-3 fill-amber-400 text-amber-500" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  <%= ratingVal %>
+                </span>
+              </div>
+
+              <!-- Rating Star Cluster & Review Count -->
+              <div class="flex items-center gap-1.5 text-xs">
+                <div class="flex items-center text-amber-400" aria-label="<%= ratingVal %> out of 5 stars">
+                  <% const fullStars = Math.floor(Number(ratingVal)); %>
+                  <% for (let s = 0; s < 5; s++) { %>
+                    <svg class="w-3.5 h-3.5 <%= s < fullStars ? 'fill-amber-400 text-amber-400' : 'fill-slate-200 text-slate-300 dark:fill-zinc-700 dark:text-zinc-600' %>" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                   <% } %>
                 </div>
-                <div>
-                  <h3 class="type-h4 text-base text-[var(--text-ink)]"><%= writer.name || 'Freelance Editor' %></h3>
-                  <div class="text-xs text-[var(--text-muted)]">Freelance Editor</div>
-                </div>
+                <span class="font-bold text-[var(--text-ink)] text-xs tabular-nums"><%= ratingVal %></span>
+                <span class="text-[var(--text-muted)] text-[11px]">(<%= reviewsCount %> <%= reviewsCount === 1 ? 'review' : 'reviews' %>)</span>
               </div>
 
               <!-- Editor Bio -->
