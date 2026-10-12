@@ -584,46 +584,81 @@
       }
 
       let audioCtx = null;
+      let cachedNoiseBuffer = null;
       let soundTriggered = false;
       let lastSoundTime = 0;
+
+      function getAudioContext() {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            audioCtx = new AudioContextClass();
+          }
+        }
+        return audioCtx;
+      }
+
+      function ensureAudioReady() {
+        const ctx = getAudioContext();
+        if (ctx) {
+          if (ctx.state === 'suspended') {
+            ctx.resume().catch(() => {});
+          }
+          if (!cachedNoiseBuffer) {
+            try {
+              const bufferSize = Math.floor(ctx.sampleRate * 2.5);
+              cachedNoiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+              const output = cachedNoiseBuffer.getChannelData(0);
+              let b0 = 0, b1 = 0, b2 = 0;
+              for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                b0 = 0.997 * b0 + white * 0.05;
+                b1 = 0.985 * b1 + white * 0.11;
+                b2 = 0.950 * b2 + white * 0.25;
+                output[i] = (b0 + b1 + b2) * 0.24;
+              }
+            } catch (e) {}
+          }
+        }
+      }
+
+      // Pre-warm audio immediately on first user gesture so playback has 0ms latency
+      ['pointerdown', 'touchstart', 'scroll', 'keydown', 'wheel'].forEach(evt => {
+        window.addEventListener(evt, ensureAudioReady, { once: true, passive: true });
+      });
 
       function playPremiumZoomSound() {
         if (motion.matches) return;
         const now = Date.now();
-        if (now - lastSoundTime < 3500) return; // 3.5s cooldown
+        if (now - lastSoundTime < 2500) return; // 2.5s cooldown
         lastSoundTime = now;
 
+        ensureAudioReady();
+        const ctx = getAudioContext();
+        if (!ctx) return;
+
         try {
-          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-          if (!AudioContextClass) return;
-          if (!audioCtx) {
-            audioCtx = new AudioContextClass();
-          }
-          if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-          }
+          const t0 = ctx.currentTime;
+          const duration = 2.4; // 2.4 seconds
 
-          const t0 = audioCtx.currentTime;
-          const duration = 2.4; // 2.4 seconds luxurious sound
-
-          // Master Gain with smooth attack and decay
-          const masterGain = audioCtx.createGain();
+          // Master Gain - Fast crisp attack (< 50ms) to eliminate audio lag!
+          const masterGain = ctx.createGain();
           masterGain.gain.setValueAtTime(0.0001, t0);
-          masterGain.gain.exponentialRampToValueAtTime(0.2, t0 + 0.6);
-          masterGain.gain.exponentialRampToValueAtTime(0.22, t0 + 1.2);
+          masterGain.gain.exponentialRampToValueAtTime(0.24, t0 + 0.05);
+          masterGain.gain.linearRampToValueAtTime(0.26, t0 + 0.5);
           masterGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
-          masterGain.connect(audioCtx.destination);
+          masterGain.connect(ctx.destination);
 
-          // 1. Cinematic Deep Sub-Bass Swell (48Hz rising to 82Hz)
-          const subOsc = audioCtx.createOscillator();
+          // 1. Instant Deep Sub-Bass Swell (hits immediately with the visual zoom)
+          const subOsc = ctx.createOscillator();
           subOsc.type = 'sine';
-          subOsc.frequency.setValueAtTime(48, t0);
-          subOsc.frequency.exponentialRampToValueAtTime(82, t0 + 1.6);
-          subOsc.frequency.linearRampToValueAtTime(60, t0 + duration);
+          subOsc.frequency.setValueAtTime(45, t0);
+          subOsc.frequency.exponentialRampToValueAtTime(95, t0 + 0.5);
+          subOsc.frequency.linearRampToValueAtTime(50, t0 + duration);
 
-          const subGain = audioCtx.createGain();
+          const subGain = ctx.createGain();
           subGain.gain.setValueAtTime(0.0001, t0);
-          subGain.gain.exponentialRampToValueAtTime(0.65, t0 + 0.8);
+          subGain.gain.exponentialRampToValueAtTime(0.7, t0 + 0.06);
           subGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
 
           subOsc.connect(subGain);
@@ -631,21 +666,21 @@
           subOsc.start(t0);
           subOsc.stop(t0 + duration);
 
-          // 2. Warm Harmonic Mid Presence (Warm chord pad tone: 130Hz -> 195Hz)
-          const midOsc = audioCtx.createOscillator();
+          // 2. Warm Cinematic Harmonic Body (120Hz -> 180Hz)
+          const midOsc = ctx.createOscillator();
           midOsc.type = 'triangle';
-          midOsc.frequency.setValueAtTime(130, t0);
-          midOsc.frequency.exponentialRampToValueAtTime(195, t0 + 1.4);
+          midOsc.frequency.setValueAtTime(120, t0);
+          midOsc.frequency.exponentialRampToValueAtTime(180, t0 + 0.45);
 
-          const midFilter = audioCtx.createBiquadFilter();
+          const midFilter = ctx.createBiquadFilter();
           midFilter.type = 'lowpass';
-          midFilter.frequency.setValueAtTime(200, t0);
-          midFilter.frequency.exponentialRampToValueAtTime(650, t0 + 1.1);
-          midFilter.frequency.exponentialRampToValueAtTime(160, t0 + duration);
+          midFilter.frequency.setValueAtTime(220, t0);
+          midFilter.frequency.exponentialRampToValueAtTime(750, t0 + 0.4);
+          midFilter.frequency.exponentialRampToValueAtTime(140, t0 + duration);
 
-          const midGain = audioCtx.createGain();
+          const midGain = ctx.createGain();
           midGain.gain.setValueAtTime(0.0001, t0);
-          midGain.gain.exponentialRampToValueAtTime(0.35, t0 + 0.7);
+          midGain.gain.exponentialRampToValueAtTime(0.35, t0 + 0.06);
           midGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
 
           midOsc.connect(midFilter);
@@ -654,42 +689,32 @@
           midOsc.start(t0);
           midOsc.stop(t0 + duration);
 
-          // 3. Luxurious Airy Rush / Whoosh (Pink/White noise with sweeping bandpass filter)
-          const bufferSize = audioCtx.sampleRate * duration;
-          const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-          const output = noiseBuffer.getChannelData(0);
-          let b0 = 0, b1 = 0, b2 = 0;
-          for (let i = 0; i < bufferSize; i++) {
-            const white = Math.random() * 2 - 1;
-            b0 = 0.997 * b0 + white * 0.05;
-            b1 = 0.985 * b1 + white * 0.11;
-            b2 = 0.950 * b2 + white * 0.25;
-            output[i] = (b0 + b1 + b2) * 0.28;
+          // 3. Crisp Airy Rush Whoosh (using pre-cached noise buffer - 0ms CPU latency!)
+          if (cachedNoiseBuffer) {
+            const noiseSource = ctx.createBufferSource();
+            noiseSource.buffer = cachedNoiseBuffer;
+
+            const noiseFilter = ctx.createBiquadFilter();
+            noiseFilter.type = 'bandpass';
+            noiseFilter.Q.value = 1.4;
+            noiseFilter.frequency.setValueAtTime(280, t0);
+            noiseFilter.frequency.exponentialRampToValueAtTime(1350, t0 + 0.45);
+            noiseFilter.frequency.exponentialRampToValueAtTime(260, t0 + duration);
+
+            const noiseGain = ctx.createGain();
+            noiseGain.gain.setValueAtTime(0.0001, t0);
+            noiseGain.gain.exponentialRampToValueAtTime(0.45, t0 + 0.05);
+            noiseGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+
+            noiseSource.connect(noiseFilter);
+            noiseFilter.connect(noiseGain);
+            noiseGain.connect(masterGain);
+            noiseSource.start(t0);
+            noiseSource.stop(t0 + duration);
           }
 
-          const noiseSource = audioCtx.createBufferSource();
-          noiseSource.buffer = noiseBuffer;
-
-          const noiseFilter = audioCtx.createBiquadFilter();
-          noiseFilter.type = 'bandpass';
-          noiseFilter.Q.value = 1.6;
-          noiseFilter.frequency.setValueAtTime(240, t0);
-          noiseFilter.frequency.exponentialRampToValueAtTime(1100, t0 + 1.0);
-          noiseFilter.frequency.exponentialRampToValueAtTime(280, t0 + duration);
-
-          const noiseGain = audioCtx.createGain();
-          noiseGain.gain.setValueAtTime(0.0001, t0);
-          noiseGain.gain.exponentialRampToValueAtTime(0.4, t0 + 0.9);
-          noiseGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
-
-          noiseSource.connect(noiseFilter);
-          noiseFilter.connect(noiseGain);
-          noiseGain.connect(masterGain);
-          noiseSource.start(t0);
-          noiseSource.stop(t0 + duration);
-
         } catch (err) {
-          // Graceful fallback if audio is not supported
+          // Graceful fallback
         }
       }
 
@@ -725,11 +750,11 @@
         section.style.setProperty("--gp-caption-hit", p < 0.08 ? "auto" : "none");
         section.dataset.gpEntered = String(p >= 0.9);
 
-        // Play premium zoom-in sound effect when entering the glyph portal zoom
-        if (!soundTriggered && p > 0.06 && p < 0.75) {
+        // Play premium zoom-in sound effect instantly as the camera begins expanding through the letter
+        if (!soundTriggered && p > 0.015 && p < 0.75) {
           soundTriggered = true;
           playPremiumZoomSound();
-        } else if (p < 0.02 || p > 0.92) {
+        } else if (p < 0.005 || p > 0.92) {
           soundTriggered = false;
         }
 
