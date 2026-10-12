@@ -194,6 +194,12 @@
           Editors
         </a>
         <a 
+          href="/leaderboard" 
+          class="nav-dock-link <%= isActive('/leaderboard') ? 'is-active' : '' %>"
+        >
+          Leaderboard
+        </a>
+        <a 
           href="/about" 
           class="nav-dock-link <%= isActive('/about') ? 'is-active' : '' %>"
         >
@@ -463,6 +469,12 @@
         class="px-3.5 py-2 text-sm font-medium rounded-lg <%= isActive('/writers') ? 'bg-[var(--bg-surface-muted)] text-[var(--text-ink)] font-semibold' : 'text-[var(--text-muted)] hover:text-[var(--text-ink)] hover:bg-[var(--bg-surface-muted)]' %>"
       >
         Editors
+      </a>
+      <a 
+        href="/leaderboard" 
+        class="px-3.5 py-2 text-sm font-medium rounded-lg <%= isActive('/leaderboard') ? 'bg-[var(--bg-surface-muted)] text-[var(--text-ink)] font-semibold' : 'text-[var(--text-muted)] hover:text-[var(--text-ink)] hover:bg-[var(--bg-surface-muted)]' %>"
+      >
+        Leaderboard
       </a>
       <a 
         href="/about" 

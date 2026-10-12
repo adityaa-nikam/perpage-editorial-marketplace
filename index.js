@@ -32,6 +32,7 @@ import dashboardRoutes from './routes/dashboard.js';
 import writerRoutes from './routes/writers.js';
 import paymentRoutes from './routes/payment.js';
 import notificationsRoutes from './routes/notifications.js';
+import leaderboardRoutes from './routes/leaderboard.js';
 
 dotenv.config();
 
@@ -331,6 +332,8 @@ app.use('/dashboard', dashboardRoutes);  // /dashboard view
 app.use('/writers', writerRoutes);        // /writers (writer-specific routes)
 app.use('/profile', profile);             // /profile/:id (writer profile)
 app.use('/about', about);                 // /about
+app.use('/leaderboard', leaderboardRoutes); // /leaderboard (Editor rankings)
+app.use('/api/leaderboard', (req, res, next) => { req.url = '/api'; leaderboardRoutes(req, res, next); });
 app.use('/payment', paymentRoutes);       // /payment (Razorpay checkout & verify)
 app.use('/api/notifications', notificationsRoutes); // /api/notifications (in-app notifications)
 
