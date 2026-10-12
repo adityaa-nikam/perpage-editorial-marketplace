@@ -18,6 +18,7 @@ export const NOTICE_MAP = {
   accepted: { type: 'success', text: 'Deal accepted. You can now review the draft and upload the edited document.' },
   paid: { type: 'success', text: 'Payment completed successfully via Razorpay test mode.' },
   rejected: { type: 'success', text: 'Deal declined.' },
+  deleted: { type: 'success', text: 'Declined request removed from your dashboard.' },
   uploaded: { type: 'success', text: 'Edited document uploaded successfully.' },
   invalid_state: { type: 'error', text: 'This deal is no longer in a state that allows that action.' },
   not_found: { type: 'error', text: 'The requested deal could not be found.' },

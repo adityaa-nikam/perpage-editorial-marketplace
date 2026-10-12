@@ -872,6 +872,57 @@ router.post('/reject/:id', checkAuthenticated, async (req, res) => {
   }
 });
 
+// 🗑️ Delete / Dismiss deal (Client deletes a declined deal or unaccepted deal)
+router.post('/:id/delete', checkAuthenticated, async (req, res) => {
+  try {
+    const dealId = req.params.id;
+    if (!dealId || typeof dealId !== 'string' || !mongoose.Types.ObjectId.isValid(dealId)) {
+      return res.redirect('/dashboard?error=not_found');
+    }
+
+    const currentUserId = req.user._id || req.user.id;
+    const isDbConnected = mongoose.connection.readyState === 1;
+
+    let deal = null;
+    if (isDbConnected) {
+      deal = await Deal.findById(dealId);
+    } else if (process.env.NODE_ENV !== 'production') {
+      deal = MOCK_DEALS.find(d => d._id.toString() === dealId.toString());
+    }
+
+    if (!deal) {
+      return res.redirect('/dashboard?error=not_found');
+    }
+
+    // Must be the client who created the deal
+    if (!deal.userId || deal.userId.toString() !== currentUserId.toString()) {
+      return res.redirect('/dashboard?error=forbidden');
+    }
+
+    // Allow deleting if declined ('rejected') or unpaid pending
+    if (deal.status !== 'rejected' && deal.status !== 'pending') {
+      return res.redirect('/dashboard?error=invalid_state');
+    }
+
+    // Prevent deleting deals that were already paid
+    if (deal.paymentStatus === 'paid') {
+      return res.redirect('/dashboard?error=invalid_state');
+    }
+
+    if (isDbConnected) {
+      await Deal.findByIdAndDelete(dealId);
+    } else if (process.env.NODE_ENV !== 'production') {
+      const idx = MOCK_DEALS.findIndex(d => d._id.toString() === dealId.toString());
+      if (idx !== -1) MOCK_DEALS.splice(idx, 1);
+    }
+
+    return res.redirect('/dashboard?deleted=1');
+  } catch (err) {
+    console.error('Deal delete error:', err.message);
+    return res.redirect('/dashboard?error=server');
+  }
+});
+
 // 🏆 Complete deal (Student confirms receipt of delivered work)
 router.post('/:id/complete', checkAuthenticated, async (req, res) => {
   try {
