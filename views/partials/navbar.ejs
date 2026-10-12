@@ -185,31 +185,105 @@
         this.isTogglingTheme = false;
       }
     },
+    lastHoverTarget: null,
+    lastHoverTime: 0,
+    handleNavHover(e) {
+      const target = e.target.closest('a, button, [role="button"]');
+      if (!target || target === this.lastHoverTarget) return;
+      const now = Date.now();
+      if (now - this.lastHoverTime < 50) return; // 50ms throttle
+      this.lastHoverTarget = target;
+      this.lastHoverTime = now;
+      this.playHoverSound();
+    },
+    playHoverSound() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        if (!this.audioCtx) this.audioCtx = new AudioCtx();
+        if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+        const ctx = this.audioCtx;
+        const now = ctx.currentTime;
+
+        // Subtle, tactile wooden/glass micro-tick (12ms)
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(1750, now);
+        osc.frequency.exponentialRampToValueAtTime(850, now + 0.012);
+
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(1400, now);
+        filter.Q.value = 2.0;
+
+        // Whisper-quiet volume (0.035) so it feels tactile and never intrusive
+        gain.gain.setValueAtTime(0.035, now);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.012);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.014);
+      } catch (e) {}
+    },
     playSwitchSound() {
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtx) return;
-        const ctx = new AudioCtx();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
+        if (!this.audioCtx) this.audioCtx = new AudioCtx();
+        if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+        const ctx = this.audioCtx;
         const now = ctx.currentTime;
-        osc.type = 'sine';
+
+        // 1. Tactile mechanical snick transient (crisp physical switch click, ~16ms)
+        const clickOsc = ctx.createOscillator();
+        const clickGain = ctx.createGain();
+        const clickFilter = ctx.createBiquadFilter();
+        clickOsc.type = 'triangle';
+        clickOsc.frequency.setValueAtTime(850, now);
+        clickOsc.frequency.exponentialRampToValueAtTime(1450, now + 0.014);
+        clickFilter.type = 'highpass';
+        clickFilter.frequency.setValueAtTime(550, now);
+        clickGain.gain.setValueAtTime(0.09, now);
+        clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.016);
+        clickOsc.connect(clickFilter);
+        clickFilter.connect(clickGain);
+        clickGain.connect(ctx.destination);
+        clickOsc.start(now);
+        clickOsc.stop(now + 0.018);
+
+        // 2. Warm settling resonance (Dark mode = deep cozy tone; Light mode = clean bright chime)
+        const toneOsc = ctx.createOscillator();
+        const toneGain = ctx.createGain();
+        toneOsc.type = 'sine';
         if (this.isDark) {
-          osc.frequency.setValueAtTime(750, now);
-          osc.frequency.exponentialRampToValueAtTime(340, now + 0.04);
+          // Dark mode: soothing deep warm drop (340Hz -> 220Hz)
+          toneOsc.frequency.setValueAtTime(340, now + 0.01);
+          toneOsc.frequency.exponentialRampToValueAtTime(220, now + 0.09);
+          toneGain.gain.setValueAtTime(0.0001, now);
+          toneGain.gain.linearRampToValueAtTime(0.08, now + 0.02);
+          toneGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
         } else {
-          osc.frequency.setValueAtTime(380, now);
-          osc.frequency.exponentialRampToValueAtTime(820, now + 0.04);
+          // Light mode: bright sunlit ascending chime (540Hz -> 760Hz)
+          toneOsc.frequency.setValueAtTime(540, now + 0.01);
+          toneOsc.frequency.exponentialRampToValueAtTime(760, now + 0.09);
+          toneGain.gain.setValueAtTime(0.0001, now);
+          toneGain.gain.linearRampToValueAtTime(0.07, now + 0.02);
+          toneGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
         }
-        gain.gain.setValueAtTime(0.15, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.045);
+        toneOsc.connect(toneGain);
+        toneGain.connect(ctx.destination);
+        toneOsc.start(now + 0.01);
+        toneOsc.stop(now + 0.13);
       } catch (e) {}
     }
   }"
+  @mouseover="handleNavHover($event)"
+  @mouseleave="lastHoverTarget = null"
   class="navbar-shell sticky top-0 z-40 w-full h-14 sm:h-16"
 >
   <div class="w-full max-w-6xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between relative">
