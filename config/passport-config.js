@@ -31,11 +31,27 @@ export default function initialize(passport) {
   ));
 
 
+// Helper to compute dynamic callback URL with fallback
+const getCallbackUrl = (configuredUrl, defaultPath) => {
+  if (configuredUrl && configuredUrl.startsWith('http')) {
+    // If user mistakenly configured just base URL like "https://perpage-app.onrender.com"
+    if (!configuredUrl.includes('/auth/')) {
+      return `${configuredUrl.replace(/\/+$/, '')}${defaultPath}`;
+    }
+    return configuredUrl;
+  }
+  const baseUrl = (process.env.SITE_URL || 'http://localhost:3000').replace(/\/+$/, '');
+  return `${baseUrl}${defaultPath}`;
+};
+
 // Google strategy
+const googleCallback = getCallbackUrl(process.env.GOOGLE_CALLBACK_URL, '/auth/google/callback');
+console.log('🔗 [OAuth] Google callback registered as:', googleCallback);
+
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/auth/google/callback',
+  callbackURL: googleCallback,
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     const email = profile.emails?.[0]?.value;
@@ -116,7 +132,7 @@ passport.serializeUser((user, done) => {
 passport.use(new GitHubStrategy({
   clientID: process.env.GITHUB_CLIENT_ID,
   clientSecret: process.env.GITHUB_CLIENT_SECRET,
-  callbackURL: process.env.GITHUB_CALLBACK_URL,
+  callbackURL: getCallbackUrl(process.env.GITHUB_CALLBACK_URL, '/auth/github/callback'),
 },
 async (accessToken, refreshToken, profile, done) => {
   try {
