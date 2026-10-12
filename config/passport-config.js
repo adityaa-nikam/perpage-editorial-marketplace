@@ -33,13 +33,22 @@ export default function initialize(passport) {
 
 // Helper to compute dynamic callback URL with fallback
 const getCallbackUrl = (configuredUrl, defaultPath) => {
-  if (configuredUrl && configuredUrl.startsWith('http')) {
-    // If user mistakenly configured just base URL like "https://perpage-app.onrender.com"
+  // If explicitly provided a valid URL
+  if (configuredUrl && configuredUrl.startsWith('http') && !configuredUrl.includes('localhost')) {
     if (!configuredUrl.includes('/auth/')) {
       return `${configuredUrl.replace(/\/+$/, '')}${defaultPath}`;
     }
     return configuredUrl;
   }
+  
+  // If running in production / on Render, always use production domain
+  if (process.env.RENDER || process.env.NODE_ENV === 'production') {
+    const prodBase = (process.env.SITE_URL && !process.env.SITE_URL.includes('localhost'))
+      ? process.env.SITE_URL.replace(/\/+$/, '')
+      : 'https://perpage-app.onrender.com';
+    return `${prodBase}${defaultPath}`;
+  }
+
   const baseUrl = (process.env.SITE_URL || 'http://localhost:3000').replace(/\/+$/, '');
   return `${baseUrl}${defaultPath}`;
 };
