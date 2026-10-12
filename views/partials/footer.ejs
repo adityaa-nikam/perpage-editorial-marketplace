@@ -1,8 +1,9 @@
 <footer class="mt-auto border-t border-[var(--border-color)] bg-[var(--bg-surface)] transition-colors duration-150">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 lg:gap-12">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+      
       <!-- Brand & Mission Column -->
-      <div class="md:col-span-1 space-y-3">
+      <div class="md:col-span-5 space-y-3">
         <a href="/home" class="flex items-center gap-2 text-decoration-none">
           <span class="w-6 h-6 rounded-md border border-[var(--border-color)] bg-[var(--bg-surface-muted)] flex items-center justify-center overflow-hidden shrink-0">
             <img src="/logo.png" alt="PerPage" class="theme-logo-light w-4 h-4 object-contain" />
@@ -12,30 +13,29 @@
             PerPage<span class="text-[var(--accent)] font-sans text-xs ml-0.5 font-bold">.</span>
           </span>
         </a>
-        <p class="text-xs text-[var(--text-muted)] leading-relaxed">
-          Demonstration marketplace for document editing and feedback on your own writing. Transparent per-page pricing, direct editor selection, and private draft delivery.
+        <p class="text-xs text-[var(--text-muted)] leading-relaxed max-w-sm">
+          Transparent per-page pricing and structured editorial critique for your academic drafts and manuscripts.
         </p>
       </div>
 
-      <!-- Platform Navigation -->
-      <div class="space-y-3">
-        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Platform</h3>
-        <ul class="space-y-2 text-xs">
+      <!-- Platform Links -->
+      <div class="md:col-span-4 space-y-2.5">
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] font-mono">Platform</h3>
+        <ul class="flex flex-wrap gap-x-6 gap-y-2 text-xs">
           <li><a href="/home" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Home</a></li>
           <li><a href="/writers" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Browse Editors</a></li>
-          <li><a href="/leaderboard" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Editor Leaderboard</a></li>
+          <li><a href="/leaderboard" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Leaderboard</a></li>
           <li><a href="/about" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">How It Works</a></li>
-          <li><a href="/dashboard" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Client &amp; Editor Dashboard</a></li>
+          <li><a href="/dashboard" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Dashboard</a></li>
         </ul>
       </div>
 
-      <!-- Resources & Standards -->
-      <div class="space-y-3">
-        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Editorial Standards</h3>
+      <!-- Editorial & Policies -->
+      <div class="md:col-span-3 space-y-2.5">
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] font-mono">Editorial</h3>
         <ul class="space-y-2 text-xs">
           <li><a href="/acceptable-use" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Acceptable Use Policy</a></li>
           <li><a href="/about" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">About Our Mission</a></li>
-          <li><a href="/acceptable-use" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Editorial Guidelines</a></li>
           <li><a href="https://github.com/adityaa-nikam/perpage-academic-help-platform" target="_blank" rel="noopener noreferrer" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] inline-flex items-center gap-1 transition-colors">
             Source Repository
             <%- icon('arrow-up-right', { class: 'w-3 h-3' }) %>
@@ -43,29 +43,16 @@
         </ul>
       </div>
 
-      <!-- Legal & Platform Info -->
-      <div class="space-y-3">
-        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Demonstration Project</h3>
-        <ul class="space-y-2 text-xs text-[var(--text-muted)]">
-          <li><span>Stack: Node.js, Express 5, EJS, MongoDB</span></li>
-          <li><span>Storage: Private storage with time-limited links</span></li>
-          <li><span>Session Store: Connect-Mongo TTL</span></li>
-          <li><a href="/health" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] inline-flex items-center gap-1 transition-colors">
-            System Health Check
-            <%- icon('shield-check', { class: 'w-3 h-3 text-[var(--accent)]' }) %>
-          </a></li>
-        </ul>
-      </div>
     </div>
 
-    <!-- Bottom Disclaimer Bar -->
-    <div class="mt-12 pt-8 border-t border-[var(--border-color)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
-      <p class="text-center sm:text-left">
-        &copy; <%= new Date().getFullYear() %> PerPage. Developed by <a href="https://github.com/adityaa-nikam" target="_blank" rel="noopener noreferrer" class="text-[var(--text-ink)] font-medium hover:text-[var(--accent)] transition-colors">Aditya Nikam</a> &mdash; dedicated to crafting thoughtful editorial workflows.
+    <!-- Minimal Bottom Bar -->
+    <div class="mt-8 pt-6 border-t border-[var(--border-color)] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[var(--text-muted)]">
+      <p>
+        &copy; <%= new Date().getFullYear() %> PerPage. Developed by <a href="https://github.com/adityaa-nikam" target="_blank" rel="noopener noreferrer" class="text-[var(--text-ink)] font-medium hover:text-[var(--accent)] transition-colors">Aditya Nikam</a>.
       </p>
-      <p class="text-center sm:text-right text-[11px] max-w-md">
-        Educational demonstration project. No real payments are processed in this demo. Built for document editing workflow evaluation.
-      </p>
+      <span class="text-[11px] opacity-75">
+        Demonstration marketplace &bull; No real payments processed
+      </span>
     </div>
   </div>
 </footer>

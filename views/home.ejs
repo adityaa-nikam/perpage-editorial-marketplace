@@ -583,6 +583,116 @@
         return clamp(-section.getBoundingClientRect().top / travel);
       }
 
+      let audioCtx = null;
+      let soundTriggered = false;
+      let lastSoundTime = 0;
+
+      function playPremiumZoomSound() {
+        if (motion.matches) return;
+        const now = Date.now();
+        if (now - lastSoundTime < 3500) return; // 3.5s cooldown
+        lastSoundTime = now;
+
+        try {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContextClass) return;
+          if (!audioCtx) {
+            audioCtx = new AudioContextClass();
+          }
+          if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+          }
+
+          const t0 = audioCtx.currentTime;
+          const duration = 2.4; // 2.4 seconds luxurious sound
+
+          // Master Gain with smooth attack and decay
+          const masterGain = audioCtx.createGain();
+          masterGain.gain.setValueAtTime(0.0001, t0);
+          masterGain.gain.exponentialRampToValueAtTime(0.2, t0 + 0.6);
+          masterGain.gain.exponentialRampToValueAtTime(0.22, t0 + 1.2);
+          masterGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+          masterGain.connect(audioCtx.destination);
+
+          // 1. Cinematic Deep Sub-Bass Swell (48Hz rising to 82Hz)
+          const subOsc = audioCtx.createOscillator();
+          subOsc.type = 'sine';
+          subOsc.frequency.setValueAtTime(48, t0);
+          subOsc.frequency.exponentialRampToValueAtTime(82, t0 + 1.6);
+          subOsc.frequency.linearRampToValueAtTime(60, t0 + duration);
+
+          const subGain = audioCtx.createGain();
+          subGain.gain.setValueAtTime(0.0001, t0);
+          subGain.gain.exponentialRampToValueAtTime(0.65, t0 + 0.8);
+          subGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+
+          subOsc.connect(subGain);
+          subGain.connect(masterGain);
+          subOsc.start(t0);
+          subOsc.stop(t0 + duration);
+
+          // 2. Warm Harmonic Mid Presence (Warm chord pad tone: 130Hz -> 195Hz)
+          const midOsc = audioCtx.createOscillator();
+          midOsc.type = 'triangle';
+          midOsc.frequency.setValueAtTime(130, t0);
+          midOsc.frequency.exponentialRampToValueAtTime(195, t0 + 1.4);
+
+          const midFilter = audioCtx.createBiquadFilter();
+          midFilter.type = 'lowpass';
+          midFilter.frequency.setValueAtTime(200, t0);
+          midFilter.frequency.exponentialRampToValueAtTime(650, t0 + 1.1);
+          midFilter.frequency.exponentialRampToValueAtTime(160, t0 + duration);
+
+          const midGain = audioCtx.createGain();
+          midGain.gain.setValueAtTime(0.0001, t0);
+          midGain.gain.exponentialRampToValueAtTime(0.35, t0 + 0.7);
+          midGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+
+          midOsc.connect(midFilter);
+          midFilter.connect(midGain);
+          midGain.connect(masterGain);
+          midOsc.start(t0);
+          midOsc.stop(t0 + duration);
+
+          // 3. Luxurious Airy Rush / Whoosh (Pink/White noise with sweeping bandpass filter)
+          const bufferSize = audioCtx.sampleRate * duration;
+          const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+          const output = noiseBuffer.getChannelData(0);
+          let b0 = 0, b1 = 0, b2 = 0;
+          for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            b0 = 0.997 * b0 + white * 0.05;
+            b1 = 0.985 * b1 + white * 0.11;
+            b2 = 0.950 * b2 + white * 0.25;
+            output[i] = (b0 + b1 + b2) * 0.28;
+          }
+
+          const noiseSource = audioCtx.createBufferSource();
+          noiseSource.buffer = noiseBuffer;
+
+          const noiseFilter = audioCtx.createBiquadFilter();
+          noiseFilter.type = 'bandpass';
+          noiseFilter.Q.value = 1.6;
+          noiseFilter.frequency.setValueAtTime(240, t0);
+          noiseFilter.frequency.exponentialRampToValueAtTime(1100, t0 + 1.0);
+          noiseFilter.frequency.exponentialRampToValueAtTime(280, t0 + duration);
+
+          const noiseGain = audioCtx.createGain();
+          noiseGain.gain.setValueAtTime(0.0001, t0);
+          noiseGain.gain.exponentialRampToValueAtTime(0.4, t0 + 0.9);
+          noiseGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+
+          noiseSource.connect(noiseFilter);
+          noiseFilter.connect(noiseGain);
+          noiseGain.connect(masterGain);
+          noiseSource.start(t0);
+          noiseSource.stop(t0 + duration);
+
+        } catch (err) {
+          // Graceful fallback if audio is not supported
+        }
+      }
+
       function paint(progress) {
         const isStatic = motion.matches || !browserFrameSeen || stalled || !target;
         const p = isStatic ? 0 : progress;
@@ -614,6 +724,14 @@
         section.style.setProperty("--gp-field-scale", String(1 + 0.16 * smooth(0, 0.82, p)));
         section.style.setProperty("--gp-caption-hit", p < 0.08 ? "auto" : "none");
         section.dataset.gpEntered = String(p >= 0.9);
+
+        // Play premium zoom-in sound effect when entering the glyph portal zoom
+        if (!soundTriggered && p > 0.06 && p < 0.75) {
+          soundTriggered = true;
+          playPremiumZoomSound();
+        } else if (p < 0.02 || p > 0.92) {
+          soundTriggered = false;
+        }
 
         // Real-time scroll-driven drawing of the red proofreader underline
         const heroWavyPath = section.querySelector('.proof-wavy-hero path');
@@ -685,6 +803,7 @@
         const button = event.target.closest("[data-gp-letter]");
         const next = candidates.find(c => c.index === Number(button?.dataset.gpLetter));
         if (!next || next === target) return;
+        playPremiumZoomSound();
         select(next); paint(position());
       }
 
@@ -692,11 +811,17 @@
         choices.addEventListener("pointerover", choose);
         choices.addEventListener("click", choose);
       }
+      const enterLink = section.querySelector("[data-gp-enter]");
+      if (enterLink) {
+        enterLink.addEventListener("click", () => {
+          playPremiumZoomSound();
+        });
+      }
       if (picker) {
         picker.addEventListener("change", () => {
           if (!choosing || position() >= 0.04) return;
           const next = candidates.find(c => c.index === Number(picker.value));
-          if (next) { select(next); paint(position()); }
+          if (next) { playPremiumZoomSound(); select(next); paint(position()); }
         });
       }
 
@@ -757,28 +882,13 @@
     x-data="{
       activeStep: 1,
       timer: null,
-      isPaused: false,
-      isVisible: true,
       init() {
         this.startAutoSwitch();
-        if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          const sectionEl = document.getElementById('how-it-works');
-          if (sectionEl) {
-            const obs = new IntersectionObserver((entries) => {
-              entries.forEach(e => {
-                this.isVisible = e.isIntersecting;
-              });
-            }, { threshold: 0.15 });
-            obs.observe(sectionEl);
-          }
-        }
       },
       startAutoSwitch() {
         if (this.timer) clearInterval(this.timer);
         this.timer = setInterval(() => {
-          if (!this.isPaused && this.isVisible) {
-            this.activeStep = this.activeStep >= 3 ? 1 : this.activeStep + 1;
-          }
+          this.activeStep = this.activeStep >= 3 ? 1 : this.activeStep + 1;
         }, 1500);
       },
       setStep(s) {
@@ -786,8 +896,6 @@
         this.startAutoSwitch();
       }
     }"
-    @mouseenter="isPaused = true"
-    @mouseleave="isPaused = false"
   >
     <div class="section-header-rule">
       <div class="section-eyebrow">
@@ -1419,7 +1527,7 @@
   <!-- =========================================================================
        6. FAQ SECTION (HORIZONTAL INFINITE MARQUEE SCROLLER)
        ========================================================================= -->
-  <section class="w-full py-12 sm:py-16 overflow-hidden reveal-on-scroll" aria-label="Frequently Asked Questions">
+  <section class="w-full pt-10 sm:pt-14 pb-4 sm:pb-6 overflow-hidden reveal-on-scroll" aria-label="Frequently Asked Questions">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-3 mb-10 sm:mb-12">
       <div class="section-eyebrow justify-center mb-1">
         <span class="eyebrow-caret">^</span>
@@ -1563,7 +1671,7 @@
   <!-- =========================================================================
        7. FINAL CTA BAND (SOLID FULL-WIDTH INK BAND)
        ========================================================================= -->
-  <section class="w-full bg-[var(--card)] text-[var(--foreground)] border-y border-[var(--border)] py-16 sm:py-24">
+  <section class="w-full bg-[var(--card)] text-[var(--foreground)] border-y border-[var(--border)] py-10 sm:py-14 !mt-4 sm:!mt-6">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
       <h2 class="type-h2 text-[var(--foreground)] text-2xl sm:text-4xl">
         Ready to <span class="proof-wavy-hero">polish<svg viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="100" d="M 2 7 Q 25 1, 50 8 T 98 7" /></svg></span> your next draft?
