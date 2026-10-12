@@ -65,13 +65,20 @@ router.get('/login', (req, res) => {
   res.render('login');
 });
 
-// Helper for safe post-login redirection
+// Helper for safe post-login redirection based on role:
+// - Editors ('writer') directly see their work dashboard (/dashboard)
+// - Clients ('user') directly see the Editors directory (/writers)
 function redirectAfterLogin(req, res) {
   const returnTo = req.session?.returnTo;
   if (req.session) {
     delete req.session.returnTo;
   }
-  const target = getSafeRedirect(returnTo, '/dashboard');
+  
+  // Default target based on role
+  const isEditor = req.user && req.user.role === 'writer';
+  const roleDefault = isEditor ? '/dashboard' : '/writers';
+  
+  const target = getSafeRedirect(returnTo, roleDefault);
   if (req.session && typeof req.session.save === 'function') {
     return req.session.save((saveErr) => {
       if (saveErr) console.error('❌ Session save error:', saveErr.message);
