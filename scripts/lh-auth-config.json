@@ -1,0 +1,10 @@
+{
+  "extends": "lighthouse:default",
+  "settings": {
+    "extraHeaders": {
+      "x-mock-user": "6ac9698be050df3e1eb4d76d",
+      "x-mock-role": "user",
+      "x-mock-name": "Julian Croft"
+    }
+  }
+}

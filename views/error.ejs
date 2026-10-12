@@ -1,0 +1,59 @@
+<%- include('partials/head', { 
+  pageTitle: (typeof statusCode !== 'undefined' ? statusCode : 'Error') + ' — ' + (typeof heading !== 'undefined' ? heading : 'Error') + ' — PerPage', 
+  metaDescription: (typeof explanation !== 'undefined' ? explanation : 'An error occurred on PerPage.'),
+  robots: 'noindex, nofollow'
+}) %>
+<%- include('partials/navbar') %>
+
+<main id="main-content" class="py-16 sm:py-24 flex-1 flex items-center justify-center">
+  <div class="max-w-xl w-full mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    
+    <div class="card card-ticket p-8 sm:p-12 space-y-6">
+      <div class="section-eyebrow justify-center">
+        <span class="eyebrow-num">ERR-<%= typeof statusCode !== 'undefined' ? statusCode : '500' %></span>
+        <span class="eyebrow-rule"></span>
+        <span class="eyebrow-label">System Notice</span>
+      </div>
+
+      <div class="w-12 h-12 mx-auto rounded-full bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]">
+        <% if (typeof statusCode !== 'undefined' && statusCode === 404) { %>
+          <%- icon('search', { class: 'w-6 h-6' }) %>
+        <% } else if (typeof statusCode !== 'undefined' && statusCode === 403) { %>
+          <%- icon('shield-alert', { class: 'w-6 h-6 text-[var(--semantic-danger-text)]' }) %>
+        <% } else if (typeof statusCode !== 'undefined' && statusCode === 429) { %>
+          <%- icon('clock', { class: 'w-6 h-6' }) %>
+        <% } else { %>
+          <%- icon('alert-circle', { class: 'w-6 h-6 text-[var(--semantic-danger-text)]' }) %>
+        <% } %>
+      </div>
+
+      <div class="space-y-2">
+        <h1 class="type-h2"><%= typeof heading !== 'undefined' ? heading : 'Something went wrong' %></h1>
+        <p class="type-body text-sm text-[var(--text-muted)] max-w-md mx-auto prose-measure">
+          <%= typeof explanation !== 'undefined' ? explanation : 'An unexpected error occurred while processing your request.' %>
+        </p>
+      </div>
+
+      <div class="pt-4 flex flex-wrap items-center justify-center gap-3">
+        <% if (typeof statusCode !== 'undefined' && statusCode === 500) { %>
+          <a href="<%= typeof retryUrl !== 'undefined' && retryUrl ? retryUrl : '' %>" class="btn btn-secondary btn-md">
+            <%- icon('refresh', { class: 'w-4 h-4 mr-1.5' }) %>
+            Try again
+          </a>
+        <% } %>
+        <a href="/" class="btn btn-secondary btn-md">
+          <%- icon('home', { class: 'w-4 h-4 mr-1.5' }) %>
+          Go home
+        </a>
+        <a href="/writers" class="btn btn-primary btn-md">
+          <%- icon('users', { class: 'w-4 h-4 mr-1.5' }) %>
+          Browse editors
+        </a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

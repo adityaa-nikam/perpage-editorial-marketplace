@@ -291,7 +291,7 @@ router.get('/:id', async (req, res) => {
     return res.status(404).render('writerNotFound', {
       user: req.user,
       invalidId: id,
-      pageTitle: 'Writer Not Found — PerPage',
+      pageTitle: 'Editor Not Found — PerPage',
       noindex: true
     });
   }
@@ -334,7 +334,7 @@ router.get('/:id', async (req, res) => {
       return res.status(404).render('writerNotFound', {
         user: req.user,
         invalidId: id,
-        pageTitle: 'Writer Not Found — PerPage',
+        pageTitle: 'Editor Not Found — PerPage',
         noindex: true
       });
     }
@@ -343,7 +343,7 @@ router.get('/:id', async (req, res) => {
     const canonical = `https://perpage.onrender.com/writers/${writer._id}`;
 
     const viewerUser = req.user || (process.env.NODE_ENV !== 'production' && req.query.mockUser === '1' 
-      ? { _id: new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9c0d9'), name: 'Student Viewer' }
+      ? { _id: new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9c0d9'), name: 'Client Viewer' }
       : (process.env.NODE_ENV !== 'production' && req.query.mockUser === 'own' ? writer : null));
 
     res.render('writerProfile', {
@@ -351,19 +351,19 @@ router.get('/:id', async (req, res) => {
       completedCount,
       user: viewerUser,
       canonical,
-      pageTitle: `${writer.name} — Academic Writer | PerPage`,
+      pageTitle: `${writer.name} — Freelance Editor | PerPage`,
       metaDescription: writer.bio 
         ? `${writer.bio.slice(0, 150)}... Upfront rate: ₹${writer.pricePerPage || 0}/page.`
-        : `Academic writing profile for ${writer.name} on PerPage.`
+        : `Document editing profile for ${writer.name} on PerPage.`
     });
 
   } catch (error) {
-    console.error('❌ Writer profile error:', error.message);
+    console.error('❌ Editor profile error:', error.message);
     res.status(500).render('writerNotFound', {
       user: req.user,
       invalidId: id,
       serverError: true,
-      pageTitle: 'Error Loading Writer — PerPage'
+      pageTitle: 'Error Loading Editor — PerPage'
     });
   }
 });

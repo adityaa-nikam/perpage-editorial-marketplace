@@ -1,0 +1,178 @@
+<%- include('partials/head', { 
+  pageTitle: typeof pageTitle !== 'undefined' ? pageTitle : 'Acceptable Use Policy — PerPage', 
+  metaDescription: typeof metaDescription !== 'undefined' ? metaDescription : 'Acceptable use guidelines for PerPage: document editing, feedback, permitted scope, client responsibilities, and academic demonstration terms.',
+  canonical: typeof canonical !== 'undefined' ? canonical : undefined,
+  ogType: 'website'
+}) %>
+<%- include('partials/navbar') %>
+
+<main id="main-content" class="py-12 sm:py-20 space-y-16 sm:space-y-20">
+
+  <!-- 1. Header Section -->
+  <header class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-4 border-b border-[var(--border-color)] pb-8">
+      <div class="section-eyebrow">
+        <span class="eyebrow-caret">^</span>
+        <span class="eyebrow-label">Platform Policy &amp; Standards</span>
+      </div>
+      <h1 class="type-h1 text-3xl sm:text-5xl">Acceptable Use Policy</h1>
+      <p class="type-body text-[var(--text-muted)] text-base sm:text-lg prose-measure">
+        PerPage is a demonstration marketplace for editing and feedback on your own documents. Editors improve what you wrote; they do not write documents from scratch.
+      </p>
+    </div>
+  </header>
+
+  <!-- 2. Core Service Scope -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-4">
+      <div class="section-eyebrow">
+        <span class="eyebrow-num">01</span>
+        <span class="eyebrow-rule"></span>
+        <span class="eyebrow-label">Platform Scope</span>
+      </div>
+      <h2 class="type-h2 text-xl sm:text-2xl">What the platform is for</h2>
+      <div class="space-y-4 type-body text-[var(--text-muted)] leading-relaxed prose-measure">
+        <p>
+          PerPage is designed exclusively for editorial review, proofreading, and structural critique of drafts that clients have already authored. Typical documents include report drafts, essay drafts, thesis chapters, résumés, and cover letters.
+        </p>
+        <p>
+          Pricing is strictly calculated per page based on the length of the submitted document. Editors review the client's existing text to improve clarity, argument coherence, grammar, and style.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. What Editors May and May Not Do -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-6">
+      <div>
+        <div class="section-eyebrow mb-2">
+          <span class="eyebrow-num">02</span>
+          <span class="eyebrow-rule"></span>
+          <span class="eyebrow-label">Editorial Boundaries</span>
+        </div>
+        <h2 class="type-h2 text-xl sm:text-2xl">What editors may and may not do</h2>
+        <p class="type-body text-sm text-[var(--text-muted)] mt-1">
+          A clear division of permissible editing assistance versus prohibited ghostwriting.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Permitted Scope -->
+        <div class="card card-ticket p-6 bg-[var(--bg-surface)] space-y-4">
+          <div class="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-[var(--semantic-success-text)]"></div>
+              <h3 class="type-h3 text-base text-[var(--text-ink)]">Permitted Actions (May Do)</h3>
+            </div>
+            <span class="badge badge-success text-[10px] font-mono">ALLOWED</span>
+          </div>
+          <ul class="space-y-3 text-xs sm:text-sm text-[var(--text-muted)]">
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--semantic-success-text)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Line Editing &amp; Proofreading:</strong> Correct typos, punctuation, spelling, grammatical syntax, and word choice errors.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--semantic-success-text)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Structural Feedback:</strong> Suggest improvements to paragraph ordering, transitions, section organization, and narrative flow.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--semantic-success-text)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Clarity &amp; Tone Commentary:</strong> Provide critical marginal notes highlighting ambiguities, inconsistencies, or awkward phrasing.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--semantic-success-text)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Citation Guidance:</strong> Verify adherence to standard referencing formats (APA, MLA, Chicago, Harvard) without inventing citations.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Prohibited Scope -->
+        <div class="card card-ticket p-6 bg-[var(--bg-surface-muted)] space-y-4">
+          <div class="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-[var(--semantic-danger-text)]"></div>
+              <h3 class="type-h3 text-base text-[var(--text-ink)]">Prohibited Actions (May Not Do)</h3>
+            </div>
+            <span class="badge badge-danger text-[10px] font-mono">PROHIBITED</span>
+          </div>
+          <ul class="space-y-3 text-xs sm:text-sm text-[var(--text-muted)]">
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--semantic-danger-text)] mt-0.5 shrink-0"><%- icon('x', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Writing from Scratch:</strong> Authors may not compose original text, essays, answers, or reports on behalf of a client.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--semantic-danger-text)] mt-0.5 shrink-0"><%- icon('x', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Contract Cheating:</strong> Completing assignments, take-home exams, or coursework meant for the student client's individual assessment.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--semantic-danger-text)] mt-0.5 shrink-0"><%- icon('x', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Ghostwriting:</strong> Creating content designed for the client to submit directly under their name without original authorial contribution.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--semantic-danger-text)] mt-0.5 shrink-0"><%- icon('x', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Fabricating Evidence:</strong> Inventing data points, interview notes, lab results, or bibliographical sources.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Client Responsibilities -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-4">
+      <div class="section-eyebrow">
+        <span class="eyebrow-num">03</span>
+        <span class="eyebrow-rule"></span>
+        <span class="eyebrow-label">Client Obligations</span>
+      </div>
+      <h2 class="type-h2 text-xl sm:text-2xl">Client requirements</h2>
+      <div class="space-y-4 type-body text-[var(--text-muted)] leading-relaxed prose-measure">
+        <p>
+          Clients must submit only their own writing. Every deal submission requires a mandatory confirmation verifying that the text is the client's own work and that the request is strictly for editing and feedback.
+        </p>
+        <p>
+          Clients retain full intellectual ownership and responsibility for their manuscripts. PerPage does not permit requests asking an editor to write documents from scratch.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Institutional Integrity -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-4">
+      <div class="section-eyebrow">
+        <span class="eyebrow-num">04</span>
+        <span class="eyebrow-rule"></span>
+        <span class="eyebrow-label">Institutional Rules</span>
+      </div>
+      <h2 class="type-h2 text-xl sm:text-2xl">Institutional policies on outside help</h2>
+      <div class="space-y-4 type-body text-[var(--text-muted)] leading-relaxed prose-measure">
+        <p>
+          Educational institutions, colleges, and academic departments maintain specific policies regarding outside editing, proofreading, and tutoring assistance.
+        </p>
+        <p>
+          While many universities permit professional proofreading and structural advice on drafts, some syllabi or departments require coursework to be completed without third-party feedback. Clients are advised to check their institution's guidelines and honor code prior to commissioning editing.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Demonstration Project Boundaries -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="card p-6 sm:p-8 bg-[var(--bg-surface-muted)] border border-[var(--border-color)] space-y-3">
+      <div class="flex items-center gap-2">
+        <%- icon('info', { class: 'w-5 h-5 text-[var(--text-muted)] shrink-0' }) %>
+        <h3 class="type-h3 text-base text-[var(--text-ink)]">Demonstration Project Notice</h3>
+      </div>
+      <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+        PerPage is an academic software demonstration project built to evaluate marketplace state machines, authenticated file sharing, and unit-priced workflows. No real payments are processed in this demo. All deals, deadlines, and transactions are simulated prototype interactions.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

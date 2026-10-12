@@ -1,133 +1,258 @@
-<%- include('partials/head', { pageTitle: 'About Us — PerPage Academic Collaboration', metaDescription: 'Learn about the mission, values, and architectural design behind PerPage.' }) %>
+<%- include('partials/head', { 
+  pageTitle: typeof pageTitle !== 'undefined' ? pageTitle : 'About — PerPage Document Editing Marketplace', 
+  metaDescription: typeof metaDescription !== 'undefined' ? metaDescription : 'An academic demonstration project modeling how clients and freelance editors agree on editing and feedback per page.',
+  canonical: typeof canonical !== 'undefined' ? canonical : undefined,
+  ogType: 'website'
+}) %>
 <%- include('partials/navbar') %>
 
-<main id="main-content" class="py-12 sm:py-20 space-y-20">
+<main id="main-content" class="py-12 sm:py-20 space-y-16 sm:space-y-24">
 
-  <!-- Header Section -->
-  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="max-w-3xl space-y-4">
-      <span class="type-eyebrow">Our Mission</span>
-      <h1 class="type-display">Academic Collaboration Built on Trust &amp; Integrity</h1>
-      <p class="type-body text-[var(--text-muted)] text-base sm:text-lg">
-        PerPage was created with a clear purpose: to connect students struggling with complex research assignments with credentialed academic authors through transparent per-page rates.
+  <!-- 1. HEADER SECTION -->
+  <header class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-4 border-b border-[var(--border-color)] pb-8">
+      <div class="section-eyebrow">
+        <span class="eyebrow-num">01</span>
+        <span class="eyebrow-rule"></span>
+        <span class="eyebrow-label">Platform Overview &amp; Specifications</span>
+      </div>
+      <h1 class="type-h1 text-3xl sm:text-5xl">A demonstration project about a document editing marketplace</h1>
+      <p class="type-body text-[var(--text-muted)] text-base sm:text-lg prose-measure">
+        Models how clients and freelance editors coordinate draft editing agreements with upfront per-page rates.
       </p>
     </div>
+  </header>
+
+  <!-- 2. WHAT PERPAGE IS -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-4">
+      <div class="section-eyebrow">
+        <span class="eyebrow-num">01</span>
+        <span class="eyebrow-rule"></span>
+        <span class="eyebrow-label">Scope &amp; Intent</span>
+      </div>
+      <h2 class="type-h2 text-xl sm:text-2xl">What PerPage is</h2>
+      <div class="space-y-4 type-body text-[var(--text-muted)] leading-relaxed prose-measure">
+        <p>
+          PerPage is an academic demonstration project that models how clients and freelance editors agree on editing and feedback per page. Editors improve what the client wrote—they do not write documents from scratch. It was built to explore marketplace state transitions, authenticated file handoffs, and clear unit pricing without hidden fees, artificial urgency, or dark patterns.
+        </p>
+        <p>
+          The application demonstrates a calm, accessible interface designed around standard web standards and server-rendered HTML. Users can inspect editor rates, initiate formal editing agreements with attached drafts and instructions, and track deliverables through each stage of the fulfillment process.
+        </p>
+      </div>
+    </div>
   </section>
 
-  <!-- Story & Background Section -->
-  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-      <div class="lg:col-span-7 space-y-6">
-        <h2 class="type-h2">The Story Behind PerPage</h2>
-        <div class="space-y-4 type-body text-[var(--text-muted)] leading-relaxed">
-          <p>
-            Traditional academic assistance is often opaque, marked by unpredictable pricing, anonymous intermediaries, and inconsistent quality. We designed PerPage as an open marketplace where students inspect author profiles, evaluate past performance, and agree upon milestone rates.
-          </p>
-          <p>
-            Whether coordinating literature syntheses, methodology reviews, or technical draft analysis, our platform facilitates clear communication, verifiable deliverables, and secure storage for research files.
-          </p>
+  <!-- 3. HOW A DEAL WORKS (STEPPER) -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-6">
+      <div>
+        <div class="section-eyebrow mb-2">
+          <span class="eyebrow-num">02</span>
+          <span class="eyebrow-rule"></span>
+          <span class="eyebrow-label">Transaction Lifecycle</span>
         </div>
-
-        <div class="pt-4 border-t border-[var(--border-color)] grid grid-cols-3 gap-6">
-          <div>
-            <div class="font-serif-display text-3xl text-[var(--text-ink)]">2024</div>
-            <div class="text-xs text-[var(--text-muted)] mt-1">Platform Inception</div>
-          </div>
-          <div>
-            <div class="font-serif-display text-3xl text-[var(--text-ink)]">1,000+</div>
-            <div class="text-xs text-[var(--text-muted)] mt-1">Students Assisted</div>
-          </div>
-          <div>
-            <div class="font-serif-display text-3xl text-[var(--text-ink)]">50+</div>
-            <div class="text-xs text-[var(--text-muted)] mt-1">Academic Authors</div>
-          </div>
-        </div>
+        <h2 class="type-h2 text-xl sm:text-2xl">How a deal works</h2>
+        <p class="type-body text-sm text-[var(--text-muted)] mt-1">
+          Every editing deal progresses through four sequential statuses.
+        </p>
       </div>
 
-      <div class="lg:col-span-5">
-        <div class="card p-8 bg-[var(--bg-surface-muted)] space-y-6">
-          <span class="type-eyebrow">Core Principles</span>
-          <div class="space-y-4">
-            <div class="flex items-start gap-3">
-              <div class="w-7 h-7 rounded-md bg-[var(--bg-surface)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)] shrink-0">
-                <%- icon('shield-check', { class: 'w-4 h-4' }) %>
-              </div>
-              <div>
-                <h4 class="text-sm font-semibold text-[var(--text-ink)]">Author Verification</h4>
-                <p class="text-xs text-[var(--text-muted)] mt-0.5">Every writer submits academic background credentials and sample publications.</p>
-              </div>
-            </div>
+      <div class="card p-6 sm:p-8 bg-[var(--bg-surface)]">
+        <div class="timeline-stepper py-2" aria-label="Deal lifecycle steps">
+          <!-- Step 1 -->
+          <div class="stepper-step is-complete">
+            <div class="stepper-indicator"><%- icon('check', { class: 'w-3.5 h-3.5' }) %></div>
+            <div class="stepper-label text-xs mt-1.5 font-medium">Pending</div>
+            <div class="stepper-line"></div>
+          </div>
+          <!-- Step 2 -->
+          <div class="stepper-step is-complete">
+            <div class="stepper-indicator"><%- icon('check', { class: 'w-3.5 h-3.5' }) %></div>
+            <div class="stepper-label text-xs mt-1.5 font-medium">Accepted</div>
+            <div class="stepper-line"></div>
+          </div>
+          <!-- Step 3 -->
+          <div class="stepper-step is-complete">
+            <div class="stepper-indicator"><%- icon('check', { class: 'w-3.5 h-3.5' }) %></div>
+            <div class="stepper-label text-xs mt-1.5 font-medium">Delivered</div>
+            <div class="stepper-line"></div>
+          </div>
+          <!-- Step 4 -->
+          <div class="stepper-step is-complete">
+            <div class="stepper-indicator"><%- icon('check', { class: 'w-3.5 h-3.5' }) %></div>
+            <div class="stepper-label text-xs mt-1.5 font-medium">Completed</div>
+          </div>
+        </div>
 
-            <div class="flex items-start gap-3">
-              <div class="w-7 h-7 rounded-md bg-[var(--bg-surface)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)] shrink-0">
-                <%- icon('file-text', { class: 'w-4 h-4' }) %>
-              </div>
-              <div>
-                <h4 class="text-sm font-semibold text-[var(--text-ink)]">Transparent Unit Pricing</h4>
-                <p class="text-xs text-[var(--text-muted)] mt-0.5">Fixed rates per page with upfront calculations. No hidden service charges.</p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-3">
-              <div class="w-7 h-7 rounded-md bg-[var(--bg-surface)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)] shrink-0">
-                <%- icon('clock', { class: 'w-4 h-4' }) %>
-              </div>
-              <div>
-                <h4 class="text-sm font-semibold text-[var(--text-ink)]">Milestone Delivery</h4>
-                <p class="text-xs text-[var(--text-muted)] mt-0.5">Direct oversight of draft progress through the integrated status dashboard.</p>
-              </div>
-            </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-6 border-t border-[var(--border-color)] text-xs text-[var(--text-muted)]">
+          <div class="space-y-1">
+            <div class="font-semibold text-[var(--text-ink)]">1. Pending</div>
+            <p>Client submits document details, page count, deadline, instructions, and draft PDF.</p>
+          </div>
+          <div class="space-y-1">
+            <div class="font-semibold text-[var(--text-ink)]">2. Accepted</div>
+            <p>Editor reviews editing scope and agrees to review the draft.</p>
+          </div>
+          <div class="space-y-1">
+            <div class="font-semibold text-[var(--text-ink)]">3. Delivered</div>
+            <p>Editor completes editing and feedback, uploading the revised PDF to private cloud storage.</p>
+          </div>
+          <div class="space-y-1">
+            <div class="font-semibold text-[var(--text-ink)]">4. Completed</div>
+            <p>Client downloads deliverable and confirms receipt to conclude the deal.</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Vision, Mission & Values -->
-  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="card p-8 space-y-3">
-        <div class="w-10 h-10 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]">
-          <%- icon('search', { class: 'w-5 h-5' }) %>
+  <!-- 4. WHAT IS REAL AND WHAT IS SIMULATED -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-6">
+      <div>
+        <div class="section-eyebrow mb-2">
+          <span class="eyebrow-num">03</span>
+          <span class="eyebrow-rule"></span>
+          <span class="eyebrow-label">System Boundaries</span>
         </div>
-        <h3 class="type-h3 text-lg">Our Vision</h3>
-        <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-          Empowering university students worldwide by making expert scholarly assistance accessible, transparent, and ethically guided.
+        <h2 class="type-h2 text-xl sm:text-2xl">What is real and what is simulated</h2>
+        <p class="type-body text-sm text-[var(--text-muted)] mt-1">
+          An honest architectural breakdown of functional subsystems versus prototype boundaries.
         </p>
       </div>
 
-      <div class="card p-8 space-y-3">
-        <div class="w-10 h-10 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]">
-          <%- icon('shield-check', { class: 'w-5 h-5' }) %>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Real Column -->
+        <div class="card card-ticket p-6 bg-[var(--bg-surface)] space-y-4">
+          <div class="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-[var(--accent)]"></div>
+              <h3 class="type-h3 text-base">Implemented Subsystems</h3>
+            </div>
+            <span class="badge badge-accent text-[10px]">Live Engine</span>
+          </div>
+          <ul class="space-y-3 text-xs sm:text-sm text-[var(--text-muted)]">
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--accent)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Accounts &amp; Sign-in:</strong> Session-based authentication, Google OAuth, and GitHub OAuth with persistent sessions.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--accent)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Editor Profiles &amp; Rates:</strong> Upfront per-page pricing, bios, and completed deal counts.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--accent)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Private Storage:</strong> Draft attachments and deliverable drafts uploaded directly to private AWS S3 buckets.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--accent)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Time-Limited Links:</strong> Authenticated, short-lived presigned S3 URLs preventing link leakage.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--accent)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Deal Lifecycle:</strong> Deterministic 4-stage state machine (pending, accepted, delivered, completed).</span>
+            </li>
+          </ul>
         </div>
-        <h3 class="type-h3 text-lg">Our Mission</h3>
-        <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-          Bridging the gap between students under strict academic deadlines and independent researchers seeking fair compensation for their expertise.
-        </p>
-      </div>
 
-      <div class="card p-8 space-y-3">
-        <div class="w-10 h-10 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]">
-          <%- icon('star', { class: 'w-5 h-5' }) %>
+        <!-- Simulated Column -->
+        <div class="card card-ticket p-6 bg-[var(--bg-surface-muted)] space-y-4">
+          <div class="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-[var(--text-muted)]"></div>
+              <h3 class="type-h3 text-base">Prototype Boundaries</h3>
+            </div>
+            <span class="badge badge-neutral text-[10px]">Demo Prototype</span>
+          </div>
+          <ul class="space-y-3 text-xs sm:text-sm text-[var(--text-muted)]">
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--text-muted)] mt-0.5 shrink-0"><%- icon('info', { class: 'w-4 h-4' }) %></span>
+              <span><strong>No Real Payments:</strong> No real payments are processed in this demo. Price tallies demonstrate unit multiplication.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--text-muted)] mt-0.5 shrink-0"><%- icon('info', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Ratings &amp; Reviews:</strong> Star ratings and review counters on mock profiles are illustrative display structures.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--text-muted)] mt-0.5 shrink-0"><%- icon('info', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Editor Verification:</strong> Editor credential reviews and verification checks are modeled conceptually.</span>
+            </li>
+          </ul>
         </div>
-        <h3 class="type-h3 text-lg">Our Values</h3>
-        <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-          Rigorous research ethics, respect for author independence, institutional privacy, and collaborative academic learning.
-        </p>
       </div>
     </div>
   </section>
 
-  <!-- Academic Integrity Policy -->
-  <section id="academic-integrity" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="card border-[var(--border-strong)] p-8 sm:p-10 space-y-4">
-      <div class="flex items-center gap-2">
-        <%- icon('alert-circle', { class: 'w-5 h-5 text-[var(--accent)]' }) %>
-        <h3 class="type-h3 text-lg">Academic Integrity Notice</h3>
+  <!-- 5. BUILT WITH (NEUTRAL BADGES) -->
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="space-y-4">
+      <div class="section-eyebrow">
+        <span class="eyebrow-num">04</span>
+        <span class="eyebrow-rule"></span>
+        <span class="eyebrow-label">Technology Stack</span>
       </div>
-      <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed max-w-3xl">
-        PerPage is an academic assistance and tutoring collaboration platform. Delivered manuscripts, analyses, and source bibliographies are intended as scholarly model drafts, study guides, and research references. Users are expected to comply with their respective institutional honor codes and citation policies.
+      <h2 class="type-h2 text-xl sm:text-2xl">Built with</h2>
+      <div class="flex flex-wrap gap-2 pt-1">
+        <span class="badge badge-neutral text-xs py-1 px-3">Node.js</span>
+        <span class="badge badge-neutral text-xs py-1 px-3">Express</span>
+        <span class="badge badge-neutral text-xs py-1 px-3">EJS</span>
+        <span class="badge badge-neutral text-xs py-1 px-3">MongoDB</span>
+        <span class="badge badge-neutral text-xs py-1 px-3">AWS S3</span>
+        <span class="badge badge-neutral text-xs py-1 px-3">Tailwind CSS</span>
+        <span class="badge badge-neutral text-xs py-1 px-3">Alpine.js</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. SOURCE CODE (CONDITIONAL) -->
+  <% if (typeof repoUrl !== 'undefined' && repoUrl) { %>
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="space-y-3">
+        <h2 class="type-h2 text-xl sm:text-2xl">Source code</h2>
+        <p class="type-body text-sm text-[var(--text-muted)]">
+          The code for this project is available on GitHub under an open-source license.
+        </p>
+        <div>
+          <a href="<%= repoUrl %>" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm inline-flex items-center gap-1.5">
+            <%- icon('external-link', { class: 'w-4 h-4' }) %>
+            View repository
+          </a>
+        </div>
+      </div>
+    </section>
+  <% } %>
+
+  <!-- 7. CLOSING CTA BAND -->
+  <section class="w-full bg-[var(--card)] text-[var(--foreground)] border-y border-[var(--border)] py-16 sm:py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+      <h2 class="type-h2 text-[var(--foreground)] text-2xl sm:text-4xl">
+        Ready to polish your next draft?
+      </h2>
+
+      <p class="type-body text-[var(--muted-foreground)] max-w-xl mx-auto text-sm sm:text-base">
+        Browse freelance editors, calculate your upfront rate, and submit your draft in minutes.
       </p>
+
+      <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+        <% if (locals.user) { %>
+          <a href="/dashboard" class="btn btn-primary btn-lg">
+            Go to dashboard
+            <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+          </a>
+          <a href="/writers" class="btn btn-secondary btn-lg">
+            Browse editors
+          </a>
+        <% } else { %>
+          <a href="/writers" class="btn btn-primary btn-lg">
+            Browse editors
+            <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+          </a>
+          <a href="/register" class="btn btn-secondary btn-lg">
+            Create an account
+          </a>
+        <% } %>
+      </div>
     </div>
   </section>
 

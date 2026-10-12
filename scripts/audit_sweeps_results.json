@@ -1,0 +1,954 @@
+{
+  "responsive": [
+    {
+      "page": "Home",
+      "width": 320,
+      "scrollWidth": 320,
+      "innerWidth": 320,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Home",
+      "width": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Home",
+      "width": 768,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Home",
+      "width": 1024,
+      "scrollWidth": 1024,
+      "innerWidth": 1024,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Home",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Home",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Writers",
+      "width": 320,
+      "scrollWidth": 320,
+      "innerWidth": 320,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Writers",
+      "width": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Writers",
+      "width": 768,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Writers",
+      "width": 1024,
+      "scrollWidth": 1024,
+      "innerWidth": 1024,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Writers",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Writers",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Writer Profile",
+      "width": 320,
+      "scrollWidth": 320,
+      "innerWidth": 320,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Writer Profile",
+      "width": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Writer Profile",
+      "width": 768,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Writer Profile",
+      "width": 1024,
+      "scrollWidth": 1024,
+      "innerWidth": 1024,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Writer Profile",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Writer Profile",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "About",
+      "width": 320,
+      "scrollWidth": 548,
+      "innerWidth": 548,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "About",
+      "width": 390,
+      "scrollWidth": 548,
+      "innerWidth": 548,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "About",
+      "width": 768,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "About",
+      "width": 1024,
+      "scrollWidth": 1024,
+      "innerWidth": 1024,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "About",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "About",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Login",
+      "width": 320,
+      "scrollWidth": 320,
+      "innerWidth": 320,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Login",
+      "width": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Login",
+      "width": 768,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Login",
+      "width": 1024,
+      "scrollWidth": 1024,
+      "innerWidth": 1024,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Login",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Login",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Register",
+      "width": 320,
+      "scrollWidth": 320,
+      "innerWidth": 320,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Register",
+      "width": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Register",
+      "width": 768,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Register",
+      "width": 1024,
+      "scrollWidth": 1024,
+      "innerWidth": 1024,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Register",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Register",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Deal Creation",
+      "width": 320,
+      "scrollWidth": 320,
+      "innerWidth": 320,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Deal Creation",
+      "width": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Deal Creation",
+      "width": 768,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Deal Creation",
+      "width": 1024,
+      "scrollWidth": 1024,
+      "innerWidth": 1024,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Deal Creation",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Deal Creation",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Dashboard Student",
+      "width": 320,
+      "scrollWidth": 320,
+      "innerWidth": 320,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Dashboard Student",
+      "width": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Dashboard Student",
+      "width": 768,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Dashboard Student",
+      "width": 1024,
+      "scrollWidth": 1024,
+      "innerWidth": 1024,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Dashboard Student",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Dashboard Student",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Dashboard Writer",
+      "width": 320,
+      "scrollWidth": 320,
+      "innerWidth": 320,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Dashboard Writer",
+      "width": 390,
+      "scrollWidth": 390,
+      "innerWidth": 390,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Dashboard Writer",
+      "width": 768,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Dashboard Writer",
+      "width": 1024,
+      "scrollWidth": 1024,
+      "innerWidth": 1024,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Dashboard Writer",
+      "width": 1440,
+      "scrollWidth": 1440,
+      "innerWidth": 1440,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    },
+    {
+      "page": "Dashboard Writer",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "hasHorizontalScroll": false,
+      "diff": 0
+    }
+  ],
+  "headings": [
+    {
+      "page": "Home",
+      "url": "http://localhost:3000/",
+      "title": "PerPage — Academic Writing & Assignment Marketplace",
+      "lang": "en",
+      "h1Count": 1,
+      "h1s": [
+        "Find a writer. Agree a price. Get it delivered."
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Find a writer. Agree a price. Get it delivered."
+        },
+        {
+          "tag": "h2",
+          "text": "Behavioral Economics Literature Review"
+        },
+        {
+          "tag": "h2",
+          "text": "How PerPage Works"
+        },
+        {
+          "tag": "h3",
+          "text": "Browse writers"
+        },
+        {
+          "tag": "h3",
+          "text": "Create a deal"
+        },
+        {
+          "tag": "h3",
+          "text": "Track to delivery"
+        },
+        {
+          "tag": "h2",
+          "text": "Designed for Trust and Clarity"
+        },
+        {
+          "tag": "h3",
+          "text": "Transparent per-page pricing"
+        },
+        {
+          "tag": "h3",
+          "text": "Private file storage"
+        },
+        {
+          "tag": "h3",
+          "text": "Author review before work starts"
+        },
+        {
+          "tag": "h3",
+          "text": "End-to-end status tracking"
+        },
+        {
+          "tag": "h3",
+          "text": "Dedicated dual dashboards"
+        },
+        {
+          "tag": "h2",
+          "text": "Featured Writers"
+        },
+        {
+          "tag": "h3",
+          "text": "Dr. Eleanor Vance"
+        },
+        {
+          "tag": "h3",
+          "text": "Prof. Liam Davies"
+        },
+        {
+          "tag": "h3",
+          "text": "Sophia Chen"
+        },
+        {
+          "tag": "h2",
+          "text": "Set your rates. Choose your projects."
+        },
+        {
+          "tag": "h2",
+          "text": "Frequently Asked Questions"
+        },
+        {
+          "tag": "h2",
+          "text": "Ready to start your next paper?"
+        },
+        {
+          "tag": "h3",
+          "text": "PLATFORM"
+        },
+        {
+          "tag": "h3",
+          "text": "EDITORIAL STANDARDS"
+        },
+        {
+          "tag": "h3",
+          "text": "ACADEMIC PROJECT"
+        }
+      ],
+      "skipLink": true,
+      "inputsWithoutLabels": []
+    },
+    {
+      "page": "Writers",
+      "url": "http://localhost:3000/writers",
+      "title": "Choose Your Writer — PerPage",
+      "lang": "en",
+      "h1Count": 1,
+      "h1s": [
+        "Choose your writer"
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Choose your writer"
+        },
+        {
+          "tag": "h2",
+          "text": "Dr. Eleanor Vance"
+        },
+        {
+          "tag": "h2",
+          "text": "Prof. Liam Davies"
+        },
+        {
+          "tag": "h2",
+          "text": "Sophia Chen"
+        },
+        {
+          "tag": "h2",
+          "text": "Marcus Thorne"
+        },
+        {
+          "tag": "h2",
+          "text": "Amina Al-Mansoor"
+        },
+        {
+          "tag": "h2",
+          "text": "Julian Ross"
+        },
+        {
+          "tag": "h2",
+          "text": "Kavita Patel"
+        },
+        {
+          "tag": "h3",
+          "text": "PLATFORM"
+        },
+        {
+          "tag": "h3",
+          "text": "EDITORIAL STANDARDS"
+        },
+        {
+          "tag": "h3",
+          "text": "ACADEMIC PROJECT"
+        }
+      ],
+      "skipLink": true,
+      "inputsWithoutLabels": []
+    },
+    {
+      "page": "Writer Profile",
+      "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d1",
+      "title": "Dr. Eleanor Vance — Academic Writer | PerPage",
+      "lang": "en",
+      "h1Count": 1,
+      "h1s": [
+        "Dr. Eleanor Vance"
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Dr. Eleanor Vance"
+        },
+        {
+          "tag": "h2",
+          "text": "About"
+        },
+        {
+          "tag": "h2",
+          "text": "How working with Eleanor works"
+        },
+        {
+          "tag": "h3",
+          "text": "Create a deal"
+        },
+        {
+          "tag": "h3",
+          "text": "Writer accepts or declines"
+        },
+        {
+          "tag": "h3",
+          "text": "Final file delivered"
+        },
+        {
+          "tag": "h3",
+          "text": "Download from your dashboard"
+        },
+        {
+          "tag": "h3",
+          "text": "PLATFORM"
+        },
+        {
+          "tag": "h3",
+          "text": "EDITORIAL STANDARDS"
+        },
+        {
+          "tag": "h3",
+          "text": "ACADEMIC PROJECT"
+        }
+      ],
+      "skipLink": true,
+      "inputsWithoutLabels": []
+    },
+    {
+      "page": "About",
+      "url": "http://localhost:3000/about",
+      "title": "About — PerPage Academic Collaboration",
+      "lang": "en",
+      "h1Count": 1,
+      "h1s": [
+        "An academic project about a marketplace workflow"
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "An academic project about a marketplace workflow"
+        },
+        {
+          "tag": "h2",
+          "text": "What PerPage is"
+        },
+        {
+          "tag": "h2",
+          "text": "How a deal works"
+        },
+        {
+          "tag": "h2",
+          "text": "What is real and what is simulated"
+        },
+        {
+          "tag": "h3",
+          "text": "Implemented & Functional"
+        },
+        {
+          "tag": "h3",
+          "text": "Demonstration Only"
+        },
+        {
+          "tag": "h2",
+          "text": "Built with"
+        },
+        {
+          "tag": "h2",
+          "text": "Ready to start your next paper?"
+        },
+        {
+          "tag": "h3",
+          "text": "PLATFORM"
+        },
+        {
+          "tag": "h3",
+          "text": "EDITORIAL STANDARDS"
+        },
+        {
+          "tag": "h3",
+          "text": "ACADEMIC PROJECT"
+        }
+      ],
+      "skipLink": true,
+      "inputsWithoutLabels": []
+    },
+    {
+      "page": "Login",
+      "url": "http://localhost:3000/login",
+      "title": "Log in — PerPage",
+      "lang": "en",
+      "h1Count": 1,
+      "h1s": [
+        "Sign in to PerPage"
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Sign in to PerPage"
+        },
+        {
+          "tag": "h3",
+          "text": "PLATFORM"
+        },
+        {
+          "tag": "h3",
+          "text": "EDITORIAL STANDARDS"
+        },
+        {
+          "tag": "h3",
+          "text": "ACADEMIC PROJECT"
+        }
+      ],
+      "skipLink": true,
+      "inputsWithoutLabels": []
+    },
+    {
+      "page": "Register",
+      "url": "http://localhost:3000/register",
+      "title": "Create an Account — PerPage",
+      "lang": "en",
+      "h1Count": 1,
+      "h1s": [
+        "Create your account"
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Create your account"
+        },
+        {
+          "tag": "h3",
+          "text": "PLATFORM"
+        },
+        {
+          "tag": "h3",
+          "text": "EDITORIAL STANDARDS"
+        },
+        {
+          "tag": "h3",
+          "text": "ACADEMIC PROJECT"
+        }
+      ],
+      "skipLink": true,
+      "inputsWithoutLabels": []
+    },
+    {
+      "page": "Deal Creation",
+      "url": "http://localhost:3000/deal?writerId=64f1a2b3c4d5e6f7a8b9c0d1&mockUser=student",
+      "title": "Writer Not Found — PerPage",
+      "lang": "en",
+      "h1Count": 1,
+      "h1s": [
+        "Writer Not Found"
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Writer Not Found"
+        },
+        {
+          "tag": "h3",
+          "text": "PLATFORM"
+        },
+        {
+          "tag": "h3",
+          "text": "EDITORIAL STANDARDS"
+        },
+        {
+          "tag": "h3",
+          "text": "ACADEMIC PROJECT"
+        }
+      ],
+      "skipLink": true,
+      "inputsWithoutLabels": []
+    },
+    {
+      "page": "Dashboard Student",
+      "url": "http://localhost:3000/dashboard?mockUser=student",
+      "title": "Dashboard | PerPage",
+      "lang": "en",
+      "h1Count": 1,
+      "h1s": [
+        "Welcome back, Aditi"
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Welcome back, Aditi"
+        },
+        {
+          "tag": "h2",
+          "text": "No deals yet"
+        },
+        {
+          "tag": "h2",
+          "text": "Decline this request?"
+        },
+        {
+          "tag": "h2",
+          "text": "Mark this deal as completed?"
+        },
+        {
+          "tag": "h3",
+          "text": "PLATFORM"
+        },
+        {
+          "tag": "h3",
+          "text": "EDITORIAL STANDARDS"
+        },
+        {
+          "tag": "h3",
+          "text": "ACADEMIC PROJECT"
+        }
+      ],
+      "skipLink": true,
+      "inputsWithoutLabels": []
+    },
+    {
+      "page": "Dashboard Writer",
+      "url": "http://localhost:3000/dashboard?mockUser=writer",
+      "title": "Dashboard | PerPage",
+      "lang": "en",
+      "h1Count": 1,
+      "h1s": [
+        "Welcome back, Dr."
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Welcome back, Dr."
+        },
+        {
+          "tag": "h2",
+          "text": "No requests yet"
+        },
+        {
+          "tag": "h2",
+          "text": "Decline this request?"
+        },
+        {
+          "tag": "h2",
+          "text": "Mark this deal as completed?"
+        },
+        {
+          "tag": "h3",
+          "text": "PLATFORM"
+        },
+        {
+          "tag": "h3",
+          "text": "EDITORIAL STANDARDS"
+        },
+        {
+          "tag": "h3",
+          "text": "ACADEMIC PROJECT"
+        }
+      ],
+      "skipLink": true,
+      "inputsWithoutLabels": []
+    },
+    {
+      "page": "404 Page",
+      "url": "http://localhost:3000/non-existent-page-test",
+      "title": "404 — Page not found — PerPage",
+      "lang": "en",
+      "h1Count": 1,
+      "h1s": [
+        "Page not found"
+      ],
+      "headings": [
+        {
+          "tag": "h1",
+          "text": "Page not found"
+        },
+        {
+          "tag": "h3",
+          "text": "PLATFORM"
+        },
+        {
+          "tag": "h3",
+          "text": "EDITORIAL STANDARDS"
+        },
+        {
+          "tag": "h3",
+          "text": "ACADEMIC PROJECT"
+        }
+      ],
+      "skipLink": true,
+      "inputsWithoutLabels": []
+    }
+  ],
+  "tapTargets": [],
+  "consoleErrors": [],
+  "networkErrors": [
+    {
+      "url": "http://localhost:3000/deal?writerId=64f1a2b3c4d5e6f7a8b9c0d1&mockUser=student",
+      "status": 404
+    }
+  ],
+  "noJsCheck": [
+    {
+      "page": "Home",
+      "hasBody": true,
+      "isContentVisible": true,
+      "length": 4921
+    },
+    {
+      "page": "Writers",
+      "hasBody": true,
+      "isContentVisible": true,
+      "length": 2128
+    },
+    {
+      "page": "Writer Profile",
+      "hasBody": true,
+      "isContentVisible": true,
+      "length": 1791
+    },
+    {
+      "page": "About",
+      "hasBody": true,
+      "isContentVisible": true,
+      "length": 3001
+    },
+    {
+      "page": "Login",
+      "hasBody": true,
+      "isContentVisible": true,
+      "length": 915
+    }
+  ]
+}

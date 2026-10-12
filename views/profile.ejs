@@ -1,6 +1,6 @@
 <%- include('partials/head', { 
   pageTitle: pageTitle || 'My Profile — PerPage', 
-  metaDescription: 'Manage your PerPage account settings, profile biography, and writing rates.',
+  metaDescription: 'Manage your PerPage account settings, profile biography, and editing rates.',
   noindex: true 
 }) %>
 <%- include('partials/navbar') %>
@@ -17,16 +17,22 @@
 
     <!-- Breadcrumb & Page Header -->
     <div class="space-y-2 border-b border-[var(--border-color)] pb-6">
-      <nav class="flex items-center gap-2 text-xs text-[var(--text-muted)]" aria-label="Breadcrumb">
-        <a href="/dashboard" class="hover:text-[var(--text-ink)] transition-colors">Dashboard</a>
-        <span aria-hidden="true">/</span>
-        <span class="text-[var(--text-ink)] font-medium" aria-current="page">Account Settings</span>
-      </nav>
+      <div class="flex items-center justify-between gap-4">
+        <nav class="flex items-center gap-2 text-xs text-[var(--text-muted)]" aria-label="Breadcrumb">
+          <a href="/dashboard" class="hover:text-[var(--text-ink)] transition-colors">Dashboard</a>
+          <span aria-hidden="true">/</span>
+          <span class="text-[var(--text-ink)] font-medium" aria-current="page">Account Settings</span>
+        </nav>
+        <div class="section-eyebrow">
+          <span class="eyebrow-caret">^</span>
+          <span class="eyebrow-label">User Preferences</span>
+        </div>
+      </div>
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
         <div>
           <h1 class="type-h1">Account Settings</h1>
-          <p class="type-body text-sm text-[var(--text-muted)] mt-1">
-            Manage your personal profile, biography, and academic writing preferences.
+          <p class="type-body text-sm text-[var(--text-muted)] mt-1 prose-measure">
+            Manage your personal profile, biography, and document editing preferences.
           </p>
         </div>
         <% if (isWriter) { %>
@@ -50,7 +56,7 @@
       </div>
     <% } %>
 
-    <!-- Unset Rate Info Alert (Writers only) -->
+    <!-- Unset Rate Info Alert (Editors only) -->
     <% if (hasUnsetRate) { %>
       <div class="alert alert-info" role="status">
         <div class="flex items-start gap-3">
@@ -58,7 +64,7 @@
           <div class="space-y-1">
             <h2 class="text-sm font-semibold text-[var(--text-ink)]">Set your rate per page</h2>
             <p class="text-xs text-[var(--text-muted)]">
-              Set your rate so students can create deals with you. Without a rate, deals cannot be commissioned.
+              Set your rate so clients can create deals with you. Without a rate, deals cannot be commissioned.
             </p>
           </div>
         </div>
@@ -74,10 +80,15 @@
     >
       
       <!-- Section 1: Profile Details -->
-      <section class="card p-6 sm:p-8 space-y-6" aria-labelledby="section-profile-heading">
-        <div class="border-b border-[var(--border-color)] pb-4">
+      <section class="card card-ticket p-6 sm:p-8 space-y-6" aria-labelledby="section-profile-heading">
+        <div class="border-b border-[var(--border-color)] pb-4 space-y-1">
+          <div class="section-eyebrow">
+            <span class="eyebrow-num">01</span>
+            <span class="eyebrow-rule"></span>
+            <span class="eyebrow-label">Identity &amp; Biography</span>
+          </div>
           <h2 id="section-profile-heading" class="type-h3 text-base font-semibold">Profile Information</h2>
-          <p class="type-body text-xs text-[var(--text-muted)] mt-0.5">
+          <p class="type-body text-xs text-[var(--text-muted)]">
             Your name and biography visible to clients and colleagues on the platform.
           </p>
         </div>
@@ -86,7 +97,7 @@
         <div class="flex items-center gap-4">
           <div class="avatar avatar-lg flex-shrink-0" aria-hidden="true">
             <% if (profile.profilePic) { %>
-              <img src="<%= profile.profilePic %>" alt="<%= profile.name %>">
+              <img src="<%= profile.profilePic %>" alt="<%= profile.name %>" class="w-full h-full object-cover rounded-full" referrerpolicy="no-referrer">
             <% } else { %>
               <span><%= initials %></span>
             <% } %>
@@ -146,26 +157,35 @@
               class="form-input text-sm w-full max-w-lg"
             >
             <p class="text-[11px] text-[var(--text-muted)]">
-              Private information. This is never displayed publicly on writer profiles or directories.
+              Private information. This is never displayed publicly on editor profiles or directories.
             </p>
           </div>
         </div>
       </section>
 
-      <!-- Section 2: Rates (Writers Only) -->
+      <!-- Section 2: Rates (Editors Only) -->
       <% if (isWriter) { %>
-        <section class="card p-6 sm:p-8 space-y-6" aria-labelledby="section-rates-heading">
-          <div class="border-b border-[var(--border-color)] pb-4">
+        <section class="card card-ticket p-6 sm:p-8 space-y-6" aria-labelledby="section-rates-heading">
+          <div class="border-b border-[var(--border-color)] pb-4 space-y-1">
+            <div class="section-eyebrow">
+              <span class="eyebrow-num">02</span>
+              <span class="eyebrow-rule"></span>
+              <span class="eyebrow-label">Unit Economics</span>
+            </div>
             <h2 id="section-rates-heading" class="type-h3 text-base font-semibold">Pricing &amp; Rates</h2>
-            <p class="type-body text-xs text-[var(--text-muted)] mt-0.5">
-              Transparent upfront pricing charged to students for assignment work.
+            <p class="type-body text-xs text-[var(--text-muted)]">
+              Transparent upfront pricing charged to clients for document editing.
             </p>
+          </div>
+
+          <div class="p-3 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] text-xs text-[var(--text-ink)]">
+            <p class="font-medium">You give feedback and edits on the client's own text. You do not write documents from scratch.</p>
           </div>
 
           <div class="space-y-2 max-w-xs">
             <label for="pricePerPage" class="form-label text-xs">Price per page</label>
             <div class="input-group">
-              <span class="input-group-addon font-semibold">₹</span>
+              <span class="input-group-addon font-semibold font-mono">₹</span>
               <input 
                 type="number" 
                 id="pricePerPage" 
@@ -173,12 +193,12 @@
                 value="<%= profile.pricePerPage || 0 %>" 
                 min="0" 
                 step="1"
-                class="form-input text-sm text-right"
+                class="form-input text-sm text-right tabular-nums font-mono"
               >
               <span class="input-group-addon text-[var(--text-muted)] text-xs">per page</span>
             </div>
             <p class="text-[11px] text-[var(--text-muted)]">
-              Students see this rate and pay pages &times; rate. Set to 0 to mark rate as unset.
+              Clients see this rate and pay pages &times; rate. Set to 0 to mark rate as unset.
             </p>
           </div>
         </section>
@@ -188,10 +208,15 @@
       <% } %>
 
       <!-- Section 3: Account & Credentials -->
-      <section class="card p-6 sm:p-8 space-y-6" aria-labelledby="section-account-heading">
-        <div class="border-b border-[var(--border-color)] pb-4">
+      <section class="card card-ticket p-6 sm:p-8 space-y-6" aria-labelledby="section-account-heading">
+        <div class="border-b border-[var(--border-color)] pb-4 space-y-1">
+          <div class="section-eyebrow">
+            <span class="eyebrow-num">03</span>
+            <span class="eyebrow-rule"></span>
+            <span class="eyebrow-label">Account &amp; Credentials</span>
+          </div>
           <h2 id="section-account-heading" class="type-h3 text-base font-semibold">Account Information</h2>
-          <p class="type-body text-xs text-[var(--text-muted)] mt-0.5">
+          <p class="type-body text-xs text-[var(--text-muted)]">
             Internal identification and system credentials.
           </p>
         </div>
@@ -199,9 +224,10 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl">
           <!-- Email (Read-only) -->
           <div class="space-y-1.5">
-            <label class="form-label text-xs">Email Address</label>
+            <label for="email" class="form-label text-xs">Email Address</label>
             <input 
               type="email" 
+              id="email"
               value="<%= profile.email || '' %>" 
               readonly 
               class="form-input text-sm bg-[var(--bg-surface-muted)] text-[var(--text-muted)] cursor-not-allowed"
@@ -213,8 +239,8 @@
           <div class="space-y-1.5">
             <label for="role" class="form-label text-xs">Platform Role</label>
             <select id="role" name="role" class="form-select text-sm w-full">
-              <option value="writer" <%= profile.role === 'writer' ? 'selected' : '' %>>Writer</option>
-              <option value="user" <%= profile.role === 'user' ? 'selected' : '' %>>Student / User</option>
+              <option value="writer" <%= profile.role === 'writer' ? 'selected' : '' %>>Editor</option>
+              <option value="user" <%= profile.role === 'user' ? 'selected' : '' %>>User</option>
             </select>
             <p class="text-[11px] text-[var(--text-muted)]">Determines whether you can be commissioned or place orders.</p>
           </div>

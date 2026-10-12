@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { ATLAS_DIRECT_URI } from '../config/db.js';
 
 /**
  * Check database connection health
@@ -42,12 +43,22 @@ export const attemptReconnect = async (maxRetries = 3, retryDelay = 5000) => {
       }
 
       if (mongoose.connection.readyState === 0) {
-        await mongoose.connect(process.env.MONGO_URL, {
-          serverSelectionTimeoutMS: 10000,
-          socketTimeoutMS: 45000,
-          bufferCommands: false,
-          maxPoolSize: 10,
-        });
+        const uri = process.env.MONGO_URL || process.env.MONGO_URI || ATLAS_DIRECT_URI;
+        try {
+          await mongoose.connect(uri, {
+            serverSelectionTimeoutMS: 8000,
+            socketTimeoutMS: 45000,
+            bufferCommands: false,
+            maxPoolSize: 10,
+          });
+        } catch (initialErr) {
+          await mongoose.connect(ATLAS_DIRECT_URI, {
+            serverSelectionTimeoutMS: 8000,
+            socketTimeoutMS: 45000,
+            bufferCommands: false,
+            maxPoolSize: 10,
+          });
+        }
       }
 
       // Wait for connection to be established

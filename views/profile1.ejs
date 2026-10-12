@@ -34,7 +34,7 @@ const profileData = typeof writer !== 'undefined' ? writer : (typeof user !== 'u
         </div>
         <div>
           <h2 class="type-h3 text-xl"><%= profileData.name %></h2>
-          <span class="badge badge-accent capitalize mt-1"><%= profileData.role || 'Writer' %></span>
+          <span class="badge badge-accent capitalize mt-1"><%= (profileData.role === 'writer') ? 'Editor' : 'User' %></span>
           <p class="text-xs text-[var(--text-muted)] mt-1"><%= profileData.email %></p>
         </div>
       </div>
@@ -49,14 +49,14 @@ const profileData = typeof writer !== 'undefined' ? writer : (typeof user !== 'u
           <span class="form-label">Verification</span>
           <div class="flex items-center gap-1.5 text-xs text-[var(--semantic-success-text)] font-medium mt-1">
             <%- icon('shield-check', { class: 'w-4 h-4' }) %>
-            Verified Academic Contributor
+            Platform Contributor
           </div>
         </div>
 
         <div class="card-muted p-4 space-y-1 sm:col-span-2">
           <span class="form-label">Research Statement</span>
           <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-            <%= profileData.bio || 'Available for assignment research papers, analytical literature reviews, and scholarly editing.' %>
+            <%= profileData.bio || 'Available for document draft editing, analytical literature reviews, and scholarly feedback.' %>
           </p>
         </div>
       </div>

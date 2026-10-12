@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { User } from '../models/User.js';
@@ -34,43 +35,79 @@ export default function initialize(passport) {
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL,
-  }, async (accessToken, refreshToken, profile, done) => {
+  callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/auth/google/callback',
+}, async (accessToken, refreshToken, profile, done) => {
   try {
+    const email = profile.emails?.[0]?.value;
+    const photo = profile.photos && profile.photos.length > 0 ? profile.photos[0].value : null;
+
     let user = await User.findOne({ googleId: profile.id });
-    if (!user) {
-      user = await User.create({
-        name: profile.displayName,
-        googleId: profile.id,
-        email: profile.emails[0].value,
-        profilePic: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : null
-      
-      },
-      { upsert: true, new: true }
-    );
+    if (user) {
+      let needsSave = false;
+      if (photo && (!user.profilePic || user.profilePic !== photo)) {
+        user.profilePic = photo;
+        needsSave = true;
+      }
+      if (!user.name && profile.displayName) {
+        user.name = profile.displayName;
+        needsSave = true;
+      }
+      if (needsSave) {
+        await user.save();
+      }
+      return done(null, user);
     }
-    return done(null, user);
+
+    if (email) {
+      user = await User.findOne({ email });
+      if (user) {
+        user.googleId = profile.id;
+        if (photo && (!user.profilePic || user.profilePic !== photo)) {
+          user.profilePic = photo;
+        }
+        if (!user.name && profile.displayName) {
+          user.name = profile.displayName;
+        }
+        await user.save();
+        return done(null, user);
+      }
+    }
+
+    const newUser = new User({
+      name: profile.displayName || profile.name?.givenName || 'User',
+      googleId: profile.id,
+      email: email,
+      profilePic: photo || ''
+    });
+    await newUser.save();
+    return done(null, newUser);
   } catch (error) {
     console.error('❌ Google OAuth error:', error.message);
     return done(new expressError('Google authentication failed', 500));
   }
-  }));
-  passport.serializeUser((user, done) => {
-    try {
-      done(null, user.id);
-    } catch (error) {
-      console.error('❌ Serialize user error:', error.message);
-      done(error);
-    }
-  });
+}));
+
+passport.serializeUser((user, done) => {
+  try {
+    const id = user._id ? user._id.toString() : (user.id || (Array.isArray(user) ? user[0]?._id?.toString() : null));
+    done(null, id);
+  } catch (error) {
+    console.error('❌ Serialize user error:', error.message);
+    done(error);
+  }
+});
+
   
   passport.deserializeUser(async (id, done) => {
     try {
+      if (mongoose.connection.readyState !== 1) {
+        return done(null, false);
+      }
       const user = await User.findById(id);
       done(null, user);
     } catch (error) {
-      console.error('❌ Deserialize user error:', error.message);
-      done(error);
+      console.warn('⚠️ Could not deserialize user (DB offline or error):', error.message);
+      done(null, false);
     }
   });
 

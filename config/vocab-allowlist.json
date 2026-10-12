@@ -1,0 +1,11 @@
+{
+  "description": "Allowlist for legitimate code, identifiers, and configuration mentioning terms monitored by check:vocab",
+  "allowed": [
+    {
+      "file": "README.md",
+      "term": "secure",
+      "pattern": "secure:\\s*true",
+      "reason": "Cookie security flag documentation for Express session in production"
+    }
+  ]
+}

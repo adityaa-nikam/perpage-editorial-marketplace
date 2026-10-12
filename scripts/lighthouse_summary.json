@@ -1,0 +1,58 @@
+{
+  "home": {
+    "performance": 88,
+    "accessibility": 100,
+    "bestPractices": 96,
+    "seo": 100,
+    "cls": 0.044578450118556774
+  },
+  "writers": {
+    "performance": 88,
+    "accessibility": 100,
+    "bestPractices": 96,
+    "seo": 100,
+    "cls": 0.01895595416072271
+  },
+  "writer-profile": {
+    "performance": 89,
+    "accessibility": 100,
+    "bestPractices": 96,
+    "seo": 100,
+    "cls": 0.0011588504445294951
+  },
+  "about": {
+    "performance": 89,
+    "accessibility": 100,
+    "bestPractices": 96,
+    "seo": 100,
+    "cls": 0
+  },
+  "login": {
+    "performance": 89,
+    "accessibility": 98,
+    "bestPractices": 96,
+    "seo": 100,
+    "cls": 0.0021361862029891914
+  },
+  "register": {
+    "performance": 89,
+    "accessibility": 98,
+    "bestPractices": 96,
+    "seo": 100,
+    "cls": 0
+  },
+  "deal": {
+    "performance": 88,
+    "accessibility": 100,
+    "bestPractices": 92,
+    "seo": 66,
+    "cls": 0
+  },
+  "dashboard": {
+    "performance": 79,
+    "accessibility": 98,
+    "bestPractices": 92,
+    "seo": 66,
+    "cls": 0.0005440527876150649
+  }
+}

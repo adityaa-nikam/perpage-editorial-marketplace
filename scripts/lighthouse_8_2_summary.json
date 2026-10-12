@@ -1,0 +1,37 @@
+{
+  "home": {
+    "performance": 81,
+    "accessibility": 100,
+    "bestPractices": 96,
+    "seo": 100,
+    "cls": 0.0185,
+    "lcp": 3175
+  },
+  "writers": {
+    "performance": 82,
+    "accessibility": 100,
+    "bestPractices": 96,
+    "seo": 100,
+    "cls": 0.0003,
+    "lcp": 3022
+  },
+  "about": {
+    "performance": 84,
+    "accessibility": 100,
+    "bestPractices": 96,
+    "seo": 100,
+    "cls": 0.0096,
+    "lcp": 2870
+  },
+  "login": {
+    "performance": 88,
+    "accessibility": 98,
+    "bestPractices": 96,
+    "seo": 100,
+    "cls": 0.0002,
+    "lcp": 2265
+  },
+  "dashboard": {
+    "error": "Command failed: npx -y lighthouse \"http://localhost:3000/dashboard\" --output=json --output-path=scripts/lighthouse-8-2-dashboard.json --only-categories=performance,accessibility,best-practices,seo --form-factor=mobile --screenEmulation.mobile=true --throttling-method=simulate --chrome-flags=\"--headless=new --no-sandbox\" --extra-headers='{\"x-mock-user\":\"6ac9698be050df3e1eb4d76d\",\"x-mock-role\":\"user\",\"x-mock-name\":\"Julian Croft\"}' --quiet"
+  }
+}

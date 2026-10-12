@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= typeof pageTitle !== 'undefined' ? pageTitle : (typeof title !== 'undefined' ? title : 'PerPage — Academic Writing & Assignment Marketplace') %></title>
-  <meta name="description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'PerPage is a calm, trustworthy academic writing marketplace connecting students with freelance academic writers with upfront per-page rates.' %>">
+  <title><%= typeof pageTitle !== 'undefined' ? pageTitle : (typeof title !== 'undefined' ? title : 'PerPage — Document Editing & Feedback Marketplace') %></title>
+  <meta name="description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'PerPage is a demonstration marketplace for editing and feedback on your own documents, connecting clients with freelance editors with upfront per-page rates.' %>">
   <link rel="canonical" href="<%= typeof canonical !== 'undefined' ? canonical : ('https://perpage.onrender.com' + (locals.currentPath || '/')) %>">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <% if (typeof robots !== 'undefined' && robots) { %>
   <meta name="robots" content="<%= robots %>">
   <% } else if (typeof noindex !== 'undefined' && noindex) { %>
@@ -16,14 +18,14 @@
   <!-- Open Graph / Social -->
   <meta property="og:type" content="<%= typeof ogType !== 'undefined' ? ogType : 'website' %>">
   <meta property="og:site_name" content="PerPage">
-  <meta property="og:title" content="<%= typeof pageTitle !== 'undefined' ? pageTitle : 'PerPage — Academic Writing Marketplace' %>">
-  <meta property="og:description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'Browse academic writers, calculate rates upfront per page, and coordinate assignments privately.' %>">
+  <meta property="og:title" content="<%= typeof pageTitle !== 'undefined' ? pageTitle : 'PerPage — Document Editing & Feedback Marketplace' %>">
+  <meta property="og:description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'Browse freelance editors, calculate rates upfront per page, and get feedback on your own documents.' %>">
   <meta property="og:url" content="<%= typeof canonical !== 'undefined' ? canonical : ('https://perpage.onrender.com' + (locals.currentPath || '/')) %>">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="<%= typeof pageTitle !== 'undefined' ? pageTitle : 'PerPage — Academic Writing Marketplace' %>">
-  <meta name="twitter:description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'Browse academic writers, calculate rates upfront per page, and coordinate assignments privately.' %>">
+  <meta name="twitter:title" content="<%= typeof pageTitle !== 'undefined' ? pageTitle : 'PerPage — Document Editing & Feedback Marketplace' %>">
+  <meta name="twitter:description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'Browse freelance editors, calculate rates upfront per page, and get feedback on your own documents.' %>">
 
   <!-- JSON-LD WebSite Schema -->
   <script type="application/ld+json">
@@ -32,14 +34,15 @@
     "@type": "WebSite",
     "name": "PerPage",
     "url": "https://perpage.onrender.com",
-    "description": "Academic writing marketplace connecting students with freelance academic writers with transparent per-page rates."
+    "description": "Demonstration marketplace for editing and feedback on a person's own documents with transparent per-page rates."
   }
   </script>
 
-  <!-- Prevent Flash of Unstyled Theme (FOUC) -->
-  <script>
+  <!-- Prevent Flash of Unstyled Theme (FOUC) and enable JS styling flag -->
+  <script nonce="<%= locals.cspNonce || '' %>">
     (function() {
       try {
+        document.documentElement.classList.add('js');
         var stored = localStorage.getItem('theme');
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (stored === 'dark' || (!stored && prefersDark)) {
@@ -51,19 +54,26 @@
     })();
   </script>
 
-  <!-- Google Fonts: Instrument Serif + Inter (font-display: swap) -->
+  <!-- Preload Critical Self-hosted Fonts (font-display: swap) -->
+  <link rel="preload" href="/fonts/source-serif-4-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/instrument-sans-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- Geist & Geist Mono Typography (Vercel Theme) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Production Built CSS -->
-  <link rel="stylesheet" href="/css/app.css">
+  <!-- Production Built CSS with Content Hash -->
+  <link rel="stylesheet" href="/css/app.css<%= locals.assetVersion ? ('?v=' + locals.assetVersion) : '' %>">
 
   <!-- Alpine.js (Pinned version, deferred) -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
 </head>
-<body class="bg-[var(--bg-background)] text-[var(--text-ink)] antialiased min-h-screen flex flex-col font-sans selection:bg-[var(--accent-subtle)] selection:text-[var(--accent)]">
+<body class="bg-[var(--bg-background)] text-[var(--text-ink)] antialiased min-h-screen flex flex-col font-sans selection:bg-[var(--primary)] selection:text-[var(--primary-foreground)]">
+  <!-- Top Navigation Progress Bar -->
+  <div id="nav-progress-bar" aria-hidden="true"></div>
+
   <!-- Accessible Skip to Content Link -->
-  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-[var(--bg-surface)] focus:text-[var(--text-ink)] focus:border focus:border-[var(--accent)] focus:rounded-md focus:shadow-lg focus:outline-none">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2 focus:bg-[var(--bg-surface)] focus:text-[var(--text-ink)] focus:border focus:border-[var(--primary)] focus:rounded-md focus:shadow-lg focus:outline-none">
     Skip to main content
   </a>

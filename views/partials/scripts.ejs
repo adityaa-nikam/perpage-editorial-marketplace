@@ -46,8 +46,68 @@
   </div>
 <% } %>
 
-<!-- Minimal Motion & Reveal Script -->
-<script>
+<!-- Navigation Progress Bar & Motion Script -->
+<script nonce="<%= locals.cspNonce || '' %>">
+  // Top Navigation Progress Bar
+  (function() {
+    var progressBar = document.getElementById('nav-progress-bar');
+    if (!progressBar) return;
+    var progressTimer = null;
+
+    function startProgress() {
+      if (progressTimer) clearInterval(progressTimer);
+      progressBar.classList.add('is-active');
+      progressBar.style.width = '20%';
+      var width = 20;
+      progressTimer = setInterval(function() {
+        if (width < 80) {
+          width += (80 - width) * 0.2;
+          progressBar.style.width = Math.min(width, 80) + '%';
+        }
+      }, 80);
+    }
+
+    function completeProgress() {
+      if (progressTimer) clearInterval(progressTimer);
+      progressBar.style.width = '100%';
+      setTimeout(function() {
+        progressBar.classList.remove('is-active');
+        setTimeout(function() {
+          progressBar.style.width = '0%';
+        }, 200);
+      }, 150);
+    }
+
+    // Intercept internal link clicks
+    document.addEventListener('click', function(e) {
+      var link = e.target.closest('a');
+      if (!link) return;
+      var href = link.getAttribute('href');
+      var target = link.getAttribute('target');
+      var isDownload = link.hasAttribute('download');
+      if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:') || target === '_blank' || isDownload) {
+        return;
+      }
+      if (href.startsWith('/') || href.startsWith(window.location.origin)) {
+        startProgress();
+      }
+    });
+
+    // Form submission progress
+    document.addEventListener('submit', function(e) {
+      var form = e.target;
+      if (form && !form.getAttribute('target')) {
+        startProgress();
+      }
+    });
+
+    // Complete on pageshow
+    window.addEventListener('pageshow', function() {
+      completeProgress();
+    });
+  })();
+
+  // Editorial Section Reveal (60ms stagger maximum, gated behind html.js)
   document.addEventListener('DOMContentLoaded', function() {
     if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       var revealElements = document.querySelectorAll('.reveal-on-scroll');
@@ -59,14 +119,15 @@
               observer.unobserve(entry.target);
             }
           });
-        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
 
-        revealElements.forEach(function(el) {
+        revealElements.forEach(function(el, idx) {
+          var stagger = Math.min((idx % 3) * 50, 60);
+          el.style.transitionDelay = stagger + 'ms';
           observer.observe(el);
         });
       }
     } else {
-      // If reduced motion or no IntersectionObserver, display all immediately
       document.querySelectorAll('.reveal-on-scroll').forEach(function(el) {
         el.classList.add('is-revealed');
       });

@@ -1,13 +1,13 @@
 <%- include('partials/head', { 
-  pageTitle: pageTitle || (writer.name + ' — Academic Writer | PerPage'), 
-  metaDescription: metaDescription || ('Academic writer profile for ' + writer.name + ' on PerPage.'),
+  pageTitle: pageTitle || (writer.name + ' — Editor | PerPage'), 
+  metaDescription: metaDescription || ('Editor profile for ' + writer.name + ' on PerPage.'),
   canonical: canonical 
 }) %>
 <%- include('partials/navbar') %>
 
 <% 
-  const initials = (writer.name || 'W').split(' ').map(n => n.charAt(0)).slice(0, 2).join('').toUpperCase();
-  const nameParts = (writer.name || 'this writer').replace(/^(Dr\.|Prof\.|Mr\.|Ms\.|Mrs\.)\s+/i, '').split(' ');
+  const initials = (writer.name || 'E').split(' ').map(n => n.charAt(0)).slice(0, 2).join('').toUpperCase();
+  const nameParts = (writer.name || 'this editor').replace(/^(Dr\.|Prof\.|Mr\.|Ms\.|Mrs\.)\s+/i, '').split(' ');
   const firstName = nameParts[0] || writer.name;
   const isOwnProfile = Boolean(user && user._id && user._id.toString() === writer._id.toString());
   const hasRate = Boolean(writer.pricePerPage && writer.pricePerPage > 0);
@@ -23,12 +23,19 @@
 <main id="main-content" class="py-10 sm:py-14">
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
-    <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 text-xs text-[var(--text-muted)]" aria-label="Breadcrumb">
-      <a href="/writers" class="hover:text-[var(--text-ink)] transition-colors">Writers</a>
-      <span aria-hidden="true">/</span>
-      <span class="text-[var(--text-ink)] font-medium" aria-current="page"><%= writer.name %></span>
-    </nav>
+    <!-- Breadcrumb & Index Stamp -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-4">
+      <nav class="flex items-center gap-2 text-xs text-[var(--text-muted)]" aria-label="Breadcrumb">
+        <a href="/writers" class="hover:text-[var(--text-ink)] transition-colors">Editors</a>
+        <span aria-hidden="true">/</span>
+        <span class="text-[var(--text-ink)] font-medium" aria-current="page"><%= writer.name %></span>
+      </nav>
+      <div class="section-eyebrow">
+        <span class="eyebrow-num">ED-<%= writer._id.toString().slice(-4).toUpperCase() %></span>
+        <span class="eyebrow-rule"></span>
+        <span class="eyebrow-label">Editor Profile</span>
+      </div>
+    </div>
 
     <!-- Two-Column Desktop Grid / Single-Column Mobile -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -50,7 +57,7 @@
             <div class="space-y-1.5 min-w-0">
               <div class="flex flex-wrap items-center gap-2.5">
                 <h1 class="type-h2"><%= writer.name %></h1>
-                <span class="badge badge-neutral text-xs">Writer</span>
+                <span class="badge badge-neutral text-xs">Editor</span>
               </div>
 
               <div class="flex flex-wrap items-center gap-3 text-xs text-[var(--text-muted)]">
@@ -60,11 +67,11 @@
                 <% } %>
 
                 <% if (completedCount > 0) { %>
-                  <span class="font-medium text-[var(--text-ink)]">
+                  <span class="font-medium text-[var(--text-ink)] tabular-nums">
                     <%= completedCount %> completed <%= completedCount === 1 ? 'deal' : 'deals' %>
                   </span>
                 <% } else { %>
-                  <span>New on PerPage</span>
+                  <span>New Editor</span>
                 <% } %>
               </div>
             </div>
@@ -73,18 +80,18 @@
 
         <!-- Mobile-Only Order Card (Shown after header on mobile, hidden on desktop) -->
         <div class="block lg:hidden">
-          <div class="card p-6 space-y-5" x-data="{ pages: 1, rate: <%= rate %> }">
+          <div class="card card-ticket p-6 space-y-5" x-data="{ pages: 1, rate: <%= rate %> }">
             <div class="border-b border-[var(--border-color)] pb-4 space-y-1">
               <span class="text-xs text-[var(--text-muted)]">Rate per page</span>
               <% if (hasRate) { %>
-                <div class="font-serif-display text-3xl font-normal text-[var(--text-ink)]">
+                <div class="font-serif-display text-3xl font-normal text-[var(--text-ink)] tabular-nums">
                   ₹<%= rate %>
                 </div>
               <% } else { %>
                 <div>
-                  <span class="badge badge-neutral text-xs">Rate not set</span>
+                  <span class="badge badge-neutral text-xs font-mono">Rate on inquiry</span>
                   <p class="text-xs text-[var(--text-muted)] mt-1.5">
-                    This writer has not set a per-page rate yet.
+                    This editor has not set a per-page rate yet. Direct inquiries are pending rate configuration.
                   </p>
                 </div>
               <% } %>
@@ -93,7 +100,7 @@
             <% if (isOwnProfile) { %>
               <div class="space-y-3">
                 <p class="text-xs text-[var(--text-muted)]">
-                  This is your public writer profile as seen by students.
+                  This is your public editor profile as seen by clients. You give feedback and edits on the client's own text. You do not write documents from scratch.
                 </p>
                 <a href="/profile/<%= writer._id %>" class="btn btn-secondary btn-md w-full justify-center">
                   Edit your profile
@@ -105,7 +112,7 @@
                   Create a deal
                 </button>
                 <p class="text-xs text-[var(--text-muted)] mt-2">
-                  Deals cannot be created until the writer sets their rate.
+                  Deals cannot be created until the editor sets their rate.
                 </p>
               </div>
             <% } else { %>
@@ -146,7 +153,7 @@
                       Log in to create a deal
                     </a>
                     <p class="text-[11px] text-[var(--text-muted)] text-center mt-1.5">
-                      Log in or register to commission an assignment.
+                      Log in or register to commission document editing.
                     </p>
                   <% } %>
                 </div>
@@ -161,68 +168,78 @@
 
         <!-- About Section -->
         <div class="card p-6 sm:p-8 space-y-4">
-          <h2 class="type-h3 text-lg">About</h2>
+          <div class="section-eyebrow">
+            <span class="eyebrow-num">01</span>
+            <span class="eyebrow-rule"></span>
+            <span class="eyebrow-label">Editorial Background</span>
+          </div>
+          <h2 class="type-h3 text-lg">Editor Biography</h2>
           <% if (writer.bio && writer.bio.trim()) { %>
-            <div class="type-body text-sm text-[var(--text-muted)] leading-relaxed whitespace-pre-line">
+            <div class="type-body text-sm text-[var(--text-muted)] leading-relaxed whitespace-pre-line prose-measure">
               <%= writer.bio.trim() %>
             </div>
           <% } else { %>
-            <p class="type-body text-sm text-[var(--text-muted)] italic">
-              This writer has not added a bio yet.
+            <p class="type-body text-sm text-[var(--text-muted)] italic opacity-80 prose-measure">
+              This editor has active availability. A full editorial background bio is pending publication.
             </p>
           <% } %>
         </div>
 
-        <!-- How Working with Writer Works Timeline/Stepper -->
+        <!-- How Working with Editor Works Timeline/Stepper -->
         <div class="card p-6 sm:p-8 space-y-6">
           <div class="space-y-1">
+            <div class="section-eyebrow">
+              <span class="eyebrow-num">02</span>
+              <span class="eyebrow-rule"></span>
+              <span class="eyebrow-label">Engagement Protocol</span>
+            </div>
             <h2 class="type-h3 text-lg">How working with <%= firstName %> works</h2>
             <p class="type-body text-xs text-[var(--text-muted)]">
-              PerPage uses a transparent, step-by-step workflow for academic assignments.
+              PerPage uses a transparent, step-by-step workflow for document editing.
             </p>
           </div>
 
-          <div class="stepper space-y-6">
+          <div class="editor-flow-stepper pt-2">
             <!-- Step 1 -->
-            <div class="stepper-step">
-              <div class="stepper-marker">1</div>
-              <div class="stepper-content space-y-1">
-                <h3 class="text-sm font-semibold text-[var(--text-ink)]">Create a deal</h3>
-                <p class="text-xs text-[var(--text-muted)] leading-relaxed">
-                  Provide your page count, instructions, and upload your brief document directly to <%= firstName %>.
+            <div class="editor-flow-step">
+              <div class="editor-flow-marker">1</div>
+              <div class="editor-flow-content">
+                <h3 class="editor-flow-title">Create a deal</h3>
+                <p class="editor-flow-desc">
+                  Provide your page count, editing notes, and upload your draft document directly to <%= firstName %>.
                 </p>
               </div>
             </div>
 
             <!-- Step 2 -->
-            <div class="stepper-step">
-              <div class="stepper-marker">2</div>
-              <div class="stepper-content space-y-1">
-                <h3 class="text-sm font-semibold text-[var(--text-ink)]">Writer accepts or declines</h3>
-                <p class="text-xs text-[var(--text-muted)] leading-relaxed">
-                  <%= firstName %> reviews your assignment details and accepts or declines based on current availability.
+            <div class="editor-flow-step">
+              <div class="editor-flow-marker">2</div>
+              <div class="editor-flow-content">
+                <h3 class="editor-flow-title">Editor accepts or declines</h3>
+                <p class="editor-flow-desc">
+                  <%= firstName %> reviews your draft details and accepts or declines based on current availability.
                 </p>
               </div>
             </div>
 
             <!-- Step 3 -->
-            <div class="stepper-step">
-              <div class="stepper-marker">3</div>
-              <div class="stepper-content space-y-1">
-                <h3 class="text-sm font-semibold text-[var(--text-ink)]">Final file delivered</h3>
-                <p class="text-xs text-[var(--text-muted)] leading-relaxed">
-                  Once completed, the writer uploads the completed paper through the secure platform.
+            <div class="editor-flow-step">
+              <div class="editor-flow-marker">3</div>
+              <div class="editor-flow-content">
+                <h3 class="editor-flow-title">Edited file delivered</h3>
+                <p class="editor-flow-desc">
+                  Once completed, the editor uploads the edited document and feedback through the platform.
                 </p>
               </div>
             </div>
 
             <!-- Step 4 -->
-            <div class="stepper-step">
-              <div class="stepper-marker">4</div>
-              <div class="stepper-content space-y-1">
-                <h3 class="text-sm font-semibold text-[var(--text-ink)]">Download from your dashboard</h3>
-                <p class="text-xs text-[var(--text-muted)] leading-relaxed">
-                  Access and download your final work anytime directly from your PerPage student dashboard.
+            <div class="editor-flow-step">
+              <div class="editor-flow-marker">4</div>
+              <div class="editor-flow-content">
+                <h3 class="editor-flow-title">Download from your dashboard</h3>
+                <p class="editor-flow-desc">
+                  Access and download your edited work anytime directly from your PerPage dashboard.
                 </p>
               </div>
             </div>
@@ -233,19 +250,19 @@
 
       <!-- Right Column: Desktop Sticky Order Card -->
       <aside class="hidden lg:block lg:col-span-4 sticky top-6">
-        <div class="card p-6 space-y-5" x-data="{ pages: 1, rate: <%= rate %> }">
+        <div class="card card-ticket p-6 space-y-5" x-data="{ pages: 1, rate: <%= rate %> }">
           
           <div class="border-b border-[var(--border-color)] pb-4 space-y-1">
             <span class="text-xs text-[var(--text-muted)]">Rate per page</span>
             <% if (hasRate) { %>
-              <div class="font-serif-display text-3xl font-normal text-[var(--text-ink)]">
+              <div class="font-serif-display text-3xl font-normal text-[var(--text-ink)] tabular-nums">
                 ₹<%= rate %>
               </div>
             <% } else { %>
               <div>
-                <span class="badge badge-neutral text-xs">Rate not set</span>
+                <span class="badge badge-neutral text-xs font-mono">Rate on inquiry</span>
                 <p class="text-xs text-[var(--text-muted)] mt-1.5">
-                  This writer has not set a per-page rate yet.
+                  This editor has not set a per-page rate yet. Direct inquiries are pending rate configuration.
                 </p>
               </div>
             <% } %>
@@ -254,7 +271,7 @@
           <% if (isOwnProfile) { %>
             <div class="space-y-3">
               <p class="text-xs text-[var(--text-muted)]">
-                This is your public writer profile as seen by students.
+                This is your public editor profile as seen by clients. You give feedback and edits on the client's own text. You do not write documents from scratch.
               </p>
               <a href="/profile/<%= writer._id %>" class="btn btn-secondary btn-md w-full justify-center">
                 Edit your profile
@@ -266,7 +283,7 @@
                 Create a deal
               </button>
               <p class="text-xs text-[var(--text-muted)] mt-2">
-                Deals cannot be created until the writer sets their rate.
+                Deals cannot be created until the editor sets their rate.
               </p>
             </div>
           <% } else { %>
@@ -307,7 +324,7 @@
                     Log in to create a deal
                   </a>
                   <p class="text-[11px] text-[var(--text-muted)] text-center mt-1.5">
-                    Log in or register to commission an assignment.
+                    Log in or register to commission document editing.
                   </p>
                 <% } %>
               </div>

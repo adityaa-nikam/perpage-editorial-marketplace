@@ -6,6 +6,7 @@ import { s3Client, bucketName } from '../config/s3.js';
 import { GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { MOCK_DEALS, MOCK_WRITERS, FILE_MAX_MB } from './deal.js';
+import { getUserNotifications, getUnreadCount } from '../utils/notifications.js';
 
 const router = express.Router();
 
@@ -13,17 +14,22 @@ export const PAGE_SIZE = 10;
 
 // Whitelisted notice definitions
 export const NOTICE_MAP = {
-  created: { type: 'success', text: 'Deal created successfully. The writer will review your request.' },
-  accepted: { type: 'success', text: 'Deal accepted. You can now work on the assignment and upload the final PDF.' },
+  created: { type: 'success', text: 'Deal created successfully. The editor will review your request.' },
+  accepted: { type: 'success', text: 'Deal accepted. You can now review the draft and upload the edited document.' },
+  paid: { type: 'success', text: 'Payment completed successfully via Razorpay test mode.' },
   rejected: { type: 'success', text: 'Deal declined.' },
-  uploaded: { type: 'success', text: 'Final document uploaded successfully.' },
+  uploaded: { type: 'success', text: 'Edited document uploaded successfully.' },
   invalid_state: { type: 'error', text: 'This deal is no longer in a state that allows that action.' },
   not_found: { type: 'error', text: 'The requested deal could not be found.' },
   forbidden: { type: 'error', text: 'You are not authorized to perform that action on this deal.' },
   upload_size: { type: 'error', text: `File exceeds the maximum size limit (${FILE_MAX_MB}MB).` },
   upload_type: { type: 'error', text: 'Only valid PDF documents are accepted.' },
   upload_missing: { type: 'error', text: 'Please select a PDF document to upload.' },
-  upload_failed: { type: 'error', text: 'Failed to upload document. Please try again.' }
+  upload_failed: { type: 'error', text: 'Failed to upload document. Please try again.' },
+  completed: { type: 'success', text: 'Deal marked as completed. You have confirmed receipt of the edited document.' },
+  unauthorized: { type: 'error', text: 'You are not authorized to complete this deal.' },
+  not_delivered: { type: 'error', text: 'This deal cannot be completed until an edited file has been delivered.' },
+  invalid_deal: { type: 'error', text: 'Invalid deal identifier provided.' }
 };
 
 // Middleware to protect route
@@ -73,6 +79,9 @@ function checkAuthenticated(req, res, next) {
     }
   }
 
+  if (req.method === 'GET' && req.session) {
+    req.session.returnTo = req.originalUrl;
+  }
   res.redirect('/login');
 }
 
@@ -314,12 +323,12 @@ router.get('/', checkAuthenticated, async (req, res) => {
             const cleanName = key.replace(/^uploads\/[a-f0-9-]{36}_/, '').replace(/^uploads\/\d+_/, '');
             deal.briefLinks.push({
               url: signedUrl,
-              filename: cleanName || 'assignment_brief.pdf'
+              filename: cleanName || 'draft_document.pdf'
             });
           } catch (signErr) {
             deal.briefLinks.push({
               url: null,
-              filename: 'assignment_brief.pdf',
+              filename: 'draft_document.pdf',
               unavailable: true
             });
           }
@@ -359,9 +368,11 @@ router.get('/', checkAuthenticated, async (req, res) => {
     // Map Whitelisted Notice Code
     let notice = null;
     if (req.query.created) notice = NOTICE_MAP.created;
+    else if (req.query.paid) notice = NOTICE_MAP.paid;
     else if (req.query.accepted) notice = NOTICE_MAP.accepted;
     else if (req.query.rejected) notice = NOTICE_MAP.rejected;
     else if (req.query.uploaded) notice = NOTICE_MAP.uploaded;
+    else if (req.query.completed) notice = NOTICE_MAP.completed;
     else if (typeof req.query.error === 'string' && NOTICE_MAP[req.query.error]) {
       notice = NOTICE_MAP[req.query.error];
     }
@@ -370,6 +381,16 @@ router.get('/', checkAuthenticated, async (req, res) => {
     res.locals.messages = { error: null, success: null, info: null };
 
     const totalPages = Math.max(1, Math.ceil(totalFiltered / PAGE_SIZE));
+
+    // Fetch in-app notifications for the user
+    let userNotifications = [];
+    let unreadCount = 0;
+    try {
+      userNotifications = await getUserNotifications(currentUserId, 10);
+      unreadCount = await getUnreadCount(currentUserId);
+    } catch (notifFetchErr) {
+      console.error('Error fetching notifications for dashboard:', notifFetchErr.message);
+    }
 
     return res.render('dashboard', {
       user: req.user,
@@ -382,7 +403,9 @@ router.get('/', checkAuthenticated, async (req, res) => {
       totalPages,
       totalFiltered,
       notice,
-      FILE_MAX_MB
+      FILE_MAX_MB,
+      userNotifications,
+      unreadCount
     });
   } catch (err) {
     console.error('Dashboard error:', err.message);

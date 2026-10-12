@@ -10,7 +10,7 @@ function isAuthenticated(req, res, next) {
   if (req.isAuthenticated && req.isAuthenticated()) return next();
   if (process.env.NODE_ENV !== 'production' && req.query.mockUser) {
     req.user = {
-      _id: req.params.id,
+      _id: req.params.id || '64f1a2b3c4d5e6f7a8b9c0d1',
       name: 'Dr. Eleanor Vance',
       email: 'eleanor@oxford.ac.uk',
       role: 'writer',
@@ -23,6 +23,14 @@ function isAuthenticated(req, res, next) {
   }
   res.redirect('/login');
 }
+
+// GET /profile - Redirect signed-in user to their own profile page
+router.get('/', isAuthenticated, (req, res) => {
+  if (req.user && req.user._id) {
+    return res.redirect(`/profile/${req.user._id}`);
+  }
+  return res.redirect('/login');
+});
 
 // GET /profile/:id - Signed-in user's own profile view / edit page
 router.get('/:id', isAuthenticated, async (req, res) => {

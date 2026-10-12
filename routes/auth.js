@@ -1,8 +1,10 @@
 import express from 'express';
 import passport from 'passport';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { body, validationResult } from 'express-validator';
 import { User } from '../models/User.js';
+import { loginLimiter, registerLimiter } from '../config/limits.js';
+import { getSafeRedirect } from '../utils/safeRedirect.js';
 
 const router = express.Router();
 
@@ -11,8 +13,9 @@ router.get('/register', (req, res) => {
   res.render('register');
 });
 
-// Register Logic
+// Register Logic with Rate Limiting
 router.post('/register',
+  registerLimiter,
   [
     body('email').isEmail().withMessage('Enter a valid email'),
     body('password').isLength({ min: 8, max: 72 }).withMessage('Password must be between 8 and 72 characters'),
@@ -59,11 +62,27 @@ router.post('/register',
 
 // Login Page
 router.get('/login', (req, res) => {
-  res.render('login-improved');
+  res.render('login');
 });
 
-// Login Logic with error handling
-router.post('/login', (req, res, next) => {
+// Helper for safe post-login redirection
+function redirectAfterLogin(req, res) {
+  const returnTo = req.session?.returnTo;
+  if (req.session) {
+    delete req.session.returnTo;
+  }
+  const target = getSafeRedirect(returnTo, '/dashboard');
+  if (req.session && typeof req.session.save === 'function') {
+    return req.session.save((saveErr) => {
+      if (saveErr) console.error('❌ Session save error:', saveErr.message);
+      return res.redirect(target);
+    });
+  }
+  return res.redirect(target);
+}
+
+// Login Logic with failure-only rate limiting
+router.post('/login', loginLimiter, (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
       console.error('❌ Login authentication error:', err.message);
@@ -77,12 +96,12 @@ router.post('/login', (req, res, next) => {
       return res.status(401).send(info.message || 'Login failed');
     }
     
-    req.logIn(user, (err) => {
-      if (err) {
-        console.error('❌ Login session error:', err.message);
+    req.logIn(user, (loginErr) => {
+      if (loginErr) {
+        console.error('❌ Login session error:', loginErr.message);
         return res.status(500).send('Login session failed. Please try again.');
       }
-      return res.redirect('/home');
+      return redirectAfterLogin(req, res);
     });
   })(req, res, next);
 });
@@ -101,19 +120,18 @@ router.get('/auth/google/callback', (req, res, next) => {
       return res.redirect('/login?error=oauth_failed');
     }
     
-    req.logIn(user, (err) => {
-      if (err) {
-        console.error('❌ Google OAuth login session error:', err.message);
+    req.logIn(user, (loginErr) => {
+      if (loginErr) {
+        console.error('❌ Google OAuth login session error:', loginErr.message);
         return res.redirect('/login?error=session_failed');
       }
-      return res.redirect('/home');
+      return redirectAfterLogin(req, res);
     });
   })(req, res, next);
 });
 
-
-//git auth with error handling
-router.get('/auth/github', passport.authenticate('github', { scope: ['profile','email'] }));
+// GitHub OAuth with error handling
+router.get('/auth/github', passport.authenticate('github', { scope: ['profile', 'email'] }));
 router.get('/auth/github/callback', (req, res, next) => {
   passport.authenticate('github', (err, user, info) => {
     if (err) {
@@ -126,26 +144,42 @@ router.get('/auth/github/callback', (req, res, next) => {
       return res.redirect('/login?error=oauth_failed');
     }
     
-    req.logIn(user, (err) => {
-      if (err) {
-        console.error('❌ GitHub OAuth login session error:', err.message);
+    req.logIn(user, (loginErr) => {
+      if (loginErr) {
+        console.error('❌ GitHub OAuth login session error:', loginErr.message);
         return res.redirect('/login?error=session_failed');
       }
-      return res.redirect('/home');
+      return redirectAfterLogin(req, res);
     });
   })(req, res, next);
 });
 
-// Logout with error handling
-router.get('/logout', (req, res, next) => {
-  req.logout(function (err) {
+// Logout via POST: ends session and redirects to /
+router.post('/logout', (req, res, next) => {
+  req.logout((err) => {
     if (err) {
       console.error('❌ Logout error:', err.message);
       return next(err);
     }
-    console.log('✅ User logged out successfully');
-    res.redirect('/login');
+    if (req.session) {
+      req.session.destroy((destroyErr) => {
+        if (destroyErr) {
+          console.warn('⚠️ Session destroy error on logout:', destroyErr.message);
+        }
+        res.clearCookie('connect.sid');
+        console.log('✅ User logged out and session destroyed');
+        return res.redirect('/');
+      });
+    } else {
+      res.clearCookie('connect.sid');
+      return res.redirect('/');
+    }
   });
+});
+
+// GET /logout no longer logs anyone out; it redirects to /
+router.get('/logout', (req, res) => {
+  res.redirect('/');
 });
 
 export default router;

@@ -1,0 +1,255 @@
+[
+  {
+    "method": "GET",
+    "path": "/",
+    "name": "Landing Page",
+    "results": {
+      "logged_out": "200",
+      "student": "200",
+      "writer": "200",
+      "admin": "200"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/home",
+    "name": "Home Route (redirects to /)",
+    "results": {
+      "logged_out": "200",
+      "student": "200",
+      "writer": "200",
+      "admin": "200"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/about",
+    "name": "About Page",
+    "results": {
+      "logged_out": "200",
+      "student": "200",
+      "writer": "200",
+      "admin": "200"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/writers",
+    "name": "Writers Directory",
+    "results": {
+      "logged_out": "200",
+      "student": "200",
+      "writer": "200",
+      "admin": "200"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/writers/64f1a2b3c4d5e6f7a8b9c0d1",
+    "name": "Writer Public Profile",
+    "results": {
+      "logged_out": "200",
+      "student": "200",
+      "writer": "200",
+      "admin": "200"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/deal?writerId=64f1a2b3c4d5e6f7a8b9c0d1",
+    "name": "Deal Commission Page",
+    "results": {
+      "logged_out": "302 → /login",
+      "student": "200",
+      "writer": "409",
+      "admin": "200"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/dashboard",
+    "name": "Dashboard",
+    "results": {
+      "logged_out": "302 → /login",
+      "student": "200",
+      "writer": "200",
+      "admin": "200"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/profile/64f1a2b3c4d5e6f7a8b9c0d1",
+    "name": "Profile Edit Page (Writer)",
+    "results": {
+      "logged_out": "302 → /login",
+      "student": "302 → /login",
+      "writer": "302 → /login",
+      "admin": "302 → /login"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/profile/64f1a2b3c4d5e6f7a8b9c0d9",
+    "name": "Profile Edit Page (Student)",
+    "results": {
+      "logged_out": "302 → /login",
+      "student": "302 → /login",
+      "writer": "302 → /login",
+      "admin": "302 → /login"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/login",
+    "name": "Login Page",
+    "results": {
+      "logged_out": "200",
+      "student": "200",
+      "writer": "200",
+      "admin": "200"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/register",
+    "name": "Register Page",
+    "results": {
+      "logged_out": "200",
+      "student": "200",
+      "writer": "200",
+      "admin": "200"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/logout",
+    "name": "Logout Endpoint",
+    "results": {
+      "logged_out": "500",
+      "student": "500",
+      "writer": "500",
+      "admin": "500"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/auth/google",
+    "name": "Google OAuth Start",
+    "results": {
+      "logged_out": "302 → https://accounts.google.com/o/oauth2/v2/auth?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgoogle%2Fcallback&scope=profile%20email&client_id=dummy_google_client_id",
+      "student": "302 → https://accounts.google.com/o/oauth2/v2/auth?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgoogle%2Fcallback&scope=profile%20email&client_id=dummy_google_client_id",
+      "writer": "302 → https://accounts.google.com/o/oauth2/v2/auth?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgoogle%2Fcallback&scope=profile%20email&client_id=dummy_google_client_id",
+      "admin": "302 → https://accounts.google.com/o/oauth2/v2/auth?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgoogle%2Fcallback&scope=profile%20email&client_id=dummy_google_client_id"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/auth/github",
+    "name": "GitHub OAuth Start",
+    "results": {
+      "logged_out": "302 → https://github.com/login/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgithub%2Fcallback&scope=profile%2Cemail&client_id=dummy_github_client_id",
+      "student": "302 → https://github.com/login/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgithub%2Fcallback&scope=profile%2Cemail&client_id=dummy_github_client_id",
+      "writer": "302 → https://github.com/login/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgithub%2Fcallback&scope=profile%2Cemail&client_id=dummy_github_client_id",
+      "admin": "302 → https://github.com/login/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgithub%2Fcallback&scope=profile%2Cemail&client_id=dummy_github_client_id"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/health",
+    "name": "System Health Check",
+    "results": {
+      "logged_out": "404",
+      "student": "404",
+      "writer": "404",
+      "admin": "404"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/favicon.svg",
+    "name": "Favicon",
+    "results": {
+      "logged_out": "200",
+      "student": "200",
+      "writer": "200",
+      "admin": "200"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/css/app.css",
+    "name": "Compiled Stylesheet",
+    "results": {
+      "logged_out": "200",
+      "student": "200",
+      "writer": "200",
+      "admin": "200"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/logo.png",
+    "name": "Brand Logo",
+    "results": {
+      "logged_out": "200",
+      "student": "200",
+      "writer": "200",
+      "admin": "200"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/styleguide",
+    "name": "Design Styleguide",
+    "results": {
+      "logged_out": "200",
+      "student": "200",
+      "writer": "200",
+      "admin": "200"
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/non-existent-page-url",
+    "name": "Unknown URL (404)",
+    "results": {
+      "logged_out": "404",
+      "student": "404",
+      "writer": "404",
+      "admin": "404"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/deal/accept/64f1a2b3c4d5e6f7a8b9d001",
+    "name": "Deal Accept Handler",
+    "results": {
+      "logged_out": "302 → /login",
+      "student": "302 → /dashboard?error=forbidden",
+      "writer": "302 → /dashboard?accepted=1",
+      "admin": "302 → /dashboard?error=forbidden"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/deal/reject/64f1a2b3c4d5e6f7a8b9d001",
+    "name": "Deal Reject Handler",
+    "results": {
+      "logged_out": "302 → /login",
+      "student": "302 → /dashboard?error=forbidden",
+      "writer": "302 → /dashboard?error=invalid_state",
+      "admin": "302 → /dashboard?error=forbidden"
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/deal/upload-final",
+    "name": "Deal Upload-Final Handler",
+    "results": {
+      "logged_out": "302 → /login",
+      "student": "302 → /dashboard?error=upload_failed",
+      "writer": "302 → /dashboard?error=upload_failed",
+      "admin": "302 → /dashboard?error=upload_failed"
+    }
+  }
+]

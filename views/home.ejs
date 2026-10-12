@@ -1,63 +1,163 @@
 <%- include('partials/head', { 
-  pageTitle: 'PerPage — Academic Writing & Assignment Marketplace',
-  metaDescription: 'Browse freelance academic writers, calculate rates upfront per page, and coordinate assignments privately.',
+  pageTitle: 'PerPage — Document Editing & Feedback Marketplace',
+  metaDescription: 'Browse freelance editors, calculate upfront per-page rates, and get structured editing and feedback on your own drafts.',
   canonical: 'https://perpage.onrender.com/'
 }) %>
 <%- include('partials/navbar') %>
 
 <% 
   function getInitials(name) {
-    if (!name) return 'W';
+    if (!name) return 'E';
     const parts = name.trim().split(/\s+/);
     if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 %>
 
-<main id="main-content" class="space-y-24 sm:space-y-32 py-12 sm:py-20">
+<!-- Brand Intro Loader (First visit per session only, maximum 800ms visible) -->
+<div id="brand-intro" aria-hidden="true">
+  <div class="flex flex-col items-center">
+    <div class="intro-letter">
+      P
+      <svg class="absolute -bottom-2 left-0 w-full h-3 overflow-visible" viewBox="0 0 40 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 2 4 Q 10 1, 20 5 T 38 4" class="intro-underline-path" />
+      </svg>
+    </div>
+  </div>
+</div>
+<script nonce="<%= locals.cspNonce || '' %>">
+  (function() {
+    try {
+      var isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var isBot = navigator.webdriver || window.location.search.indexOf('noloader') !== -1;
+      var alreadySeen = sessionStorage.getItem('perpage_intro_seen');
+      var introEl = document.getElementById('brand-intro');
+      if (isReduced || isBot || alreadySeen) {
+        if (introEl) introEl.remove();
+      } else {
+        sessionStorage.setItem('perpage_intro_seen', '1');
+        setTimeout(function() {
+          if (introEl) {
+            introEl.classList.add('fade-out');
+            setTimeout(function() { introEl.remove(); }, 250);
+          }
+        }, 700);
+      }
+    } catch (e) {
+      var el = document.getElementById('brand-intro');
+      if (el) el.remove();
+    }
+  })();
+</script>
+
+<main id="main-content" class="space-y-20 sm:space-y-28 py-10 sm:py-16">
 
   <!-- =========================================================================
-       1. HERO SECTION
+       1. HERO SECTION WITH GLYPH PORTAL
+       Scroll-driven camera through live type "PERPAGE", revealing the hero
        ========================================================================= -->
-  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
+  <section 
+    id="gp-perpage-hero" 
+    class="glyph-portal-section -mt-10 sm:-mt-16 mb-16" 
+    aria-label="perpage"
+    style="--gp-length: 2.2; --gp-characters: 7;"
+  >
+    <div data-gp-viewport aria-hidden="true"></div>
+    <div data-gp-pin>
+      <div data-gp-field aria-hidden="true" inert>
+        <div data-gp-default-field class="gp-default-field-bg" style="position: absolute; inset: 0; transform: scale(var(--gp-field-scale, 1));"></div>
+      </div>
+      <svg data-gp-art aria-hidden="true" focusable="false">
+        <defs>
+          <clipPath id="gp-perpage-clip" clipPathUnits="userSpaceOnUse">
+            <text data-gp-glyph x="0" y="0" style="font-family: Georgia, serif; font-weight: 900; font-size: 100px; font-kerning: none; font-variant-ligatures: none; letter-spacing: 0;">perpage</text>
+          </clipPath>
+        </defs>
+        <g data-gp-marks style="visibility: hidden;"><path /></g>
+      </svg>
+      <div data-gp-choices role="radiogroup" aria-label="Choose the letter to enter through" inert>
+        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gp-letter="0" aria-label="p, letter 1 of 7"></button>
+        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gp-letter="1" aria-label="e, letter 2 of 7"></button>
+        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gp-letter="2" aria-label="r, letter 3 of 7"></button>
+        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gp-letter="3" aria-label="p, letter 4 of 7"></button>
+        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gp-letter="4" aria-label="a, letter 5 of 7"></button>
+        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gp-letter="5" aria-label="g, letter 6 of 7"></button>
+        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gp-letter="6" aria-label="e, letter 7 of 7"></button>
+      </div>
+      <label data-gp-touch-picker>
+        <span class="sr-only">Entry letter</span>
+        <select data-gp-select defaultValue="">
+          <option value="" disabled selected>Choose a letter</option>
+          <option value="0">1 · p</option>
+          <option value="1">2 · e</option>
+          <option value="2">3 · r</option>
+          <option value="3">4 · p</option>
+          <option value="4">5 · a</option>
+          <option value="5">6 · g</option>
+          <option value="6">7 · e</option>
+        </select>
+      </label>
+      <div data-gp-front>
+        <p class="gp-front-eyebrow">A different perspective on your draft starts here.</p>
+        <p class="gp-front-support">Follow your curiosity. Choose an entry letter.</p>
+      </div>
+      <div data-gp-caption class="justify-center">
+        <a data-gp-enter href="#gp-perpage-content" class="gp-scroll-indicator" aria-label="Scroll down to explore">
+          <span>Scroll down</span>
+          <span class="gp-scroll-arrow" aria-hidden="true">&darr;</span>
+        </a>
+      </div>
+    </div>
+    <div data-gp-content id="gp-perpage-content" tabindex="-1">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 w-full">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-start">
       
       <!-- Left Column: Copy & Actions -->
       <div class="lg:col-span-7 space-y-6">
         <div>
-          <span class="badge badge-neutral">Academic writing marketplace</span>
+          <div class="section-eyebrow mb-2">
+            <span class="eyebrow-num">01</span>
+            <span class="eyebrow-rule"></span>
+            <span class="eyebrow-label">Overview</span>
+          </div>
         </div>
 
         <h1 class="type-display text-[var(--text-ink)]">
-          Find a writer. Agree a price. Get it delivered.
+          <span class="sr-only">Find an editor. Agree a price. Improve your draft.</span>
+          <span aria-hidden="true">Find an editor. Agree a price. <span class="proof-wavy-hero">Improve<svg viewBox="0 0 100 12" preserveAspectRatio="none"><path pathLength="100" d="M 2 7 Q 25 1, 50 8 T 98 7" /></svg></span> your draft.</span>
         </h1>
 
-        <p class="type-body text-[var(--text-muted)] max-w-xl text-base sm:text-lg">
-          Browse freelance academic authors, set your page count with transparent upfront pricing, and track each assignment through structured delivery.
+        <p class="type-body text-[var(--text-muted)] prose-measure text-base sm:text-lg">
+          Browse freelance editors, set your page count with transparent upfront pricing, and track each editing review through structured delivery.
         </p>
 
-        <!-- CTA Buttons -->
-        <div class="flex flex-wrap items-center gap-3 pt-2">
+        <!-- Positioning Guardrail Statement -->
+        <p class="text-sm font-medium text-[var(--text-ink)] proof-margin-rule py-0.5">
+          Editors improve your writing. They do not write it for you.
+        </p>
+
+        <!-- CTA Buttons (Sleek, Compact, Clickable) -->
+        <div class="flex flex-wrap items-center gap-3 pt-1">
           <% if (locals.user) { %>
-            <a href="/dashboard" class="btn btn-primary btn-lg">
-              Go to dashboard
+            <a href="/dashboard" class="btn btn-primary btn-md rounded-full shadow-sm">
+              <span>Go to dashboard</span>
               <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
             </a>
-            <a href="/writers" class="btn btn-secondary btn-lg">
-              Browse writers
+            <a href="/writers" class="btn btn-secondary btn-md rounded-full">
+              Browse editors
             </a>
           <% } else { %>
-            <a href="/writers" class="btn btn-primary btn-lg">
-              Browse writers
+            <a href="/writers" class="btn btn-primary btn-md rounded-full shadow-sm">
+              <span>Browse editors</span>
               <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
             </a>
-            <a href="/register" class="btn btn-secondary btn-lg">
-              Become a writer
+            <a href="/register" class="btn btn-secondary btn-md rounded-full">
+              Become an editor
             </a>
           <% } %>
         </div>
 
-        <!-- Fact Strip (Verified against codebase reality) -->
+        <!-- Fact Strip (Platform attributes) -->
         <div class="pt-6 border-t border-[var(--border-color)] grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl">
           <div class="flex items-start gap-2.5">
             <span class="text-[var(--accent)] mt-0.5 shrink-0">
@@ -82,128 +182,785 @@
               <%- icon('clock', { class: 'w-4 h-4' }) %>
             </span>
             <span class="text-xs text-[var(--text-muted)] font-medium leading-snug">
-              Writer accepts before work starts
+              Editor accepts before work starts
             </span>
           </div>
         </div>
       </div>
 
-      <!-- Right Column: Coded Product Mockup (Deal Card) -->
+      <!-- Right Column: Interactive PerPage Workflow Component (Vercel Monochrome Aesthetics) -->
       <div 
         class="lg:col-span-5"
-        x-data="{ currentStep: 2 }"
-        x-init="if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          setInterval(() => {
-            currentStep = (currentStep % 4) + 1;
-          }, 3600);
+        x-data="{
+          activeStep: 1,
+          steps: [
+            { id: 1, tag: '01', title: 'Price', desc: 'Upfront rates' },
+            { id: 2, tag: '02', title: 'Pair', desc: 'Editor match' },
+            { id: 3, tag: '03', title: 'Revise', desc: 'Tracked changes' },
+            { id: 4, tag: '04', title: 'Deliver', desc: 'Final draft' }
+          ],
+          setStep(step) {
+            this.activeStep = step;
+          },
+          nextStep() {
+            this.activeStep = this.activeStep >= 4 ? 1 : this.activeStep + 1;
+          },
+          prevStep() {
+            this.activeStep = this.activeStep <= 1 ? 4 : this.activeStep - 1;
+          }
         }"
       >
-        <div class="card p-6 sm:p-7 space-y-5 bg-[var(--bg-surface)] shadow-sm relative">
-          <!-- Card Header & Badge -->
-          <div class="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
-            <div class="flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-[var(--accent)]"></span>
-              <span class="text-xs font-semibold text-[var(--text-ink)]">Assignment Deal No. 1042</span>
+        <div class="workflow-card-container">
+          <div class="workflow-card">
+            
+            <!-- Workflow Header & Stepper Tabs -->
+            <div class="workflow-header">
+              <div class="flex items-center justify-between pb-2.5 border-b border-[var(--border-color)]">
+                <div class="flex items-center gap-2">
+                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-md bg-[var(--text-ink)] text-[var(--bg-surface)] text-[10px] font-mono font-bold">P</span>
+                  <span class="font-sans text-xs font-semibold text-[var(--text-ink)] tracking-tight">PerPage Editorial Workflow</span>
+                </div>
+                <div class="flex items-center gap-1 font-mono text-[11px] text-[var(--text-muted)]">
+                  <span>Step</span>
+                  <span class="font-semibold text-[var(--text-ink)]" x-text="activeStep">1</span>
+                  <span>of 4</span>
+                </div>
+              </div>
+
+              <!-- Stepper Navigation Pills -->
+              <div class="grid grid-cols-4 gap-1 pt-2" role="tablist" aria-label="Workflow Steps">
+                <template x-for="s in steps" :key="s.id">
+                  <button 
+                    type="button"
+                    role="tab"
+                    :aria-selected="activeStep === s.id ? 'true' : 'false'"
+                    @click="setStep(s.id)"
+                    class="workflow-tab-btn"
+                    :class="activeStep === s.id ? 'is-active' : ''"
+                  >
+                    <span class="workflow-tab-tag" x-text="s.tag">01</span>
+                    <span class="workflow-tab-title truncate" x-text="s.title">Price</span>
+                  </button>
+                </template>
+              </div>
             </div>
+
+            <!-- Workflow Stage 1: Upfront Pricing -->
+            <div x-show="activeStep === 1" x-transition:enter.opacity.duration.200ms class="workflow-stage-body">
+              <div class="workflow-inner-card">
+                <div class="flex items-center justify-between pb-2 border-b border-[var(--border-color)] text-xs">
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    <%- icon('file-text', { class: 'w-3.5 h-3.5 text-[var(--text-muted)] shrink-0' }) %>
+                    <span class="font-mono text-[11px] font-medium text-[var(--text-ink)] truncate">Editing Deal No. 1042</span>
+                    <span class="text-[var(--border-strong)]">•</span>
+                    <span class="text-[11px] text-[var(--text-muted)] truncate">Report draft, 12 pages</span>
+                  </div>
+                  <span class="badge badge-neutral text-[10px] shrink-0">Step 01</span>
+                </div>
+
+                <div class="space-y-2.5 py-2.5 flex-1 flex flex-col justify-center">
+                  <div class="text-[11px] font-mono text-[var(--text-muted)] flex items-center gap-1.5">
+                    <%- icon('paperclip', { class: 'w-3 h-3' }) %>
+                    <span>Attached file: report-draft.pdf</span>
+                  </div>
+
+                  <div class="p-3 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] space-y-1.5">
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="text-[var(--text-muted)] text-[11px]">Manuscript Volume</span>
+                      <span class="font-mono text-xs font-medium text-[var(--text-ink)]">12 pages</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="text-[var(--text-muted)] text-[11px]">Agreed Rate</span>
+                      <span class="font-mono text-xs font-medium text-[var(--text-ink)]">₹45 / page</span>
+                    </div>
+                    <div class="pt-1.5 border-t border-[var(--border-color)] flex items-center justify-between">
+                      <span class="text-xs font-semibold text-[var(--text-ink)]">Upfront Price</span>
+                      <span class="font-mono text-xs font-bold text-[var(--text-ink)]">12 pgs × ₹45 = ₹540</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs text-[var(--text-muted)]">
+                  <span class="inline-flex items-center gap-1 text-[11px]">
+                    <%- icon('check-circle', { class: 'w-3.5 h-3.5 text-emerald-500' }) %>
+                    Priced upfront
+                  </span>
+                  <span class="text-[11px] font-medium text-[var(--text-ink)]">No unexpected fees</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Workflow Stage 2: Pair with Editor -->
+            <div x-show="activeStep === 2" x-transition:enter.opacity.duration.200ms class="workflow-stage-body">
+              <div class="workflow-inner-card">
+                <div class="flex items-center justify-between pb-2 border-b border-[var(--border-color)] text-xs">
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="font-mono text-[11px] font-medium text-[var(--text-ink)] truncate">Editing Deal No. 1042</span>
+                    <span class="text-[var(--border-strong)]">•</span>
+                    <span class="text-[11px] text-[var(--text-muted)] truncate">Report draft, 12 pages</span>
+                  </div>
+                  <span class="badge badge-success text-[10px] shrink-0">Step 02</span>
+                </div>
+
+                <div class="space-y-2.5 py-2.5 flex-1 flex flex-col justify-center">
+                  <div class="flex items-center gap-2.5 p-2.5 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)]">
+                    <div class="w-8 h-8 rounded-full bg-[var(--text-ink)] text-[var(--bg-surface)] font-bold text-xs flex items-center justify-center shrink-0">AS</div>
+                    <div class="flex-1 min-w-0">
+                      <div class="font-medium text-xs text-[var(--text-ink)]">Ananya Sharma</div>
+                      <div class="text-[11px] text-[var(--text-muted)]">Freelance Editor • Academic Papers</div>
+                    </div>
+                    <span class="badge badge-neutral text-[10px]">Paired</span>
+                  </div>
+
+                  <div class="p-2.5 rounded-lg border border-[var(--border-color)] space-y-1 text-xs">
+                    <div class="text-[11px] font-mono text-[var(--text-muted)]">Attached file: report-draft.pdf</div>
+                    <p class="text-[11px] text-[var(--text-body)] leading-relaxed">
+                      Editor reviews draft scope and accepts the deal before work begins.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs text-[var(--text-muted)]">
+                  <span class="inline-flex items-center gap-1 text-[11px]">
+                    <%- icon('check-circle', { class: 'w-3.5 h-3.5 text-emerald-500' }) %>
+                    Scope confirmed
+                  </span>
+                  <span class="text-[11px] font-medium text-[var(--text-ink)]">Work starts upon mutual agreement</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Workflow Stage 3: Tracked Revisions -->
+            <div x-show="activeStep === 3" x-transition:enter.opacity.duration.200ms class="workflow-stage-body">
+              <div class="workflow-inner-card">
+                <div class="flex items-center justify-between pb-2 border-b border-[var(--border-color)] text-xs">
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="font-mono text-[11px] font-medium text-[var(--text-ink)] truncate">Editing Deal No. 1042</span>
+                    <span class="text-[var(--border-strong)]">•</span>
+                    <span class="text-[11px] text-[var(--text-muted)] truncate">Report draft, 12 pages</span>
+                  </div>
+                  <span class="badge badge-neutral text-[10px] shrink-0">Step 03</span>
+                </div>
+
+                <div class="space-y-2 py-2 flex-1 flex flex-col justify-center">
+                  <div class="text-[10px] font-mono text-[var(--text-muted)]">Attached file: report-draft.pdf</div>
+                  
+                  <div class="p-3 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] font-serif text-[13px] leading-relaxed text-[var(--text-ink)]">
+                    <p class="select-none">
+                      The community newsletter 
+                      <span class="line-through text-rose-500 decoration-rose-500/80 decoration-1 bg-rose-500/10 px-0.5 rounded">was</span>
+                      <span class="text-emerald-600 font-sans font-semibold bg-emerald-500/10 px-0.5 rounded">were</span>
+                      prepared for all members 
+                      <span class="line-through text-rose-500 decoration-rose-500/80 decoration-1 bg-rose-500/10 px-0.5 rounded">at this current point in time</span>
+                      <span class="text-emerald-600 font-sans font-semibold bg-emerald-500/10 px-0.5 rounded">now</span>.
+                    </p>
+                    
+                    <div class="mt-2 pt-1.5 border-t border-[var(--border-color)] font-sans text-[11px] flex items-center gap-1.5 text-rose-500">
+                      <%- icon('message-square', { class: 'w-3 h-3' }) %>
+                      <span class="font-medium">Margin note: Shorter and clearer</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs text-[var(--text-muted)]">
+                  <span class="inline-flex items-center gap-1 text-[11px]">
+                    <%- icon('check-circle', { class: 'w-3.5 h-3.5 text-emerald-500' }) %>
+                    Tracked revisions
+                  </span>
+                  <span class="text-[11px] font-medium text-[var(--text-ink)]">No ghostwriting</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Workflow Stage 4: Delivered Manuscript -->
+            <div x-show="activeStep === 4" x-transition:enter.opacity.duration.200ms class="workflow-stage-body">
+              <div class="workflow-inner-card">
+                <div class="flex items-center justify-between pb-2 border-b border-[var(--border-color)] text-xs">
+                  <div class="flex items-center gap-1.5 min-w-0">
+                    <span class="font-mono text-[11px] font-medium text-[var(--text-ink)] truncate">Editing Deal No. 1042</span>
+                    <span class="text-[var(--border-strong)]">•</span>
+                    <span class="text-[11px] text-[var(--text-muted)] truncate">Report draft, 12 pages</span>
+                  </div>
+                  <span class="badge badge-success text-[10px] shrink-0">Delivered</span>
+                </div>
+
+                <div class="space-y-2.5 py-2.5 flex-1 flex flex-col justify-center">
+                  <div class="p-3 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] space-y-1.5 text-xs">
+                    <div class="flex items-center justify-between">
+                      <span class="font-mono font-medium text-[var(--text-ink)] text-[11px]">report-draft.pdf</span>
+                      <span class="badge badge-success text-[10px]">Delivered</span>
+                    </div>
+                    <div class="text-[11px] text-[var(--text-muted)]">
+                      Reviewed by Freelance Editor • 12 manuscript pages completed
+                    </div>
+                    <div class="pt-1.5 border-t border-[var(--border-color)] flex items-center justify-between text-[11px] text-[var(--text-muted)]">
+                      <span>Tracked edits incorporated</span>
+                      <span class="font-mono font-semibold text-[var(--text-ink)]">₹540</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs text-[var(--text-muted)]">
+                  <span class="inline-flex items-center gap-1 text-[11px]">
+                    <%- icon('check-circle', { class: 'w-3.5 h-3.5 text-emerald-500' }) %>
+                    Review completed
+                  </span>
+                  <span class="text-[11px] font-medium text-[var(--text-ink)]">Ready for submission</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Workflow Footer Stepper Controls -->
+            <div class="workflow-footer">
+              <div class="flex items-center gap-1.5">
+                <button 
+                  type="button" 
+                  @click="prevStep()" 
+                  class="btn btn-secondary btn-sm h-6 px-2 text-[11px] font-medium"
+                  aria-label="Previous workflow step"
+                >
+                  <%- icon('arrow-left', { class: 'w-3 h-3' }) %>
+                  <span>Prev</span>
+                </button>
+                <button 
+                  type="button" 
+                  @click="nextStep()" 
+                  class="btn btn-secondary btn-sm h-6 px-2 text-[11px] font-medium"
+                  aria-label="Next workflow step"
+                >
+                  <span>Next</span>
+                  <%- icon('arrow-right', { class: 'w-3 h-3' }) %>
+                </button>
+              </div>
+
+              <div class="flex items-center gap-1.5">
+                <template x-for="s in steps" :key="s.id">
+                  <button 
+                    type="button"
+                    @click="setStep(s.id)"
+                    class="w-2 h-2 rounded-full transition-all cursor-pointer"
+                    :class="activeStep === s.id ? 'bg-[var(--text-ink)] scale-125' : 'bg-[var(--border-strong)] opacity-50 hover:opacity-100'"
+                    :aria-label="'Go to step ' + s.id"
+                  ></button>
+                </template>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Glyph Portal Interactive Controller Script -->
+  <script nonce="<%= locals.cspNonce || '' %>">
+    (function() {
+      const section = document.getElementById('gp-perpage-hero');
+      if (!section) return;
+
+      const pin = section.querySelector('[data-gp-pin]');
+      const field = section.querySelector('[data-gp-field]');
+      const art = section.querySelector('[data-gp-art]');
+      const clip = section.querySelector('#gp-perpage-clip');
+      const glyph = section.querySelector('[data-gp-glyph]');
+      const marks = section.querySelector('[data-gp-marks]');
+      const choices = section.querySelector('[data-gp-choices]');
+      const buttons = Array.from(choices ? choices.querySelectorAll('button') : []);
+      const picker = section.querySelector('[data-gp-select]');
+      const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      const text = 'perpage';
+      const clamp = (n, a = 0, b = 1) => Math.min(b, Math.max(a, n));
+      const smooth = (a, b, n) => {
+        const t = clamp((n - a) / (b - a));
+        return t * t * (3 - 2 * t);
+      };
+
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      if (!context) return;
+
+      function interior(ctx, char, font) {
+        const cvs = ctx.canvas;
+        ctx.font = font;
+        const m = ctx.measureText(char);
+        const pad = 8;
+        const left = Math.ceil(m.actualBoundingBoxLeft || 0);
+        const ascent = Math.ceil(m.actualBoundingBoxAscent || 0);
+        cvs.width = Math.max(1, Math.ceil((m.actualBoundingBoxLeft || 0) + (m.actualBoundingBoxRight || 0)) + pad * 2);
+        cvs.height = Math.max(1, Math.ceil((m.actualBoundingBoxAscent || 0) + (m.actualBoundingBoxDescent || 0)) + pad * 2);
+        ctx.font = font;
+        ctx.fontKerning = 'none';
+        ctx.fillText(char, pad + left, pad + ascent);
+        const { width, height } = cvs;
+        const pixels = ctx.getImageData(0, 0, width, height).data;
+        const rows = new Uint16Array(width + 1);
+        let size = 0, bx = 0, by = 0;
+        for (let y = 0; y < height; y++) {
+          let diagonal = 0;
+          for (let x = 0; x < width; x++) {
+            const above = rows[x + 1];
+            rows[x + 1] = pixels[(y * width + x) * 4 + 3] > 245
+              ? Math.min(above, rows[x], diagonal) + 1 : 0;
+            diagonal = above;
+            if (rows[x + 1] > size) { size = rows[x + 1]; bx = x; by = y; }
+          }
+        }
+        if (size < 3) return null;
+        return {
+          x: (bx + 1 - size / 2 - pad - left) / 3,
+          y: (by + 1 - size / 2 - pad - ascent) / 3,
+          radius: (size / 2 - 1) / 3
+        };
+      }
+
+      let disposed = false, raf = 0, dirty = true, active = true, ready = false;
+      const mountedAt = performance.now();
+      let browserFrameSeen = false, stalled = false;
+      let W = 1, H = 1, travel = 1, startScale = 1, endScale = 1;
+      let center = { x: 0, y: 0 }, target = null;
+      let candidates = [], letters = [];
+      let choosing = false;
+      let bounds = { x: 0, y: 0, width: 1, height: 1 };
+      const length = 2.2;
+
+      function readInk() {
+        const font = window.getComputedStyle(glyph);
+        const scanFont = `${font.fontWeight || 900} 300px ${font.fontFamily}`;
+        context.font = `${font.fontWeight || 900} 100px ${font.fontFamily}`;
+        context.fontKerning = 'none';
+        const metrics = context.measureText(text);
+        const advances = Array.from({ length: text.length }, (_, i) => context.measureText(text.slice(0, i)).width);
+        bounds = {
+          x: -metrics.actualBoundingBoxLeft,
+          y: -metrics.actualBoundingBoxAscent,
+          width: metrics.actualBoundingBoxLeft + metrics.actualBoundingBoxRight,
+          height: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
+        };
+        if (!bounds.width || !bounds.height) return false;
+        center = { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 };
+
+        let offset = 0;
+        candidates = []; letters = [];
+        for (const char of Array.from(text)) {
+          context.font = `${font.fontWeight || 900} 100px ${font.fontFamily}`;
+          const m = context.measureText(char);
+          letters.push({
+            index: offset,
+            x: advances[offset] - m.actualBoundingBoxLeft,
+            y: -m.actualBoundingBoxAscent,
+            width: m.actualBoundingBoxLeft + m.actualBoundingBoxRight,
+            height: m.actualBoundingBoxAscent + m.actualBoundingBoxDescent
+          });
+          const found = interior(context, char, scanFont);
+          if (found) candidates.push({ ...found, x: found.x + advances[offset], index: offset });
+          offset += char.length;
+        }
+        target = candidates.find(c => c.index === 0) || candidates[0] || null;
+        return true;
+      }
+
+      function select(next) {
+        target = next;
+        endScale = target ? Math.max(startScale, Math.hypot(W, H) / (target.radius * 1.35)) : startScale;
+        section.dataset.gpFocus = target ? Array.from(text.slice(target.index))[0] : "";
+        section.dataset.gpFocusIndex = String(target ? target.index : -1);
+        for (const button of buttons) {
+          const selected = Number(button.dataset.gpLetter) === target?.index;
+          button.disabled = !candidates.some(c => c.index === Number(button.dataset.gpLetter));
+          button.setAttribute("aria-checked", String(selected));
+          button.tabIndex = selected ? 0 : -1;
+        }
+        if (picker && picker.value !== "") picker.value = String(target?.index ?? -1);
+      }
+
+      function position() {
+        return clamp(-section.getBoundingClientRect().top / travel);
+      }
+
+      function paint(progress) {
+        const isStatic = motion.matches || !browserFrameSeen || stalled || !target;
+        const p = isStatic ? 0 : progress;
+        const t = clamp(p / 0.78);
+        const eased = t < 0.5 ? 4 * Math.pow(t, 3) : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        const scale = Math.exp(Math.log(startScale) + Math.log(endScale / startScale) * eased);
+        const blend = endScale === startScale ? 0 : (1 / scale - 1 / startScale) / (1 / endScale - 1 / startScale);
+        const cx = center.x + ((target?.x ?? center.x) - center.x) * blend;
+        const cy = center.y + ((target?.y ?? center.y) - center.y) * blend;
+        const roll = -4 * smooth(0.06, 0.5, t) * (1 - smooth(0.62, 0.92, t));
+        const radians = roll * Math.PI / 180;
+        const dx = W / 2 / scale, dy = (H * 0.46 + H * 0.04 * eased) / scale;
+
+        if (clip) clip.setAttribute("transform", `scale(${scale}) rotate(${roll})`);
+        if (glyph) glyph.setAttribute("transform", `translate(${Math.cos(radians) * dx + Math.sin(radians) * dy - cx} ${-Math.sin(radians) * dx + Math.cos(radians) * dy - cy})`);
+        if (marks) {
+          marks.setAttribute("transform", `translate(${W / 2} ${H * 0.46 + H * 0.04 * eased}) scale(${scale}) rotate(${roll}) translate(${-cx} ${-cy})`);
+          marks.style.opacity = String(1 - smooth(0.015, 0.17, p));
+        }
+        choosing = !isStatic && p < 0.04;
+        if (choices) choices.inert = !choosing;
+        section.dataset.gpChoosing = String(choosing);
+        if (field) {
+          field.style.clipPath = t >= 1 ? "none" : "url(#gp-perpage-clip)";
+          field.style.opacity = isStatic ? "0" : String(t >= 1 ? Math.max(0, 1 - smooth(0.78, 0.95, p)) : 1);
+        }
+        section.style.setProperty("--gp-caption", String(1 - smooth(0.01, 0.16, p)));
+        section.style.setProperty("--gp-reveal", String(isStatic ? 1 : smooth(0.78, 0.9, p)));
+        section.style.setProperty("--gp-field-scale", String(1 + 0.16 * smooth(0, 0.82, p)));
+        section.style.setProperty("--gp-caption-hit", p < 0.08 ? "auto" : "none");
+        section.dataset.gpEntered = String(p >= 0.9);
+
+      }
+
+      function layout() {
+        if (!section.clientWidth) return;
+        W = pin.clientWidth;
+        const viewportProbe = section.querySelector("[data-gp-viewport]");
+        const smallViewport = viewportProbe ? viewportProbe.offsetHeight : window.innerHeight;
+        const viewportHeight = Math.max(1, Math.min(window.innerHeight, smallViewport));
+        H = motion.matches ? Math.min(viewportHeight * 0.75, 480) : viewportHeight;
+        section.style.setProperty("--gp-height", `${H}px`);
+        travel = H * length;
+        if (art) art.setAttribute("viewBox", `0 0 ${W} ${H}`);
+        if (!ready) { ready = readInk(); }
+        if (!ready) return;
+        const wordHeight = H * 0.32;
+        startScale = Math.min(W * 0.72 / bounds.width, wordHeight / bounds.height);
+        select(target);
+        for (const button of buttons) {
+          const letter = letters.find(item => item.index === Number(button.dataset.gpLetter));
+          if (letter) {
+            Object.assign(button.style, {
+              left: `${W / 2 + (letter.x - center.x) * startScale}px`,
+              top: `${H * 0.46 + (letter.y - center.y) * startScale - Math.max(0, 44 - letter.height * startScale) / 2}px`,
+              width: `${Math.max(1, letter.width * startScale)}px`,
+              height: `${Math.max(44, letter.height * startScale)}px`
+            });
+          }
+        }
+        section.style.setProperty("--gp-word-top", `${H * 0.46 - bounds.height * startScale / 2}px`);
+        section.style.setProperty("--gp-word-bottom", `${H * 0.46 + bounds.height * startScale / 2}px`);
+        section.dataset.gpReady = "true";
+        section.dataset.gpMotion = !motion.matches && browserFrameSeen && !stalled && target ? "on" : "off";
+      }
+
+      function frame(time) {
+        raf = 0;
+        if (disposed) return;
+        if (time !== undefined && !browserFrameSeen) {
+          browserFrameSeen = true;
+          stalled = (performance.now() - mountedAt > 2500);
+          dirty = true;
+        }
+        if (dirty) { dirty = false; layout(); }
+        if (ready) paint(position());
+      }
+
+      function schedule() { if (!raf && active) raf = requestAnimationFrame(frame); }
+      function resize() { cancelAnimationFrame(raf); dirty = true; frame(); }
+      function scroll() { schedule(); }
+
+      function choose(event) {
+        if (!choosing || position() >= 0.04) return;
+        const button = event.target.closest("[data-gp-letter]");
+        const next = candidates.find(c => c.index === Number(button?.dataset.gpLetter));
+        if (!next || next === target) return;
+        select(next); paint(position());
+      }
+
+      if (choices) {
+        choices.addEventListener("pointerover", choose);
+        choices.addEventListener("click", choose);
+      }
+      if (picker) {
+        picker.addEventListener("change", () => {
+          if (!choosing || position() >= 0.04) return;
+          const next = candidates.find(c => c.index === Number(picker.value));
+          if (next) { select(next); paint(position()); }
+        });
+      }
+
+      const observer = new ResizeObserver(resize);
+      observer.observe(section);
+
+      const visibility = new IntersectionObserver(([entry]) => {
+        active = entry.isIntersecting;
+        if (active) { dirty = true; schedule(); }
+        else if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      }, { rootMargin: "100% 0px" });
+      visibility.observe(section);
+
+      window.addEventListener("scroll", scroll, { passive: true });
+      window.addEventListener("resize", resize);
+      motion.addEventListener("change", resize);
+
+      // Visible, graceful draw animation for wavy underline under "Improve"
+      const wavyHero = section.querySelector('.proof-wavy-hero');
+      if (wavyHero && 'IntersectionObserver' in window) {
+        const wavyObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const path = wavyHero.querySelector('path');
+              if (path && (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+                path.style.animation = 'none';
+                void path.offsetWidth;
+                path.style.animation = 'proofDrawWavy 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards';
+              }
+              wavyObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1 });
+        wavyObserver.observe(wavyHero);
+      }
+
+      // Scroll-driven slide animation: red wavy underline slides to its right side on scroll down
+      const wavySvgs = document.querySelectorAll('.proof-wavy-hero svg');
+      if (wavySvgs.length) {
+        let wavyTicking = false;
+        function updateWavySlide() {
+          if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            wavySvgs.forEach(svg => { svg.style.transform = 'none'; });
+            wavyTicking = false;
+            return;
+          }
+          const scrollY = window.scrollY || window.pageYOffset || 0;
+          wavySvgs.forEach(svg => {
+            const parent = svg.closest('.proof-wavy-hero');
+            if (!parent) return;
+            const elemTop = parent.offsetTop || 0;
+            const relativeScroll = Math.max(0, scrollY - Math.max(0, elemTop - 250));
+            const shiftX = Math.min(relativeScroll * 0.45, 140);
+            svg.style.transform = `translateX(${shiftX}px)`;
+          });
+          wavyTicking = false;
+        }
+
+        window.addEventListener('scroll', () => {
+          if (!wavyTicking) {
+            window.requestAnimationFrame(updateWavySlide);
+            wavyTicking = true;
+          }
+        }, { passive: true });
+        updateWavySlide();
+      }
+
+      frame();
+      schedule();
+    })();
+  </script>
+
+
+  <!-- =========================================================================
+       2. HOW IT WORKS SECTION (Scroll-driven 2-column sticky layout with fallbacks)
+       ========================================================================= -->
+  <section 
+    id="how-it-works" 
+    class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll"
+    x-data="{
+      activeStep: 1,
+      init() {
+        if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          const steps = [1, 2, 3];
+          steps.forEach(s => {
+            const el = document.getElementById('step-trigger-' + s);
+            if (el) {
+              const obs = new IntersectionObserver((entries) => {
+                entries.forEach(e => {
+                  if (e.isIntersecting) {
+                    this.activeStep = s;
+                  }
+                });
+              }, { threshold: 0.6 });
+              obs.observe(el);
+            }
+          });
+        }
+      }
+    }"
+  >
+    <div class="section-header-rule">
+      <div class="section-eyebrow">
+        <span class="eyebrow-num">02</span>
+        <span class="eyebrow-rule"></span>
+        <span class="eyebrow-label">How it works</span>
+      </div>
+    </div>
+    
+    <div class="max-w-2xl mb-12">
+      <h2 class="type-h2 tracking-tight">How PerPage Works</h2>
+      <p class="type-body text-[var(--text-muted)] prose-measure">
+        From draft to delivered edits in three steps.
+      </p>
+    </div>
+
+    <!-- 2-Column Layout on Desktop: Left steps list, Right sticky sheet preview -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+      
+      <!-- Left Column: Steps List -->
+      <div class="lg:col-span-6 space-y-2">
+        
+        <!-- Step 1 -->
+        <div 
+          id="step-trigger-1"
+          class="how-step-item"
+          :aria-current="activeStep === 1 ? 'step' : null"
+        >
+          <div class="flex items-start gap-4">
+            <span class="font-serif italic text-3xl font-bold text-[var(--text-ink)] tabular-nums shrink-0 leading-none">01</span>
+            <div class="space-y-2 flex-1">
+              <div class="flex items-center gap-2">
+                <h3 class="type-h3 text-xl">Browse editors</h3>
+                <span x-show="activeStep === 1" class="hidden lg:inline text-[10px] font-semibold text-[var(--accent)] uppercase tracking-wider">Active Step</span>
+              </div>
+              <p class="type-small text-[var(--text-muted)] leading-relaxed prose-measure">
+                Compare editor profiles, bios and per-page rates. Choose a specialist suited to your subject matter.
+              </p>
+
+              <!-- Mobile/Fallback Vignette 1 -->
+              <div class="lg:hidden mt-4 p-3 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <div class="avatar avatar-sm">AS</div>
+                  <div>
+                    <div class="text-xs font-medium text-[var(--text-ink)]">Ananya Sharma</div>
+                    <div class="text-[11px] text-[var(--text-muted)]">₹45 / page</div>
+                  </div>
+                </div>
+                <span class="badge badge-neutral text-[10px]">Sample</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div 
+          id="step-trigger-2"
+          class="how-step-item"
+          :aria-current="activeStep === 2 ? 'step' : null"
+        >
+          <div class="flex items-start gap-4">
+            <span class="font-serif italic text-3xl font-bold text-[var(--text-ink)] tabular-nums shrink-0 leading-none">02</span>
+            <div class="space-y-2 flex-1">
+              <div class="flex items-center gap-2">
+                <h3 class="type-h3 text-xl">Create a deal</h3>
+                <span x-show="activeStep === 2" class="hidden lg:inline text-[10px] font-semibold text-[var(--accent)] uppercase tracking-wider">Active Step</span>
+              </div>
+              <p class="type-small text-[var(--text-muted)] leading-relaxed prose-measure">
+                Specify your draft page count, include editing instructions, and upload your document in PDF format.
+              </p>
+
+              <!-- Mobile/Fallback Vignette 2 -->
+              <div class="lg:hidden mt-4 p-3 rounded-md bg-[var(--bg-surface-muted)] border border-dashed border-[var(--border-color)] flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2 text-[var(--text-ink)] truncate">
+                  <%- icon('upload', { class: 'w-4 h-4 text-[var(--accent)] shrink-0' }) %>
+                  <span class="truncate font-mono text-[11px]">report-draft.pdf</span>
+                </div>
+                <span class="text-[11px] font-medium text-[var(--text-muted)] font-mono tabular-nums">12 pgs • ₹540</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div 
+          id="step-trigger-3"
+          class="how-step-item"
+          :aria-current="activeStep === 3 ? 'step' : null"
+        >
+          <div class="flex items-start gap-4">
+            <span class="font-serif italic text-3xl font-bold text-[var(--text-ink)] tabular-nums shrink-0 leading-none">03</span>
+            <div class="space-y-2 flex-1">
+              <div class="flex items-center gap-2">
+                <h3 class="type-h3 text-xl">Track to delivery</h3>
+                <span x-show="activeStep === 3" class="hidden lg:inline text-[10px] font-semibold text-[var(--accent)] uppercase tracking-wider">Active Step</span>
+              </div>
+              <p class="type-small text-[var(--text-muted)] leading-relaxed prose-measure">
+                Once the editor delivers, download your edited draft and feedback from your dashboard.
+              </p>
+
+              <!-- Mobile/Fallback Vignette 3 -->
+              <div class="lg:hidden mt-4 p-3 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="text-[var(--semantic-success-text)]">
+                    <%- icon('check', { class: 'w-4 h-4' }) %>
+                  </span>
+                  <span class="text-xs font-medium text-[var(--text-ink)]">Edits Ready</span>
+                </div>
+                <span class="badge badge-success text-[10px] font-mono">DELIVERED</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Sticky Preview Sheet (Desktop Only) -->
+      <div class="hidden lg:block lg:col-span-6">
+        <div class="how-sticky-card p-7 space-y-6">
+          <div class="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
+            <span class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">
+              Step <span x-text="activeStep">1</span> of 3 Preview
+            </span>
             <span class="badge badge-neutral text-[10px]">Sample</span>
           </div>
 
-          <!-- Assignment Details -->
-          <div class="space-y-1">
-            <h2 class="type-h4 text-base font-semibold text-[var(--text-ink)]">
-              Behavioral Economics Literature Review
-            </h2>
-            <div class="flex items-center gap-3 text-xs text-[var(--text-muted)]">
-              <span>6 Pages</span>
-              <span>•</span>
-              <span>₹150 / page</span>
-              <span>•</span>
-              <span class="font-semibold text-[var(--text-ink)]">Total: ₹900</span>
-            </div>
-          </div>
-
-          <!-- Writer Row -->
-          <div class="p-3 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
+          <!-- Preview State 1: Browse Profile -->
+          <div x-show="activeStep === 1" x-transition:enter="transition ease-out duration-200" class="space-y-4">
             <div class="flex items-center gap-3">
-              <div class="avatar avatar-sm">
-                <span>AS</span>
-              </div>
+              <div class="avatar avatar-md">AS</div>
               <div>
-                <div class="text-xs font-medium text-[var(--text-ink)]">Aditi Sharma</div>
-                <div class="text-[11px] text-[var(--text-muted)]">Assigned Author</div>
+                <div class="font-semibold text-[var(--text-ink)] text-sm">Ananya Sharma</div>
+                <div class="text-xs text-[var(--text-muted)]">Freelance Academic &amp; Technical Editor</div>
               </div>
             </div>
-            <span 
-              class="badge"
-              :class="{
-                'badge-neutral': currentStep === 1,
-                'badge-accent': currentStep === 2 || currentStep === 3,
-                'badge-success': currentStep === 4
-              }"
-              x-text="currentStep === 1 ? 'Pending' : (currentStep === 2 ? 'Accepted' : (currentStep === 3 ? 'In Progress' : 'Completed'))"
-            >
-              In Progress
-            </span>
+            <p class="text-xs text-[var(--text-muted)] leading-relaxed">
+              Specializing in document structure, clarity, grammar polish, and reference formatting with consistent per-page pricing.
+            </p>
+            <div class="p-3 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
+              <span class="text-xs text-[var(--text-muted)]">Fixed Rate</span>
+              <span class="font-mono text-xs font-bold text-[var(--text-ink)] tabular-nums">₹45 / page</span>
+            </div>
           </div>
 
-          <!-- Attached Brief File -->
-          <div class="flex items-center justify-between p-2.5 rounded-md border border-[var(--border-color)] text-xs">
-            <div class="flex items-center gap-2 text-[var(--text-ink)] truncate mr-2">
-              <%- icon('file-text', { class: 'w-4 h-4 text-[var(--text-muted)] shrink-0' }) %>
-              <span class="truncate font-mono text-[11px]">assignment-brief.pdf</span>
+          <!-- Preview State 2: Create Deal & Upload -->
+          <div x-show="activeStep === 2" x-transition:enter="transition ease-out duration-200" class="space-y-4" style="display: none;">
+            <div class="space-y-1">
+              <div class="text-sm font-semibold text-[var(--text-ink)]">Commission Request</div>
+              <div class="text-xs text-[var(--text-muted)]">Report draft submission</div>
             </div>
-            <span class="text-[11px] text-[var(--text-muted)] shrink-0">1.8 MB</span>
+            <div class="p-4 rounded-md border border-dashed border-[var(--border-strong)] bg-[var(--bg-surface-muted)] flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2.5 truncate">
+                <%- icon('file-text', { class: 'w-4 h-4 text-[var(--accent)] shrink-0' }) %>
+                <span class="font-mono text-xs text-[var(--text-ink)] truncate">report-draft.pdf</span>
+              </div>
+              <span class="text-[11px] text-[var(--text-muted)] shrink-0">1.8 MB</span>
+            </div>
+            <div class="p-3 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
+              <span class="text-xs text-[var(--text-muted)]">Calculated Total (12 pgs × ₹45)</span>
+              <span class="font-mono text-xs font-bold text-[var(--text-ink)] tabular-nums">₹540</span>
+            </div>
           </div>
 
-          <!-- Interactive Timeline Stepper -->
-          <div class="pt-2">
-            <div class="text-[11px] font-medium text-[var(--text-muted)] mb-2.5">Pipeline Status</div>
-            <div class="timeline-stepper">
-              <!-- Step 1: Created -->
-              <div class="stepper-step" :class="currentStep >= 1 ? 'is-complete' : ''">
-                <div class="stepper-indicator text-[11px]">
-                  <%- icon('check', { class: 'w-3 h-3' }) %>
-                </div>
-                <div class="stepper-line"></div>
+          <!-- Preview State 3: Tracked Delivery -->
+          <div x-show="activeStep === 3" x-transition:enter="transition ease-out duration-200" class="space-y-4" style="display: none;">
+            <div class="flex items-center justify-between">
+              <div class="text-sm font-semibold text-[var(--text-ink)]">Delivery Completed</div>
+              <span class="badge badge-success text-[10px] font-mono">DELIVERED</span>
+            </div>
+            <div class="p-3.5 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] space-y-2 text-xs">
+              <div class="flex items-center justify-between font-medium text-[var(--text-ink)]">
+                <span>Edited document &amp; feedback attached</span>
+                <span class="text-[var(--semantic-success-text)]">Ready</span>
               </div>
-
-              <!-- Step 2: Accepted -->
-              <div class="stepper-step" :class="currentStep > 2 ? 'is-complete' : (currentStep === 2 ? 'is-current' : '')">
-                <div class="stepper-indicator text-[11px]">
-                  <template x-if="currentStep > 2">
-                    <%- icon('check', { class: 'w-3 h-3' }) %>
-                  </template>
-                  <template x-if="currentStep <= 2">
-                    <span>2</span>
-                  </template>
-                </div>
-                <div class="stepper-line"></div>
-              </div>
-
-              <!-- Step 3: In Progress -->
-              <div class="stepper-step" :class="currentStep > 3 ? 'is-complete' : (currentStep === 3 ? 'is-current' : '')">
-                <div class="stepper-indicator text-[11px]">
-                  <template x-if="currentStep > 3">
-                    <%- icon('check', { class: 'w-3 h-3' }) %>
-                  </template>
-                  <template x-if="currentStep <= 3">
-                    <span>3</span>
-                  </template>
-                </div>
-                <div class="stepper-line"></div>
-              </div>
-
-              <!-- Step 4: Completed -->
-              <div class="stepper-step" :class="currentStep === 4 ? 'is-complete' : ''">
-                <div class="stepper-indicator text-[11px]">4</div>
+              <div class="flex items-center gap-2 text-[var(--accent)] font-medium">
+                <%- icon('download', { class: 'w-3.5 h-3.5 shrink-0' }) %>
+                <span class="font-mono text-[11px]">report-draft-edited.pdf</span>
               </div>
             </div>
-
-            <div class="flex justify-between text-[10px] text-[var(--text-muted)] mt-2">
-              <span>Created</span>
-              <span>Accepted</span>
-              <span>Writing</span>
-              <span>Delivered</span>
+            <div class="text-[11px] text-[var(--text-muted)]">
+              Files are shared through private time-limited download links from your dashboard.
             </div>
           </div>
         </div>
@@ -214,239 +971,116 @@
 
 
   <!-- =========================================================================
-       2. HOW IT WORKS SECTION
-       ========================================================================= -->
-  <section id="how-it-works" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
-    <div class="section-header max-w-2xl">
-      <div class="type-eyebrow">The Process</div>
-      <h2 class="type-h2">How PerPage Works</h2>
-      <p class="type-body text-[var(--text-muted)]">
-        A structured, milestone-based collaboration from initial brief to final draft.
-      </p>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      
-      <!-- Step 01 -->
-      <div class="card p-6 sm:p-7 space-y-5 flex flex-col justify-between">
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <span class="step-numeral">01</span>
-            <span class="badge badge-neutral">Step 1</span>
-          </div>
-          <h3 class="type-h3 text-lg">Browse writers</h3>
-          <p class="type-small text-[var(--text-muted)] leading-relaxed">
-            Compare author profiles, subject bios, and per-page rates to find the right specialist for your academic paper.
-          </p>
-        </div>
-
-        <!-- Step 1 Vignette: Mini Author Row -->
-        <div class="p-3 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <div class="avatar avatar-sm">DR</div>
-            <div>
-              <div class="text-xs font-medium text-[var(--text-ink)]">Dr. J. Doe</div>
-              <div class="text-[11px] text-[var(--text-muted)]">₹150 / page</div>
-            </div>
-          </div>
-          <span class="text-xs text-[var(--accent)] font-medium">Profile</span>
-        </div>
-      </div>
-
-      <!-- Step 02 -->
-      <div class="card p-6 sm:p-7 space-y-5 flex flex-col justify-between">
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <span class="step-numeral">02</span>
-            <span class="badge badge-neutral">Step 2</span>
-          </div>
-          <h3 class="type-h3 text-lg">Create a deal</h3>
-          <p class="type-small text-[var(--text-muted)] leading-relaxed">
-            Specify your required page count, include assignment instructions, and upload your prompt document in PDF format.
-          </p>
-        </div>
-
-        <!-- Step 2 Vignette: Mini Upload Dropzone -->
-        <div class="p-3 rounded-lg bg-[var(--bg-surface-muted)] border border-dashed border-[var(--border-color)] flex items-center justify-between text-xs">
-          <div class="flex items-center gap-2 text-[var(--text-ink)] truncate">
-            <%- icon('upload', { class: 'w-4 h-4 text-[var(--accent)] shrink-0' }) %>
-            <span class="truncate font-mono text-[11px]">brief.pdf</span>
-          </div>
-          <span class="text-[11px] font-medium text-[var(--text-muted)]">4 pgs • ₹600</span>
-        </div>
-      </div>
-
-      <!-- Step 03 -->
-      <div class="card p-6 sm:p-7 space-y-5 flex flex-col justify-between">
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <span class="step-numeral">03</span>
-            <span class="badge badge-neutral">Step 3</span>
-          </div>
-          <h3 class="type-h3 text-lg">Track to delivery</h3>
-          <p class="type-small text-[var(--text-muted)] leading-relaxed">
-            The writer accepts or declines before work begins. Once finalized, download your completed draft securely from your dashboard.
-          </p>
-        </div>
-
-        <!-- Step 3 Vignette: Mini Status & Download -->
-        <div class="p-3 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="text-[var(--semantic-success-text)]">
-              <%- icon('check', { class: 'w-4 h-4' }) %>
-            </span>
-            <span class="text-xs font-medium text-[var(--text-ink)]">Draft Ready</span>
-          </div>
-          <span class="badge badge-success text-[10px]">Download</span>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-
-  <!-- =========================================================================
-       3. WHY PERPAGE (BENTO GRID)
+       3. WHY PERPAGE (Asymmetric Editorial Layout, No Icon Tiles)
        ========================================================================= -->
   <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
-    <div class="section-header max-w-2xl">
-      <div class="type-eyebrow">Platform Architecture</div>
-      <h2 class="type-h2">Designed for Trust and Clarity</h2>
-      <p class="type-body text-[var(--text-muted)]">
-        Every feature is backed directly by our database schema and security model.
-      </p>
+    <div class="section-header-rule">
+      <div class="section-eyebrow">
+        <span class="eyebrow-num">03</span>
+        <span class="eyebrow-rule"></span>
+        <span class="eyebrow-label">Features</span>
+      </div>
     </div>
 
-    <!-- Asymmetric Bento Grid (2x3 on desktop) -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      
-      <!-- Bento Card 1: Transparent Pricing (Span 2 on desktop) -->
-      <div class="bento-card lg:col-span-2">
-        <div class="space-y-3">
-          <div class="w-9 h-9 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]">
-            <%- icon('file-text', { class: 'w-4 h-4' }) %>
-          </div>
-          <h3 class="type-h3 text-lg">Transparent per-page pricing</h3>
-          <p class="type-small text-[var(--text-muted)] max-w-xl leading-relaxed">
-            You know the exact total before commissioning. Price is calculated simply as requested page count multiplied by the author's fixed rate per page, with no bidding wars or unexpected fees.
-          </p>
-        </div>
-        <div class="pt-6 flex items-center gap-3 text-xs text-[var(--text-muted)] font-mono">
-          <span class="badge badge-neutral">Formula</span>
-          <span>totalPages × pricePerPage = totalPrice</span>
-        </div>
-      </div>
-
-      <!-- Bento Card 2: Private S3 Storage -->
-      <div class="bento-card">
-        <div class="space-y-3">
-          <div class="w-9 h-9 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]">
-            <%- icon('shield-check', { class: 'w-4 h-4' }) %>
-          </div>
-          <h3 class="type-h3 text-lg">Private file storage</h3>
-          <p class="type-small text-[var(--text-muted)] leading-relaxed">
-            Assignment instructions and finalized drafts are securely stored in Amazon S3 and accessed exclusively via authenticated, time-limited presigned URLs.
-          </p>
-        </div>
-        <div class="pt-6 text-xs text-[var(--text-muted)]">
-          <span class="badge badge-neutral">Amazon S3 Presigned</span>
-        </div>
-      </div>
-
-      <!-- Bento Card 3: Pre-work acceptance -->
-      <div class="bento-card">
-        <div class="space-y-3">
-          <div class="w-9 h-9 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]">
-            <%- icon('clock', { class: 'w-4 h-4' }) %>
-          </div>
-          <h3 class="type-h3 text-lg">Author review before work starts</h3>
-          <p class="type-small text-[var(--text-muted)] leading-relaxed">
-            Deals begin in a pending state. Writers review your prompt instructions and deadline, deciding to accept or decline before starting work.
-          </p>
-        </div>
-        <div class="pt-6 text-xs text-[var(--text-muted)]">
-          <span class="badge badge-neutral">Author Decision Flow</span>
-        </div>
-      </div>
-
-      <!-- Bento Card 4: Status tracking -->
-      <div class="bento-card">
-        <div class="space-y-3">
-          <div class="w-9 h-9 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]">
-            <%- icon('layout-dashboard', { class: 'w-4 h-4' }) %>
-          </div>
-          <h3 class="type-h3 text-lg">End-to-end status tracking</h3>
-          <p class="type-small text-[var(--text-muted)] leading-relaxed">
-            Both parties monitor clear deal statuses: pending, accepted, in-progress, submitted, and completed directly inside their accounts.
-          </p>
-        </div>
-        <div class="pt-6 text-xs text-[var(--text-muted)]">
-          <span class="badge badge-neutral">Milestone Pipeline</span>
-        </div>
-      </div>
-
-      <!-- Bento Card 5: Dedicated Dashboards -->
-      <div class="bento-card">
-        <div class="space-y-3">
-          <div class="w-9 h-9 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center text-[var(--accent)]">
-            <%- icon('user', { class: 'w-4 h-4' }) %>
-          </div>
-          <h3 class="type-h3 text-lg">Dedicated dual dashboards</h3>
-          <p class="type-small text-[var(--text-muted)] leading-relaxed">
-            Separate, purpose-built interfaces for student clients tracking orders and authors managing assignments and final deliveries.
-          </p>
-        </div>
-        <div class="pt-6 text-xs text-[var(--text-muted)]">
-          <span class="badge badge-neutral">Client &amp; Writer Portals</span>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-
-  <!-- =========================================================================
-       4. FEATURED WRITERS SECTION
-       ========================================================================= -->
-  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-      <div class="section-header mb-0 max-w-xl">
-        <div class="type-eyebrow">Academic Authors</div>
-        <h2 class="type-h2">Featured Writers</h2>
-        <p class="type-body text-[var(--text-muted)]">
-          Academic authors currently open for research and writing commissions.
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+      <!-- Left Statement -->
+      <div class="lg:col-span-5 space-y-4">
+        <h2 class="type-h2 tracking-tight">What you get</h2>
+        <p class="type-body text-[var(--text-muted)] prose-measure text-base">
+          Clear pricing, private storage, and structured reviews for every document.
         </p>
+        <div class="pt-4 proof-margin-rule text-xs text-[var(--text-muted)] space-y-1">
+          <p class="font-semibold text-[var(--text-ink)]">Editorial Principle</p>
+          <p>Transparent agreements protect both client drafting and editor time.</p>
+        </div>
       </div>
 
-      <a href="/writers" class="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--accent)] hover:underline shrink-0">
-        <span>View all writers</span>
-        <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+      <!-- Right Feature Editorial List (Hairline Separated, Specific & Concise) -->
+      <div class="lg:col-span-7 divide-y divide-[var(--border-color)] border-y border-[var(--border-color)]">
+        
+        <!-- Feature 1 -->
+        <div class="py-4 space-y-1">
+          <h3 class="type-h3 text-base font-semibold text-[var(--text-ink)]">Transparent per-page pricing</h3>
+          <p class="type-small text-[var(--text-muted)] leading-relaxed">
+            Upfront rate calculation: page count × editor rate. No bidding wars or surprise platform fees.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="py-4 space-y-1">
+          <h3 class="type-h3 text-base font-semibold text-[var(--text-ink)]">Editor review before start</h3>
+          <p class="type-small text-[var(--text-muted)] leading-relaxed">
+            Editors inspect your draft and requirements to accept or decline before starting work.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="py-4 space-y-1">
+          <h3 class="type-h3 text-base font-semibold text-[var(--text-ink)]">Private file storage</h3>
+          <p class="type-small text-[var(--text-muted)] leading-relaxed">
+            Drafts stay confidential in private storage and are accessed through time-limited download links.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="py-4 space-y-1">
+          <h3 class="type-h3 text-base font-semibold text-[var(--text-ink)]">Dedicated dual dashboards</h3>
+          <p class="type-small text-[var(--text-muted)] leading-relaxed">
+            Track review progress in real time and download feedback directly from your personal dashboard.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- =========================================================================
+       4. FEATURED EDITORS SECTION (Editorial Card Layout)
+       ========================================================================= -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
+    <div class="section-header-rule">
+      <div class="section-eyebrow">
+        <span class="eyebrow-num">04</span>
+        <span class="eyebrow-rule"></span>
+        <span class="eyebrow-label">Editors</span>
+      </div>
+      <a href="/writers" class="inline-flex items-center gap-1.5 text-xs font-mono text-[var(--accent)] hover:underline uppercase tracking-wider">
+        <span>View all editors</span>
+        <%- icon('arrow-right', { class: 'w-3.5 h-3.5' }) %>
       </a>
+    </div>
+
+    <div class="max-w-xl mb-8">
+      <h2 class="type-h2 tracking-tight">Featured Editors</h2>
+      <p class="type-body text-[var(--text-muted)] prose-measure">
+        Editors you can hire for document editing and feedback.
+      </p>
     </div>
 
     <% if (locals.featuredWriters && featuredWriters.length > 0) { %>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <% featuredWriters.forEach(function(writer) { %>
-          <div class="card p-6 flex flex-col justify-between space-y-5 hover:border-[var(--border-strong)] transition-colors duration-150">
+        <% featuredWriters.forEach(function(writer, index) { %>
+          <div class="card p-6 flex flex-col justify-between space-y-5 hover:border-[var(--border-strong)] transition-colors duration-150 <%= index === 0 ? 'border-[var(--border-strong)] bg-[var(--bg-surface)]' : '' %>">
             <div class="space-y-4">
-              <!-- Author Header -->
+              <!-- Editor Header -->
               <div class="flex items-center gap-3">
-                <div class="avatar avatar-md">
+                <div class="avatar avatar-md font-serif font-semibold">
                   <% if (writer.profilePic) { %>
-                    <img src="<%= writer.profilePic %>" alt="<%= writer.name || 'Author' %>" class="w-full h-full object-cover">
+                    <img src="<%= writer.profilePic %>" alt="<%= writer.name || 'Editor' %>" class="w-full h-full object-cover">
                   <% } else { %>
                     <span><%= getInitials(writer.name) %></span>
                   <% } %>
                 </div>
                 <div>
-                  <h3 class="type-h4 text-base text-[var(--text-ink)]"><%= writer.name || 'Academic Writer' %></h3>
-                  <div class="text-xs text-[var(--text-muted)]">Academic Author</div>
+                  <h3 class="type-h4 text-base text-[var(--text-ink)]"><%= writer.name || 'Freelance Editor' %></h3>
+                  <div class="text-xs text-[var(--text-muted)]">Freelance Editor</div>
                 </div>
               </div>
 
-              <!-- Author Bio (2-line clamped) -->
+              <!-- Editor Bio -->
               <p class="type-small text-[var(--text-muted)] line-clamp-2 leading-relaxed">
-                <%= writer.bio || 'Experienced academic author specializing in structured research papers, literature reviews, and formatted references.' %>
+                <%= writer.bio || 'Experienced editor specializing in document structure, clarity, grammar polish, and reference formatting.' %>
               </p>
             </div>
 
@@ -454,7 +1088,7 @@
             <div class="pt-4 border-t border-[var(--border-color)] flex items-center justify-between">
               <div>
                 <span class="text-xs text-[var(--text-muted)] block">Rate</span>
-                <span class="text-sm font-semibold text-[var(--text-ink)]">
+                <span class="text-sm font-semibold text-[var(--text-ink)] font-mono tabular-nums">
                   <%= writer.pricePerPage ? ('₹' + writer.pricePerPage + ' / page') : 'Rates on profile' %>
                 </span>
               </div>
@@ -473,13 +1107,13 @@
           <div class="w-10 h-10 rounded-full bg-[var(--bg-surface)] border border-[var(--border-color)] mx-auto flex items-center justify-center text-[var(--text-muted)]">
             <%- icon('user', { class: 'w-5 h-5' }) %>
           </div>
-          <h3 class="type-h4 text-base">No authors registered yet</h3>
+          <h3 class="type-h4 text-base">No editors registered yet</h3>
           <p class="type-small text-[var(--text-muted)]">
-            Be the first academic writer to join PerPage, establish your per-page rate, and receive assignment commissions.
+            Be the first freelance editor to join PerPage, establish your per-page rate, and receive editing requests.
           </p>
           <div class="pt-2">
             <a href="/register" class="btn btn-primary btn-sm">
-              Become the first writer
+              Become the first editor
               <%- icon('arrow-right', { class: 'w-3.5 h-3.5' }) %>
             </a>
           </div>
@@ -490,7 +1124,7 @@
 
 
   <!-- =========================================================================
-       5. FOR WRITERS (SPLIT SECTION)
+       5. FOR EDITORS (SURFACE-MUTED BAND WITH MARGIN-LINE MOTIF)
        ========================================================================= -->
   <section class="bg-[var(--bg-surface-muted)] py-16 sm:py-24 border-y border-[var(--border-color)] reveal-on-scroll">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -498,66 +1132,71 @@
         
         <!-- Left: Copy & Checklist -->
         <div class="lg:col-span-6 space-y-6">
-          <div class="type-eyebrow">For Academic Authors</div>
+          <div>
+            <div class="section-eyebrow mb-2">
+              <span class="eyebrow-num">05</span>
+              <span class="eyebrow-rule"></span>
+              <span class="eyebrow-label">For editors</span>
+            </div>
+          </div>
           
-          <h2 class="type-h2">Set your rates. Choose your projects.</h2>
+          <h2 class="type-h2 tracking-tight">Set your rates. Choose your projects.</h2>
           
-          <p class="type-body text-[var(--text-muted)] text-base sm:text-lg">
-            PerPage gives academic freelance writers full autonomy over pricing and commitments. Review incoming briefs, coordinate directly, and upload final drafts through your dashboard.
+          <p class="type-body text-[var(--text-muted)] prose-measure text-base sm:text-lg">
+            PerPage gives freelance editors full autonomy over pricing and commitments. Review incoming drafts, coordinate directly, and upload edited documents through your dashboard.
           </p>
+
+          <!-- Guardrail Notice for Editors -->
+          <div class="p-3.5 rounded-lg bg-[var(--bg-surface)] border border-[var(--border-color)] text-xs text-[var(--text-ink)] leading-relaxed proof-margin-rule">
+            <span class="font-semibold text-[var(--text-ink)]">Scope policy:</span> You give feedback and edits on the client's own text. You do not write documents from scratch.
+          </div>
 
           <ul class="space-y-3 pt-2">
             <li class="flex items-start gap-3">
-              <span class="text-[var(--accent)] mt-0.5 shrink-0">
-                <%- icon('check', { class: 'w-4 h-4' }) %>
-              </span>
+              <span class="text-[var(--mark)] font-bold mt-0.5 shrink-0 text-sm">^</span>
               <span class="type-small text-[var(--text-ink)]">
                 Set your own per-page price with complete rate autonomy
               </span>
             </li>
 
             <li class="flex items-start gap-3">
-              <span class="text-[var(--accent)] mt-0.5 shrink-0">
-                <%- icon('check', { class: 'w-4 h-4' }) %>
-              </span>
+              <span class="text-[var(--mark)] font-bold mt-0.5 shrink-0 text-sm">^</span>
               <span class="type-small text-[var(--text-ink)]">
-                Review assignment briefs and accept or decline before starting
+                Review incoming drafts and accept or decline before starting
               </span>
             </li>
 
             <li class="flex items-start gap-3">
-              <span class="text-[var(--accent)] mt-0.5 shrink-0">
-                <%- icon('check', { class: 'w-4 h-4' }) %>
-              </span>
+              <span class="text-[var(--mark)] font-bold mt-0.5 shrink-0 text-sm">^</span>
               <span class="type-small text-[var(--text-ink)]">
-                Upload finalized PDF deliverables directly through your author portal
+                Upload edited PDF documents directly through your editor portal
               </span>
             </li>
           </ul>
 
           <div class="pt-4">
             <a href="/register" class="btn btn-primary btn-md">
-              Join as a writer
+              Join as an editor
               <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
             </a>
           </div>
         </div>
 
-        <!-- Right: Coded Mini Mockup (Writer Dashboard Row) -->
+        <!-- Right: Mini Mockup (Editor Dashboard Row) -->
         <div class="lg:col-span-6">
           <div class="card p-6 sm:p-7 space-y-4 bg-[var(--bg-surface)] shadow-sm">
             <div class="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
-              <span class="text-xs font-semibold text-[var(--text-ink)]">Author Portal • Incoming Request</span>
+              <span class="text-xs font-semibold text-[var(--text-ink)]">Editor Portal • Incoming Request</span>
               <span class="badge badge-neutral text-[10px]">Sample</span>
             </div>
 
             <!-- Client Info Row -->
             <div class="flex items-center justify-between text-xs">
               <div class="flex items-center gap-2.5">
-                <div class="avatar avatar-sm">RT</div>
+                <div class="avatar avatar-sm">RS</div>
                 <div>
-                  <div class="font-medium text-[var(--text-ink)]">Rahul T.</div>
-                  <div class="text-[11px] text-[var(--text-muted)]">Student Client</div>
+                  <div class="font-medium text-[var(--text-ink)]">Rahul Sharma</div>
+                  <div class="text-[11px] text-[var(--text-muted)]">Client</div>
                 </div>
               </div>
               <span class="badge badge-neutral text-[10px]">Awaiting Decision</span>
@@ -565,18 +1204,18 @@
 
             <!-- Deal Scope -->
             <div class="p-3.5 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] space-y-1.5">
-              <div class="text-xs font-semibold text-[var(--text-ink)]">Literature Review on Renewable Grid Integration</div>
+              <div class="text-xs font-semibold text-[var(--text-ink)]">Review of Renewable Energy Policy Draft</div>
               <div class="flex items-center justify-between text-xs text-[var(--text-muted)]">
-                <span>Scope: 5 Pages</span>
-                <span class="font-semibold text-[var(--text-ink)]">Earnings: ₹750 (₹150/pg)</span>
+                <span>Scope: 12 Pages</span>
+                <span class="font-semibold text-[var(--text-ink)] font-mono tabular-nums">Earnings: ₹540 (₹45/pg)</span>
               </div>
             </div>
 
-            <!-- Attached Prompt File -->
+            <!-- Attached Brief File -->
             <div class="flex items-center justify-between p-2 rounded-md border border-[var(--border-color)] text-xs">
               <div class="flex items-center gap-2 truncate mr-2">
                 <%- icon('file-text', { class: 'w-3.5 h-3.5 text-[var(--text-muted)] shrink-0' }) %>
-                <span class="truncate font-mono text-[11px]">rubric-and-notes.pdf</span>
+                <span class="truncate font-mono text-[11px]">policy-draft.pdf</span>
               </div>
               <span class="text-[11px] text-[var(--accent)] font-medium">Download</span>
             </div>
@@ -603,7 +1242,10 @@
        ========================================================================= -->
   <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
     <div class="section-header text-center max-w-xl mx-auto mb-10">
-      <div class="type-eyebrow">Common Questions</div>
+      <div class="section-eyebrow mb-2">
+        <span class="eyebrow-caret">^</span>
+        <span class="eyebrow-label">Common Questions</span>
+      </div>
       <h2 class="type-h2">Frequently Asked Questions</h2>
       <p class="type-body text-[var(--text-muted)]">
         Clear answers on pricing, file formats, and platform mechanics.
@@ -622,7 +1264,7 @@
           id="faq-btn-1"
           class="accordion-trigger"
         >
-          <span>How is pricing calculated for an assignment?</span>
+          <span>How is pricing calculated for editing?</span>
           <span :class="active === 1 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
             <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
           </span>
@@ -638,7 +1280,7 @@
           class="accordion-content"
           style="display: none;"
         >
-          Pricing is calculated upfront based on the assigned writer's agreed per-page rate multiplied by the total page count you request (Pages × Rate per Page). You review the exact total before confirming the deal.
+          Pricing is calculated upfront based on the assigned editor's agreed per-page rate multiplied by the total page count you request (Pages × Rate per Page). You review the exact total before confirming the deal.
         </div>
       </div>
 
@@ -652,7 +1294,7 @@
           id="faq-btn-2"
           class="accordion-trigger"
         >
-          <span>What file types can I upload with my brief?</span>
+          <span>What file types can I upload with my draft?</span>
           <span :class="active === 2 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
             <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
           </span>
@@ -668,7 +1310,7 @@
           class="accordion-content"
           style="display: none;"
         >
-          You can upload assignment rubrics, prompt instructions, and formatting notes in PDF format (up to 10MB) directly through the commission form.
+          You can upload document drafts, reports, and editing instructions in PDF format (up to 10MB) directly through the commission form.
         </div>
       </div>
 
@@ -682,7 +1324,7 @@
           id="faq-btn-3"
           class="accordion-trigger"
         >
-          <span>Can an author decline an assignment request?</span>
+          <span>Can an editor decline an editing request?</span>
           <span :class="active === 3 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
             <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
           </span>
@@ -698,7 +1340,7 @@
           class="accordion-content"
           style="display: none;"
         >
-          Yes. All commissions initially enter a pending review state. Authors review the subject requirements and timeline to accept or decline before committing to the work.
+          Yes. All requests initially enter a pending review state. Editors review the document requirements and timeline to accept or decline before committing to the work.
         </div>
       </div>
 
@@ -712,7 +1354,7 @@
           id="faq-btn-4"
           class="accordion-trigger"
         >
-          <span>How do I receive and download my completed draft?</span>
+          <span>How do I receive and download my edited document?</span>
           <span :class="active === 4 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
             <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
           </span>
@@ -728,11 +1370,11 @@
           class="accordion-content"
           style="display: none;"
         >
-          When the author finishes writing, they upload the final document through their writer portal. You can securely download the file from your dashboard via authenticated, time-limited Amazon S3 presigned links.
+          When the editor finishes, they upload the edited document and feedback through their editor portal. You can download the file from your dashboard via time-limited download links.
         </div>
       </div>
 
-      <!-- FAQ 5 -->
+      <!-- FAQ 5: Required Guardrail FAQ - Will an editor write my document? -->
       <div class="accordion-item">
         <button 
           type="button"
@@ -742,7 +1384,7 @@
           id="faq-btn-5"
           class="accordion-trigger"
         >
-          <span>What authentication methods are available?</span>
+          <span>Will an editor write my document?</span>
           <span :class="active === 5 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
             <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
           </span>
@@ -758,11 +1400,11 @@
           class="accordion-content"
           style="display: none;"
         >
-          You can register and sign in using a standard email address and password (secured via bcrypt hashing) or authenticate via Google or GitHub OAuth.
+          No. Editors work on text you wrote. They provide proofreading, copy editing, and constructive feedback on your own draft—they do not write documents from scratch.
         </div>
       </div>
 
-      <!-- FAQ 6: Honest Academic Disclaimer -->
+      <!-- FAQ 6: Required Guardrail FAQ - Is this allowed by my college? -->
       <div class="accordion-item">
         <button 
           type="button"
@@ -772,7 +1414,7 @@
           id="faq-btn-6"
           class="accordion-trigger"
         >
-          <span>Is PerPage a live commercial service?</span>
+          <span>Is this allowed by my college?</span>
           <span :class="active === 6 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
             <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
           </span>
@@ -788,7 +1430,67 @@
           class="accordion-content"
           style="display: none;"
         >
-          No. PerPage is an academic software demonstration project built to demonstrate full-stack architecture with Express, EJS, and MongoDB. No real monetary transactions or commercial payments are processed.
+          You should always check your institution's specific honor code and academic integrity policies regarding external editing and feedback. PerPage is a demonstration software project designed to showcase peer editing workflows.
+        </div>
+      </div>
+
+      <!-- FAQ 7: Required FAQ - Demonstration Disclaimer -->
+      <div class="accordion-item">
+        <button 
+          type="button"
+          @click="active = (active === 7 ? null : 7)"
+          :aria-expanded="(active === 7).toString()"
+          aria-controls="faq-ans-7"
+          id="faq-btn-7"
+          class="accordion-trigger"
+        >
+          <span>Is this a live service?</span>
+          <span :class="active === 7 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
+            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
+          </span>
+        </button>
+        <div 
+          x-show="active === 7" 
+          x-transition:enter="transition ease-out duration-150"
+          x-transition:enter-start="opacity-0 -translate-y-1"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          id="faq-ans-7"
+          role="region"
+          aria-labelledby="faq-btn-7"
+          class="accordion-content"
+          style="display: none;"
+        >
+          No. PerPage is a demonstration project built to showcase a full-stack editing platform. No real payments are processed in this demo.
+        </div>
+      </div>
+
+      <!-- FAQ 8: Auth Methods -->
+      <div class="accordion-item">
+        <button 
+          type="button"
+          @click="active = (active === 8 ? null : 8)"
+          :aria-expanded="(active === 8).toString()"
+          aria-controls="faq-ans-8"
+          id="faq-btn-8"
+          class="accordion-trigger"
+        >
+          <span>What authentication methods are available?</span>
+          <span :class="active === 8 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
+            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
+          </span>
+        </button>
+        <div 
+          x-show="active === 8" 
+          x-transition:enter="transition ease-out duration-150"
+          x-transition:enter-start="opacity-0 -translate-y-1"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          id="faq-ans-8"
+          role="region"
+          aria-labelledby="faq-btn-8"
+          class="accordion-content"
+          style="display: none;"
+        >
+          You can register and sign in using a standard email address and password (with bcrypt password hashing) or authenticate via Google or GitHub OAuth.
         </div>
       </div>
 
@@ -797,16 +1499,16 @@
 
 
   <!-- =========================================================================
-       7. FINAL CTA BAND (SOLID FULL-WIDTH)
+       7. FINAL CTA BAND (SOLID FULL-WIDTH INK BAND)
        ========================================================================= -->
-  <section class="w-full bg-[var(--text-ink)] text-[var(--bg-background)] dark:bg-[var(--bg-surface)] dark:text-[var(--text-ink)] dark:border-y dark:border-[var(--border-color)] py-16 sm:py-24">
+  <section class="w-full bg-[var(--card)] text-[var(--foreground)] border-y border-[var(--border)] py-16 sm:py-24">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-      <h2 class="type-h2 text-current text-2xl sm:text-4xl">
-        Ready to start your next paper?
+      <h2 class="type-h2 text-[var(--foreground)] text-2xl sm:text-4xl">
+        Ready to <span class="proof-wavy-hero">polish<svg viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="100" d="M 2 7 Q 25 1, 50 8 T 98 7" /></svg></span> your next draft?
       </h2>
 
-      <p class="type-body opacity-80 max-w-xl mx-auto text-sm sm:text-base text-current">
-        Browse freelance academic authors, calculate your upfront rate, and submit your prompt in minutes.
+      <p class="type-body text-[var(--muted-foreground)] max-w-xl mx-auto text-sm sm:text-base">
+        Browse freelance editors, calculate your upfront rate, and submit your draft in minutes.
       </p>
 
       <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
@@ -815,15 +1517,15 @@
             Go to dashboard
             <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
           </a>
-          <a href="/writers" class="btn btn-secondary btn-lg bg-transparent text-current border-current/25 hover:bg-white/10">
-            Browse writers
+          <a href="/writers" class="btn btn-secondary btn-lg">
+            Browse editors
           </a>
         <% } else { %>
           <a href="/writers" class="btn btn-primary btn-lg">
-            Browse writers
+            Browse editors
             <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
           </a>
-          <a href="/register" class="btn btn-secondary btn-lg bg-transparent text-current border-current/25 hover:bg-white/10">
+          <a href="/register" class="btn btn-secondary btn-lg">
             Create an account
           </a>
         <% } %>

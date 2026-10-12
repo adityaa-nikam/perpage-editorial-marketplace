@@ -8,6 +8,8 @@ import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sd
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import Deal from '../models/deal.js';
 import { User } from '../models/User.js';
+import { dealActionLimiter } from '../config/limits.js';
+import { createNotification } from '../utils/notifications.js';
 
 const router = express.Router();
 
@@ -27,6 +29,7 @@ export const MOCK_DEALS = [
     userNotes: 'Comparative essay analyzing macroeconomic fiscal stimulus mechanisms following the 2008 crisis. APA 7th edition referencing with peer-reviewed journal sources.',
     writerNotes: '',
     status: 'pending',
+    paymentStatus: 'unpaid',
     fileLinks: ['uploads/e2a1b3c4-0001-4000-8000-000000000001_macroeconomics_prompt_brief.pdf'],
     submissionFiles: [],
     finalFileLink: null,
@@ -41,6 +44,7 @@ export const MOCK_DEALS = [
     userNotes: 'Systematic literature review synthesizing attention mechanisms in large language model architectures. Include formal mathematical notation and citations.',
     writerNotes: '',
     status: 'accepted',
+    paymentStatus: 'unpaid',
     fileLinks: ['uploads/e2a1b3c4-0002-4000-8000-000000000002_transformer_architectures_spec.pdf'],
     submissionFiles: [],
     finalFileLink: null,
@@ -56,6 +60,9 @@ export const MOCK_DEALS = [
     userNotes: 'Empirical term paper examining volatility clustering in emerging equity markets using GARCH modeling techniques.',
     writerNotes: 'Delivered complete manuscript with full regression diagnostic tables in appendix.',
     status: 'accepted',
+    paymentStatus: 'paid',
+    razorpayPaymentId: 'pay_demo_10003_seed',
+    paidAt: new Date(Date.now() - 3600000 * 40),
     fileLinks: ['uploads/e2a1b3c4-0003-4000-8000-000000000003_time_series_syllabus.pdf'],
     submissionFiles: [],
     finalFileLink: 'https://perpagedb.s3.amazonaws.com/finals/e2a1b3c4-0003-4000-8000-000000000003_econometrics_volatility_draft.pdf',
@@ -215,6 +222,9 @@ function checkAuthenticated(req, res, next) {
     }
   }
 
+  if (req.method === 'GET' && req.session) {
+    req.session.returnTo = req.originalUrl;
+  }
   res.redirect('/login');
 }
 
@@ -279,7 +289,8 @@ async function findAndValidateWriter(writerId) {
     } catch (err) {
       return { error: 'db_error', status: 500 };
     }
-  } else if (process.env.NODE_ENV !== 'production') {
+  }
+  if (!writer && process.env.NODE_ENV !== 'production') {
     writer = MOCK_WRITERS.find(w => w._id.toString() === writerId) || null;
   }
 
@@ -329,7 +340,7 @@ function finalMulterMiddleware(req, res, next) {
 // --------------------------------------------------------------------------
 // HARDENED ACTIVE ROUTE: POST /deal/upload-final (Runs first)
 // --------------------------------------------------------------------------
-router.post('/upload-final', checkAuthenticated, finalMulterMiddleware, async (req, res) => {
+router.post('/upload-final', checkAuthenticated, dealActionLimiter, finalMulterMiddleware, async (req, res) => {
   let uploadedKey = null;
   try {
     const { dealId } = req.body;
@@ -408,10 +419,25 @@ router.post('/upload-final', checkAuthenticated, finalMulterMiddleware, async (r
       }
     }
 
-    // Update Deal second (status remains untouched per existing flow)
-    deal.finalFileLink = signedUrl;
+    // Update Deal second (store clean S3 key: finals/<uuid>_<name>.pdf)
+    deal.finalFileLink = finalFileKey;
     if (isDbConnected) {
       await deal.save();
+    }
+
+    // Notify client that edited work has been delivered
+    try {
+      await createNotification({
+        recipient: deal.userId,
+        sender: currentUserId,
+        dealId: deal._id,
+        type: 'work_delivered',
+        title: 'Edited Document Delivered',
+        message: 'Your editor has delivered the completed draft. You can now review and confirm receipt on your dashboard.',
+        link: '/dashboard?status=delivered'
+      });
+    } catch (notifErr) {
+      console.error('Work delivery notification error:', notifErr.message);
     }
 
     return res.redirect('/dashboard?uploaded=1');
@@ -473,7 +499,7 @@ router.get('/', checkAuthenticated, async (req, res) => {
         pageTitle: 'Cannot Create Deal — PerPage',
         errorTitle: 'Self-Deal Not Permitted',
         errorCode: '409',
-        errorMessage: 'You cannot commission an assignment deal with yourself.',
+        errorMessage: 'You cannot create an editing deal with yourself.',
         robots: 'noindex, nofollow'
       });
     }
@@ -489,9 +515,9 @@ router.get('/', checkAuthenticated, async (req, res) => {
       });
     }
 
-    const nameParts = (writer.name || 'this writer').replace(/^(Dr\.|Prof\.|Mr\.|Ms\.|Mrs\.)\s+/i, '').split(' ');
+    const nameParts = (writer.name || 'this editor').replace(/^(Dr\.|Prof\.|Mr\.|Ms\.|Mrs\.)\s+/i, '').split(' ');
     const firstName = nameParts[0] || writer.name;
-    const initials = (writer.name || 'W').split(' ').map(n => n.charAt(0)).slice(0, 2).join('').toUpperCase();
+    const initials = (writer.name || 'E').split(' ').map(n => n.charAt(0)).slice(0, 2).join('').toUpperCase();
 
     res.render('deal', {
       writer,
@@ -499,7 +525,7 @@ router.get('/', checkAuthenticated, async (req, res) => {
       initials,
       FILE_MAX_MB,
       errors: {},
-      values: { pages: '1', userNotes: '' }
+      values: { pages: '1', userNotes: '', ownWork: false }
     });
   } catch (err) {
     console.error('GET /deal error:', err.message);
@@ -513,12 +539,13 @@ router.get('/', checkAuthenticated, async (req, res) => {
   }
 });
 
-// 📨 POST /deal - Create new deal and upload initial brief
-router.post('/', checkAuthenticated, dealMulterMiddleware, async (req, res) => {
+// 📨 POST /deal - Create new deal and upload initial draft
+router.post('/', checkAuthenticated, dealActionLimiter, dealMulterMiddleware, async (req, res) => {
   const errors = {};
   const values = {
     pages: typeof req.body?.pages === 'string' ? req.body.pages : '',
-    userNotes: typeof req.body?.userNotes === 'string' ? req.body.userNotes : ''
+    userNotes: typeof req.body?.userNotes === 'string' ? req.body.userNotes : '',
+    ownWork: Boolean(req.body?.ownWork === 'on' || req.body?.ownWork === 'true' || req.body?.ownWork === true)
   };
 
   const rawWriterId = req.body?.writerId;
@@ -526,10 +553,10 @@ router.post('/', checkAuthenticated, dealMulterMiddleware, async (req, res) => {
 
   if (lookup.error === 'invalid_id' || lookup.error === 'not_found') {
     return res.status(404).render('dealError', {
-      pageTitle: 'Writer Not Found — PerPage',
-      errorTitle: 'Writer Not Found',
+      pageTitle: 'Editor Not Found — PerPage',
+      errorTitle: 'Editor Not Found',
       errorCode: '404',
-      errorMessage: 'The requested author could not be found or is not registered as an academic writer.',
+      errorMessage: 'The requested editor could not be found or is not registered as an editor.',
       robots: 'noindex, nofollow'
     });
   }
@@ -553,7 +580,7 @@ router.post('/', checkAuthenticated, dealMulterMiddleware, async (req, res) => {
       pageTitle: 'Cannot Create Deal — PerPage',
       errorTitle: 'Self-Deal Not Permitted',
       errorCode: '409',
-      errorMessage: 'You cannot commission an assignment deal with yourself.',
+      errorMessage: 'You cannot commission an editing deal with yourself.',
       robots: 'noindex, nofollow'
     });
   }
@@ -564,16 +591,21 @@ router.post('/', checkAuthenticated, dealMulterMiddleware, async (req, res) => {
       pageTitle: 'Rate Not Set — PerPage',
       errorTitle: 'Rate Not Set',
       errorCode: '422',
-      errorMessage: 'This writer has not set a rate yet. Deals cannot be created until the writer sets their rate.',
+      errorMessage: 'This editor has not set a rate yet. Deals cannot be created until the editor sets their rate.',
       robots: 'noindex, nofollow'
     });
   }
 
-  const nameParts = (writer.name || 'this writer').replace(/^(Dr\.|Prof\.|Mr\.|Ms\.|Mrs\.)\s+/i, '').split(' ');
+  const nameParts = (writer.name || 'this editor').replace(/^(Dr\.|Prof\.|Mr\.|Ms\.|Mrs\.)\s+/i, '').split(' ');
   const firstName = nameParts[0] || writer.name;
-  const initials = (writer.name || 'W').split(' ').map(n => n.charAt(0)).slice(0, 2).join('').toUpperCase();
+  const initials = (writer.name || 'E').split(' ').map(n => n.charAt(0)).slice(0, 2).join('').toUpperCase();
 
-  // 1. Validate pages: string, integer between 1 and 500, no decimals
+  // 1. Validate ownWork checkbox (Guardrail B: Required before S3 upload)
+  if (!req.body?.ownWork || (req.body.ownWork !== 'on' && req.body.ownWork !== 'true' && req.body.ownWork !== true)) {
+    errors.ownWork = "You must confirm that this is your own work and you are seeking editing or feedback.";
+  }
+
+  // 2. Validate pages: string, integer between 1 and 500, no decimals
   const rawPages = req.body?.pages;
   let pagesNum = 0;
   if (typeof rawPages !== 'string' || !/^\d+$/.test(rawPages.trim())) {
@@ -585,7 +617,7 @@ router.post('/', checkAuthenticated, dealMulterMiddleware, async (req, res) => {
     }
   }
 
-  // 2. Validate userNotes: optional, trimmed, max 2000 chars
+  // 3. Validate userNotes: optional, trimmed, max 2000 chars
   let userNotes = '';
   if (typeof req.body?.userNotes === 'string') {
     userNotes = req.body.userNotes.trim();
@@ -594,11 +626,11 @@ router.post('/', checkAuthenticated, dealMulterMiddleware, async (req, res) => {
     }
   }
 
-  // 3. Validate file
+  // 4. Validate file
   if (req.fileError) {
     errors.file = req.fileError;
   } else if (!req.file) {
-    errors.file = 'Please upload your assignment brief (PDF).';
+    errors.file = 'Please upload your draft document (PDF).';
   } else {
     const file = req.file;
     if (file.mimetype !== 'application/pdf') {
@@ -694,12 +726,28 @@ router.post('/', checkAuthenticated, dealMulterMiddleware, async (req, res) => {
         userNotes,
         writerNotes: '',
         status: 'pending',
+        paymentStatus: 'unpaid',
         fileLinks: [fileKey],
         submissionFiles: [],
         finalFileLink: null,
         createdAt: new Date()
       };
       MOCK_DEALS.push(savedDeal);
+    }
+
+    // Notify editor that new manuscript work has been allocated
+    try {
+      await createNotification({
+        recipient: writer._id,
+        sender: currentUserId,
+        dealId: savedDeal ? savedDeal._id : null,
+        type: 'work_allocated',
+        title: 'New Manuscript Allocated',
+        message: `A client has allocated a new editing order (${pagesNum} pages). Review details on your dashboard.`,
+        link: '/dashboard?view=incoming&status=pending'
+      });
+    } catch (notifErr) {
+      console.error('Work allocation notification error:', notifErr.message);
     }
 
     // Redirect to dashboard with ?created=1
@@ -820,6 +868,58 @@ router.post('/reject/:id', checkAuthenticated, async (req, res) => {
   } catch (err) {
     console.error('Deal reject error:', err.message);
     res.redirect('/dashboard?error=invalid_state');
+  }
+});
+
+// 🏆 Complete deal (Student confirms receipt of delivered work)
+router.post('/:id/complete', checkAuthenticated, async (req, res) => {
+  try {
+    const dealId = req.params.id;
+    if (!dealId || typeof dealId !== 'string' || !mongoose.Types.ObjectId.isValid(dealId) || !/^[0-9a-fA-F]{24}$/.test(dealId)) {
+      return res.redirect('/dashboard?error=not_found');
+    }
+
+    const currentUserId = req.user._id || req.user.id;
+    const isDbConnected = mongoose.connection.readyState === 1;
+    let deal = null;
+
+    if (isDbConnected) {
+      deal = await Deal.findById(dealId);
+    } else if (process.env.NODE_ENV !== 'production') {
+      deal = MOCK_DEALS.find(d => d._id.toString() === dealId.toString());
+    }
+
+    if (!deal) {
+      return res.redirect('/dashboard?error=not_found');
+    }
+
+    // Guard: Must be the student client who created the deal
+    if (!deal.userId || deal.userId.toString() !== currentUserId.toString()) {
+      return res.redirect('/dashboard?error=unauthorized');
+    }
+
+    // Guard: Idempotent if already completed
+    if (deal.status === 'completed') {
+      return res.redirect('/dashboard?completed=1');
+    }
+
+    // Guard: Must have a delivered final file and be in accepted or submitted status
+    const hasFinal = Boolean(deal.finalFileLink);
+    if (!hasFinal || (deal.status !== 'accepted' && deal.status !== 'submitted')) {
+      return res.redirect('/dashboard?error=not_delivered');
+    }
+
+    deal.status = 'completed';
+    deal.completedAt = new Date();
+
+    if (isDbConnected) {
+      await deal.save();
+    }
+
+    return res.redirect('/dashboard?completed=1');
+  } catch (err) {
+    console.error('Deal complete error:', err.message);
+    return res.redirect('/dashboard?error=server');
   }
 });
 

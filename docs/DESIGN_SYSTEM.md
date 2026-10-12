@@ -17,11 +17,13 @@
      - Active stepper milestones
    - **Never** use the accent for decorative backgrounds, large cards, or non-interactive headings.
 3. **Typography-Driven Hierarchy**:
-   - Display and section headings use **Instrument Serif** (or Fraunces fallback) with tight tracking (`-0.025em` to `-0.03em`).
-   - Body copy, forms, badges, and interface data use **Inter** with generous line-height (`1.5` to `1.6`) for effortless readability.
+   - Display and section headings use **Source Serif 4** (self-hosted variable woff2 with optical sizing) with deliberate tracking (`-0.02em` to `-0.025em`) and line heights tailored per step.
+   - Body copy, forms, badges, and interface data use **Instrument Sans** (self-hosted variable woff2) with generous line-height (`1.5` to `1.6`) and 60-68 character line lengths (`.prose-measure`) for effortless readability.
+   - Monospace font is strictly restricted to tiny data details (prices, page counts, dates, and IDs) and is **never** used for section headers or eyebrows.
 4. **Restraint & Elevation**:
-   - Flat, subtle 1px borders (`var(--border-color)`) are prioritized over high-contrast drop shadows.
-   - Motion is subtle (150ms–200ms `ease-out`) and disabled when `prefers-reduced-motion: reduce` is detected.
+   - Flat, subtle hairline borders (`var(--border-color)`) and minimal paper shadows are prioritized over harsh digital borders or heavy drop shadows.
+   - Motion is subtle, using exclusively `transform` and `opacity` with fixed-size containers to guarantee zero cumulative layout shift (CLS = 0).
+   - All animations and transitions respect `prefers-reduced-motion` and degrade gracefully with JavaScript disabled.
 
 ---
 
@@ -30,11 +32,34 @@
 | Anti-Pattern | Why It Is Forbidden | Paper & Ink Alternative |
 | :--- | :--- | :--- |
 | **Gradient Text** | Cheap, generic AI aesthetics; hard to read | Solid Ink (`var(--text-ink)`) with serif display font |
-| **Glow Blobs / Blur Circles** | Distracting neon template look | Warm paper surface with 1px border cards |
+| **Glow Blobs / Blur Circles** | Distracting neon template look | Warm paper surface with hairline 1px border cards |
 | **Glassmorphism / Heavy Blur** | Accessibility issue; poor contrast | Solid surfaces (`var(--bg-surface)`) with clean borders |
 | **Emoji in Interface Elements** | Inconsistent across OS; unprofessional | Inline Lucide SVGs via `<%- icon('name') %>` |
 | **Purple-to-Blue Gradients** | Generic SaaS template signature | Single solid accent CTA button (`.btn-primary`) |
+| **Mono Bracket Labels (`[01 // ...]`)** | Artificial AI template indexing cliché | Plain numeral small-caps eyebrow with hairline rule (`.section-eyebrow`) |
+| **Identical Icon-Tile Card Grids** | Formulaic SaaS card repetition | Asymmetric columns, wide editorial text blocks, and hairline lists |
 | **Rainbow Badges / Stat Counters**| Chaotic visual hierarchy | Semantic badges with muted backgrounds and dark text |
+
+---
+
+## 2.5 Brand Motif: "Proofreader's Marks & Editorial Craft" (Replaces Bracket Labels)
+
+**Design Choice & Rationale:**
+> *PerPage adopts an authentic editorial proofreader motif rooted in the tangible physical craft of editing: hand-drawn proofreader underlines, caret insertions, strikethroughs, margin notes, and faint ruled margins. All artificial monospace bracket stamps (`[01 // OVERVIEW]`, `[04 // ...]`, `[WR-...]`, etc.) have been completely removed across every template. Section eyebrows now feature small-caps/uppercase sans kickers with a plain numeral and a hairline rule or caret accent (e.g. `01  How it works`).*
+
+### Motif Components:
+1. **Section Eyebrow (`.section-eyebrow`)**:
+   - Small-caps or uppercase sans text (`.eyebrow-label`) accompanied by a plain numeral (`.eyebrow-num`) and a delicate hairline rule (`.eyebrow-rule`). Replaces all `[01 // ...]` bracket labels.
+2. **Hand-Drawn Wavy Underline (`.proof-wavy-hero`)**:
+   - Inline SVG wavy path under a single emphasized word in headings (e.g. hero "Improve"). Draws itself once on initial page paint (`stroke-dashoffset`, 600ms, transform/opacity only, zero layout shift).
+3. **Proofreader Strikethrough (`.proof-strike`, `.hero-anim-strike`)**:
+   - Subtle editor-pen strike through text rendered using the dedicated `--mark` token.
+4. **Caret Insertion Mark (`.proof-insert`, `.hero-anim-insert`)**:
+   - Caret insertion mark (`^`) paired with underlined correction copy.
+5. **Margin Comment Bubble (`.proof-comment-badge`, `.hero-anim-comment`)**:
+   - Small margin note badge (`bg-[var(--mark-bg)] text-[var(--mark)]`) modeling an editor's margin feedback.
+6. **Ruled Margin Line (`.proof-margin-rule`, `.hero-doc-sheet::before`)**:
+   - Faint vertical hairline rule running along the left margin of editorial excerpts, callouts, and paper sheets.
 
 ---
 
@@ -42,69 +67,130 @@
 
 All tokens are defined in `/src/styles/app.css` and compiled via the Tailwind v4 CLI to `/public/css/app.css`:
 
-### Light Mode (Default)
+### Light Mode (Primary Default — "Warm Tactile Paper")
 ```css
 :root {
-  --bg-background: #FAFAF7;         /* Warm paper base */
-  --bg-surface: #FFFFFF;            /* Pure white card/nav surface */
-  --bg-surface-muted: #F3F2EE;      /* Subtle muted background */
-  --text-ink: #0E0F12;              /* Deep ink for headings & text */
-  --text-muted: #5B5F68;            /* Secondary metadata text */
-  --border-color: #E7E5DF;          /* Subtle dividing border */
-  --border-strong: #D5D2C9;         /* High-contrast border */
-  --accent: #3347FF;                /* Primary action color */
-  --accent-hover: #2235E6;          /* Primary button hover */
+  /* Fonts */
+  --font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Theme Tokens - Light Paper */
+  --bg-background: #FAF8F5;         /* Warm off-white paper, not digital white */
+  --bg-surface: #FFFFFF;            /* Clean white document sheet */
+  --bg-surface-muted: #F3EFE8;      /* Soft parchment wash */
+  --text-ink: #141413;              /* Deep editorial ink */
+  --text-muted: #5C5B56;            /* Graphite editorial notes (AA contrast 4.9:1) */
+  --border-color: #E6E2D8;          /* Hairline sheet border */
+  --border-strong: #CFC9BC;         /* Ruled margin border */
+
+  /* Accent Token (Strictly for primary CTA, links, focus rings, active states) */
+  --accent: #1F3BB3;                /* Refined deep academic cobalt */
+  --accent-hover: #162B85;          /* Deep cobalt hover */
   --accent-foreground: #FFFFFF;     /* Text on accent */
-  --accent-subtle: #EEF0FF;         /* Accent wash for active nav */
-  --accent-subtle-border: #D0D6FF;  /* Accent badge border */
+  --accent-subtle: #EEF2FD;         /* Accent wash for active nav */
+  --accent-subtle-border: #CCD6F6;  /* Accent badge border */
+
+  /* Editor Pen Token Group (Strictly for proofreader marks, NEVER buttons/links) */
+  --mark: #C23B27;                  /* Warm red editor proofing pen */
+  --mark-bg: #FDF2F0;               /* Subtle proofing tint */
+  --mark-border: #F5C7C1;           /* Proofing margin note border */
+  --mark-hover: #A62F1E;
+
+  /* Semantic Status Tokens */
+  --semantic-success-bg: #ECFDF5;
+  --semantic-success-text: #065F46;
+  --semantic-success-border: #A7F3D0;
+
+  --semantic-warning-bg: #FFFBEB;
+  --semantic-warning-text: #92400E;
+  --semantic-warning-border: #FDE68A;
+
+  --semantic-danger-bg: #FEF2F2;
+  --semantic-danger-text: #991B1B;
+  --semantic-danger-border: #FECACA;
+
+  --semantic-info-bg: #EFF6FF;
+  --semantic-info-text: #1E40AF;
+  --semantic-info-border: #BFDBFE;
 }
 ```
 
-### Dark Mode (Secondary)
+### Dark Mode (Secondary — "Obsidian Paper")
 ```css
 .dark {
-  --bg-background: #0B0C0E;         /* Deep obsidian background */
-  --bg-surface: #131519;            /* Slightly elevated card surface */
-  --bg-surface-muted: #1A1D22;      /* Muted inset surface */
-  --text-ink: #F2F2EF;              /* Crisp light ink */
-  --text-muted: #9AA0AA;            /* Muted cool grey */
-  --border-color: #25282E;          /* Muted dark border */
-  --border-strong: #363A42;         /* Focused dark border */
-  --accent: #6E7BFF;                /* High-contrast dark mode accent */
-  --accent-hover: #838EFF;          /* Dark mode accent hover */
-  --accent-foreground: #FFFFFF;     /* Text on accent */
-  --accent-subtle: #181B38;         /* Subtle accent wash */
-  --accent-subtle-border: #2B326B;  /* Subtle accent border */
+  /* Theme Tokens - Dark Mode */
+  --bg-background: #111215;         /* Deep neutral obsidian, not indigo wash */
+  --bg-surface: #17181D;            /* Elevated paper surface */
+  --bg-surface-muted: #1F2127;      /* Muted inset surface */
+  --text-ink: #EDECE8;              /* Crisp light ink */
+  --text-muted: #A8ACB8;            /* High-contrast graphite (AA contrast 5.8:1) */
+  --border-color: #262931;          /* Subtle dark hairline border */
+  --border-strong: #383C46;         /* Focused dark border */
+
+  /* Accent Token */
+  --accent: #5D7AFF;                /* High-contrast dark mode cobalt */
+  --accent-hover: #758DFF;          /* Dark mode accent hover */
+  --accent-foreground: #0E0F14;     /* Dark button text */
+  --accent-subtle: #19203D;         /* Subtle accent wash */
+  --accent-subtle-border: #2B3566;  /* Subtle accent border */
+
+  /* Editor Pen Token Group - Dark Mode (Soft Coral) */
+  --mark: #E05D4E;                  /* Soft coral editor proofing pen */
+  --mark-bg: #2B1816;               /* Dark proofing wash */
+  --mark-border: #522722;           /* Dark proofing border */
+  --mark-hover: #F07668;
+
+  /* Semantic Status Tokens */
+  --semantic-success-bg: #064E3B;
+  --semantic-success-text: #A7F3D0;
+  --semantic-success-border: #047857;
+
+  --semantic-warning-bg: #451A03;
+  --semantic-warning-text: #FDE68A;
+  --semantic-warning-border: #78350F;
+
+  --semantic-danger-bg: #450A0A;
+  --semantic-danger-text: #FECACA;
+  --semantic-danger-border: #7F1D1D;
+
+  --semantic-info-bg: #172554;
+  --semantic-info-text: #BFDBFE;
+  --semantic-info-border: #1D4ED8;
 }
 ```
-
-### Semantic Status Tokens
-| State | Light Background | Light Foreground | Dark Background | Dark Foreground |
-| :--- | :--- | :--- | :--- | :--- |
-| **Success** | `#ECFDF5` | `#065F46` | `#064E3B` | `#A7F3D0` |
-| **Warning** | `#FFFBEB` | `#92400E` | `#451A03` | `#FDE68A` |
-| **Danger**  | `#FEF2F2` | `#991B1B` | `#450A0A` | `#FECACA` |
-| **Info**    | `#EFF6FF` | `#1E40AF` | `#172554` | `#BFDBFE` |
 
 ---
 
 ## 4. Typography Scale
 
-Fonts are imported via Google Fonts with `font-display: swap` in `head.ejs`:
-- Serif: `Instrument Serif`, `Georgia`, serif
-- Sans: `Inter`, system-ui, sans-serif
+Fonts are self-hosted Latin variable WOFF2 files stored in `/public/fonts/` with `font-display: swap` preloaded in `<head>`:
+- **Serif Display & Headings**: `Source Serif 4` (variable weight 200–900, optical sizing)
+- **Sans Interface & Body**: `Instrument Sans` (variable weight 400–700)
+- **Monospace Restricted Utility**: `ui-monospace, Menlo, Monaco, Consolas` (strictly restricted to prices, counts, and dates)
 
 | Style Class | Font Family | Size (clamp / rem) | Tracking | Line Height | Usage |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `.type-display` | Instrument Serif | `clamp(2.75rem, 5vw, 4.25rem)` | `-0.03em` | `1.05` | Landing page hero titles |
-| `.type-h1` | Instrument Serif | `clamp(2.25rem, 3.5vw, 3rem)` | `-0.025em` | `1.15` | Page titles (H1) |
-| `.type-h2` | Instrument Serif | `clamp(1.75rem, 2.5vw, 2.25rem)` | `-0.02em` | `1.25` | Section headers |
-| `.type-h3` | Inter (600) | `1.375rem` (22px) | `-0.015em` | `1.35` | Card headings |
-| `.type-h4` | Inter (600) | `1.125rem` (18px) | Normal | `1.4` | Form / block titles |
-| `.type-body` | Inter (400) | `1rem` (16px) | Normal | `1.6` | Standard body paragraphs |
-| `.type-small` | Inter (400) | `0.875rem` (14px) | Normal | `1.5` | Data tables, form hints |
-| `.type-caption` | Inter (400) | `0.75rem` (12px) | `0.02em` | `1.4` | Timestamps, micro labels |
-| `.type-eyebrow` | Inter (600) | `0.75rem` (12px) | `0.08em` | `1.0` | Uppercase category kicker |
+| `.type-display` | Source Serif 4 | `clamp(2.5rem, 5vw, 4rem)` | `-0.02em` | `1.1` | Landing page hero titles |
+| `.type-h1` | Source Serif 4 | `clamp(2rem, 3.5vw, 2.75rem)` | `-0.02em` | `1.18` | Page titles (H1) |
+| `.type-h2` | Source Serif 4 | `clamp(1.65rem, 2.5vw, 2.15rem)` | `-0.015em` | `1.25` | Section headers |
+| `.type-h3` | Instrument Sans (600) | `1.25rem` (20px) | `-0.01em` | `1.35` | Card headings |
+| `.type-h4` | Instrument Sans (600) | `1.125rem` (18px) | Normal | `1.4` | Form / block titles |
+| `.type-body` | Instrument Sans (400) | `1rem` (16px) | Normal | `1.6` | Standard body paragraphs |
+| `.type-small` | Instrument Sans (400) | `0.875rem` (14px) | Normal | `1.5` | Data tables, form hints |
+| `.type-caption` | Instrument Sans (400) | `0.75rem` (12px) | `0.02em` | `1.4` | Timestamps, micro labels |
+| `.section-eyebrow` | Instrument Sans (600) | `0.75rem` (12px) | `0.08em` | `1.0` | Small-caps / uppercase category kicker |
+
+### Typographic Utilities
+- **Prose Measure (`.prose-measure`)**: Caps reading line length at `65ch` (60 to 68 characters) for effortless reading and scannability.
+- **Tabular Numerals (`.num-tabular`, `tabular-nums`)**: Sets `font-variant-numeric: tabular-nums lining-nums` for aligned pricing, page counts, statistics, and dates.
+- **Monospace Stack**: Reserved exclusively for numbers, rates, and IDs. Never used for section labels or branding.
+
+### Section Rhythm Scale (4px Grid)
+- **`.section-tight`**: `py-10 md:py-14` (Compact blocks, metadata panels, micro-sections)
+- **`.section-default`**: `py-16 md:py-24` (Standard informational sections)
+- **`.section-loose`**: `py-20 md:py-32` (Major hero and closing conversion tiers)
+
 
 ---
 
@@ -160,6 +246,10 @@ Every view in `/views` inherits the standard shell:
 ## 7. Component Library Reference
 
 ### 1. Buttons
+- **Height Scale**: `.btn-sm` (32px / `h-8`), `.btn-md` (40px / `h-10`), `.btn-lg` (48px / `h-12`).
+- **Tactile Feedback**: Active press state features an ergonomic `scale-[0.98]` micro-transform with smooth `transition-all duration-150`.
+- **Focus Rings**: Consistent high-contrast keyboard outline with `focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2`.
+
 ```html
 <!-- Primary CTA -->
 <button class="btn btn-primary btn-md">
@@ -168,6 +258,9 @@ Every view in `/views` inherits the standard shell:
 
 <!-- Secondary Action -->
 <button class="btn btn-secondary btn-md">Cancel</button>
+
+<!-- Outline Action -->
+<button class="btn btn-outline btn-md">View details</button>
 
 <!-- Ghost Action -->
 <button class="btn btn-ghost btn-sm">Dismiss</button>
@@ -188,13 +281,22 @@ Every view in `/views` inherits the standard shell:
 </div>
 ```
 
-### 3. Cards
+### 3. Cards & Archival Docket Containers
+- **Standard Card (`.card`)**: Rounded surface with subtle 1px border (`var(--border-color)`) and muted hover border.
+- **Archival Ticket (`.card-ticket`)**: Architectural container featuring monospace header metadata, hairline divider, and distinct content compartment.
+
 ```html
-<div class="card p-6">
+<!-- Archival Ticket Card -->
+<div class="card-ticket p-6">
+  <div class="flex items-center justify-between border-b border-[var(--border-color)] pb-3 mb-4">
+    <span class="index-stamp">[01 // METRIC]</span>
+    <span class="type-caption text-[var(--text-muted)]">Verified</span>
+  </div>
   <h3 class="type-h3">Title</h3>
-  <p class="text-xs text-[var(--text-muted)]">Content</p>
+  <p class="type-body text-[var(--text-muted)] prose-measure">Archival body content.</p>
 </div>
 ```
+
 
 ### 4. Badges
 ```html
@@ -620,6 +722,8 @@ Compact inline file uploader for accepted deals inside dashboard cards, featurin
 
 ---
 
+---
+
 ## 8. Build & Deployment Commands
 
 - **Local CSS Build**: `npm run build:css`
@@ -633,3 +737,87 @@ Compact inline file uploader for accepted deals inside dashboard cards, featurin
   ```bash
   npm start
   ```
+
+---
+
+## 9. Security Hardening & System Patterns
+
+### 9.1 Unified Error Page System
+Error pages (`404`, `403`, `422`, `429`, `500`) share a single, consistent layout template (`views/error.ejs`) rendered inside the standard application shell with the header and footer intact:
+- **Visual Design**: Uses the Paper & Ink Empty-State block pattern (`.card.border-dashed`).
+- **Typography**: Clean eyebrow status badge (e.g. `404 Not Found`), serif H1 heading (`.type-h1`), and calm, unambiguous explanation paragraph.
+- **Action Buttons**:
+  - Primary button: "Go home" (`.btn-primary`)
+  - Secondary button: "Browse writers" (`.btn-secondary`)
+  - Status 500 context button: "Try again" (`.btn-outline`) pointing to the original requested URL.
+
+### 9.2 Safe Authentication & POST Logout
+- **Session Termination**: Logout MUST use `POST /logout` to prevent accidental pre-fetching logouts and CSRF attacks.
+- **Navbar Implementation**: Both desktop user dropdown and mobile drawer implement logout as a semantic `<form method="post" action="/logout">` containing an unstyled button that inherits the dropdown item typography.
+- **Safe Redirection**: All post-login and return-to redirects are validated via `utils/safeRedirect.js` preventing open redirect vulnerabilities (strictly blocking `//`, `/\`, absolute URLs, and control characters).
+
+### 9.3 Asset Versioning & Caching
+- **Content-Hash Cache Busting**: The server computes an 8-character MD5 hash of `public/css/app.css` at startup, exposing `res.locals.assetVersion`.
+- **Cache-Control**: Static CSS, fonts, and images are served with `maxAge: '7d'`.
+- **HTML References**: Core stylesheets are referenced as `/css/app.css?v=<assetVersion>`, guaranteeing instant cache invalidation upon redeployment.
+
+### 9.4 Content Security Policy & Cryptographic Nonces
+- **Report-Only Mode**: Helmet is configured with `contentSecurityPolicy: { reportOnly: true }` to avoid breaking third-party OAuth flows or extensions while reporting violations.
+- **Per-Request Nonce**: A crypto-random nonce is generated per request (`crypto.randomBytes(16).toString('base64')`) and injected into `res.locals.cspNonce`.
+- **Inline Scripts**: Inline scripts (such as the FOUC-prevention theme loader in `views/partials/head.ejs`) include the nonce attribute: `<script nonce="<%= cspNonce %>">`.
+
+### 9.5 Complete Deal Lifecycle Stepper
+The deal workflow follows a 4-step linear progression:
+1. **Requested (Pending)**: Initial order created by student with attached PDF prompt.
+2. **Accepted**: Writer reviews and confirms the assignment.
+3. **Delivered**: Writer uploads the deliverable PDF (stored with clean S3 key `finals/<uuid>_<name>.pdf`).
+4. **Completed**: Student confirms receipt and satisfaction via the accessible confirmation modal, unlocking the deal's final state and updating writer statistics.
+
+---
+
+## 10. Editorial Landing Page & Motion Patterns (Prompt 8.2)
+
+### 10.1 Hero Tracked Changes Document Sheet (`.hero-doc-sheet`)
+An authentic representation of physical editorial work built strictly with semantic HTML and CSS (zero images):
+- **Visual Design**: Warm paper document sheet (`var(--bg-surface)`) featuring a ruled red margin line (`rgba(194, 59, 39, 0.15)`), header row (`report-draft.pdf`, 12 pages), neutral sample draft text with 3 deliberate editing errors, an inline margin note bubble (`.proof-comment-badge`), and an upfront calculation summary.
+- **Fixed Dimensions**: Fixed container height (`440px`) across all responsive breakpoints ensuring exactly zero Cumulative Layout Shift (CLS = 0).
+- **Animation Sequence**: 12-second loop (9 seconds animation + 3 seconds hold) animating only `transform` and `opacity`:
+  1. Strikethrough drawn across deliberate errors (`hero-strike-draw` in `--mark`).
+  2. Corrections inserted with caret symbol (`hero-insert-reveal` in `--mark`).
+  3. Margin comment bubble reveals (`hero-comment-reveal` with "Shorter and clearer").
+  4. Status transitions from "Pending" to "Delivered".
+- **Accessibility & Controls**:
+  - The document preview has `role="img"` with descriptive `aria-label="Sample paragraph showing an editor's tracked changes"`, and internal animated text elements are `aria-hidden="true"`.
+  - Accessible controls bar beneath the sheet exposes dedicated `Replay` and `Pause/Play` buttons with high-contrast `:focus-visible` rings.
+  - Pauses automatically on pointer hover and on keyboard `:focus-within`.
+  - Under `prefers-reduced-motion` or when JavaScript is disabled, the sheet renders statically in the delivered/corrected state.
+
+### 10.2 Scroll-Driven Sticky How-It-Works Pattern
+Replaces generic 3-card grids with a dynamic editorial reader layout:
+- **Desktop (1024px+)**: Two-column layout. Left column presents a vertical sequence of steps with prominent serif numerals (`01`, `02`, `03`). Right column features a sticky preview sheet that dynamically transitions between step states (Rate selection -> File upload & price -> Delivered status) as steps scroll into viewport.
+- **Dynamic State**: Managed via native `IntersectionObserver` with a smooth 200ms transition. Active step is explicitly communicated to screen readers via `aria-current="step"`.
+- **Mobile & Fallbacks**: Automatically stacks steps into vertical flow, each accompanied by its own self-contained static vignette. Operates with zero layout shift and 100% visibility when JavaScript is disabled.
+
+### 10.3 Brand Intro Loader & Navigation Progress System
+Three hand-written, zero-dependency performance and navigation components:
+1. **Brand Intro Loader (`#brand-intro`)**:
+   - Renders a full-viewport paper layer (`var(--bg-background)`) displaying the serif "P" brand mark and a self-drawing proofreader underline.
+   - Visible for a maximum of 800ms on the first visit per session on the root landing page (`/`).
+   - The page content is pre-rendered underneath in the DOM; after 800ms, the loader fades out (`opacity: 0`), disables pointer events (`pointer-events: none`), and is removed from the DOM.
+   - **Bypass Conditions**: Automatically suppressed under `prefers-reduced-motion`, when JavaScript is disabled, on subsequent page visits via `sessionStorage.getItem('perpage_intro_seen')`, during automated test execution (`navigator.webdriver === true`), or when the URL contains `?noloader=1`.
+2. **Top Navigation Progress Bar (`#nav-progress-bar`)**:
+   - A 2px fixed bar (`var(--accent)`) anchored to the top of the viewport (`z-index: 9999`).
+   - Initiated on internal navigation clicks and form submissions (ignoring external links, downloads, and `target="_blank"`).
+   - Eases smoothly to 80% while awaiting response, and completes instantly to 100% on `pageshow`.
+   - Transitions disabled under `prefers-reduced-motion`.
+3. **Button Loading Spinners (`.is-loading`)**:
+   - Primary and form submission buttons swap in an inline SVG spinner without changing button dimensions.
+
+---
+
+## 11. Deprecation & Removal of Mono Bracket Labels
+The monospace bracket label convention (`[01 // OVERVIEW]`, `[02 // FEATURES]`, `[AUTH-01]`, `[WR-6AC9]`) has been permanently deprecated and purged from all views and templates:
+- **Replacement**: Clean sans small-caps / uppercase `.section-eyebrow` kickers featuring plain numerals and a subtle hairline rule (e.g. `<div class="section-eyebrow"><span class="eyebrow-num">01</span><span class="eyebrow-rule"></span><span class="eyebrow-label">How it works</span></div>`).
+- **Rule**: Templates must not introduce bracketed indexing or artificial `//` separators in user-facing views.
+
+

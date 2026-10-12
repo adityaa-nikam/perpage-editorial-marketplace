@@ -1,0 +1,896 @@
+[
+  {
+    "url": "http://localhost:3000/",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/about",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/register",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard?mockUser=student",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard?mockUser=writer",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d1",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/favicon.svg",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/css/app.css",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/home",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d2",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d3",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard",
+    "role": "logged_out",
+    "status": 302,
+    "location": "/login"
+  },
+  {
+    "url": "http://localhost:3000/health",
+    "role": "logged_out",
+    "status": 404,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d4",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d5",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d6",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d7",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/auth/google",
+    "role": "logged_out",
+    "status": 302,
+    "location": "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgoogle%2Fcallback&scope=profile%20email&client_id=dummy_google_client_id"
+  },
+  {
+    "url": "http://localhost:3000/auth/github",
+    "role": "logged_out",
+    "status": 302,
+    "location": "https://github.com/login/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgithub%2Fcallback&scope=profile%2Cemail&client_id=dummy_github_client_id"
+  },
+  {
+    "url": "http://localhost:3000/favicon.svg",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/css/app.css",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/home",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/about",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/profile/64f1a2b3c4d5e6f7a8b9c0d9",
+    "role": "student",
+    "status": 302,
+    "location": "/login"
+  },
+  {
+    "url": "http://localhost:3000/styleguide",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/logout",
+    "role": "student",
+    "status": 500,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard?status=pending",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard?status=active",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard?status=delivered",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard?status=completed",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard?status=all",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard?status=declined",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d1",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0001-4000-8000-000000000001_macroeconomics_prompt_brief.pdf?expires=1791578153295",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d2",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0006-4000-8000-000000000006_comparative_law_brief.pdf?expires=1791578153295",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0002-4000-8000-000000000002_transformer_architectures_spec.pdf?expires=1791578153295",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0003-4000-8000-000000000003_time_series_syllabus.pdf?expires=1791578153295",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/finals%2Fe2a1b3c4-0003-4000-8000-000000000003_econometrics_volatility_draft.pdf?expires=1791578153296",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0004-4000-8000-000000000004_polymer_lab_brief.pdf?expires=1791578153296",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0005-4000-8000-000000000005_weimar_monetary_history.pdf?expires=1791578153296",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/finals%2Fe2a1b3c4-0005-4000-8000-000000000005_weimar_analysis_final.pdf?expires=1791578153296",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/health",
+    "role": "student",
+    "status": 404,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/favicon.svg",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/css/app.css",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/home",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/about",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/profile/64f1a2b3c4d5e6f7a8b9c0d1",
+    "role": "writer",
+    "status": 302,
+    "location": "/login"
+  },
+  {
+    "url": "http://localhost:3000/styleguide",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/logout",
+    "role": "writer",
+    "status": 500,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard?status=pending",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard?status=active",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard?status=delivered",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard?status=completed",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard?status=all",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/dashboard?status=declined",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0001-4000-8000-000000000001_macroeconomics_prompt_brief.pdf?expires=1791578153320",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0002-4000-8000-000000000002_transformer_architectures_spec.pdf?expires=1791578153320",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0003-4000-8000-000000000003_time_series_syllabus.pdf?expires=1791578153320",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/finals%2Fe2a1b3c4-0003-4000-8000-000000000003_econometrics_volatility_draft.pdf?expires=1791578153320",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0004-4000-8000-000000000004_polymer_lab_brief.pdf?expires=1791578153320",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/health",
+    "role": "writer",
+    "status": 404,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/deal/accept/64f1a2b3c4d5e6f7a8b9d001",
+    "role": "writer",
+    "status": 404,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/deal/upload-final",
+    "role": "writer",
+    "status": 404,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d1",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d2",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d3",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d4",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d5",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d6",
+    "role": "logged_out",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/register",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d3",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d4",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d5",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d6",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d7",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0001-4000-8000-000000000001_macroeconomics_prompt_brief.pdf?expires=1791578153388",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0006-4000-8000-000000000006_comparative_law_brief.pdf?expires=1791578153388",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0002-4000-8000-000000000002_transformer_architectures_spec.pdf?expires=1791578153388",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0003-4000-8000-000000000003_time_series_syllabus.pdf?expires=1791578153388",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/finals%2Fe2a1b3c4-0003-4000-8000-000000000003_econometrics_volatility_draft.pdf?expires=1791578153388",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0004-4000-8000-000000000004_polymer_lab_brief.pdf?expires=1791578153388",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0005-4000-8000-000000000005_weimar_monetary_history.pdf?expires=1791578153388",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/finals%2Fe2a1b3c4-0005-4000-8000-000000000005_weimar_analysis_final.pdf?expires=1791578153388",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0001-4000-8000-000000000001_macroeconomics_prompt_brief.pdf?expires=1791578160495",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0006-4000-8000-000000000006_comparative_law_brief.pdf?expires=1791578160495",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0002-4000-8000-000000000002_transformer_architectures_spec.pdf?expires=1791578160501",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0003-4000-8000-000000000003_time_series_syllabus.pdf?expires=1791578160507",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/finals%2Fe2a1b3c4-0003-4000-8000-000000000003_econometrics_volatility_draft.pdf?expires=1791578160507",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0005-4000-8000-000000000005_weimar_monetary_history.pdf?expires=1791578160507",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/finals%2Fe2a1b3c4-0005-4000-8000-000000000005_weimar_analysis_final.pdf?expires=1791578160507",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0005-4000-8000-000000000005_weimar_monetary_history.pdf?expires=1791578160513",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/finals%2Fe2a1b3c4-0005-4000-8000-000000000005_weimar_analysis_final.pdf?expires=1791578160513",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0001-4000-8000-000000000001_macroeconomics_prompt_brief.pdf?expires=1791578160518",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0006-4000-8000-000000000006_comparative_law_brief.pdf?expires=1791578160518",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0002-4000-8000-000000000002_transformer_architectures_spec.pdf?expires=1791578160518",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0003-4000-8000-000000000003_time_series_syllabus.pdf?expires=1791578160518",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/finals%2Fe2a1b3c4-0003-4000-8000-000000000003_econometrics_volatility_draft.pdf?expires=1791578160518",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0004-4000-8000-000000000004_polymer_lab_brief.pdf?expires=1791578160518",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0005-4000-8000-000000000005_weimar_monetary_history.pdf?expires=1791578160518",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/finals%2Fe2a1b3c4-0005-4000-8000-000000000005_weimar_analysis_final.pdf?expires=1791578160518",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0004-4000-8000-000000000004_polymer_lab_brief.pdf?expires=1791578160524",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d1",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d2",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/register",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d1",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d2",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d3",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d4",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d5",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d6",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/writers/64f1a2b3c4d5e6f7a8b9c0d7",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0001-4000-8000-000000000001_macroeconomics_prompt_brief.pdf?expires=1791578160558",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0002-4000-8000-000000000002_transformer_architectures_spec.pdf?expires=1791578160558",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0003-4000-8000-000000000003_time_series_syllabus.pdf?expires=1791578160558",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/finals%2Fe2a1b3c4-0003-4000-8000-000000000003_econometrics_volatility_draft.pdf?expires=1791578160558",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0004-4000-8000-000000000004_polymer_lab_brief.pdf?expires=1791578160558",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0001-4000-8000-000000000001_macroeconomics_prompt_brief.pdf?expires=1791578160568",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0002-4000-8000-000000000002_transformer_architectures_spec.pdf?expires=1791578160574",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0003-4000-8000-000000000003_time_series_syllabus.pdf?expires=1791578160579",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/finals%2Fe2a1b3c4-0003-4000-8000-000000000003_econometrics_volatility_draft.pdf?expires=1791578160579",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0001-4000-8000-000000000001_macroeconomics_prompt_brief.pdf?expires=1791578160593",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0002-4000-8000-000000000002_transformer_architectures_spec.pdf?expires=1791578160593",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0003-4000-8000-000000000003_time_series_syllabus.pdf?expires=1791578160593",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/finals%2Fe2a1b3c4-0003-4000-8000-000000000003_econometrics_volatility_draft.pdf?expires=1791578160593",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0004-4000-8000-000000000004_polymer_lab_brief.pdf?expires=1791578160593",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/mock-download/uploads%2Fe2a1b3c4-0004-4000-8000-000000000004_polymer_lab_brief.pdf?expires=1791578160598",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/auth/google",
+    "role": "student",
+    "status": 302,
+    "location": "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgoogle%2Fcallback&scope=profile%20email&client_id=dummy_google_client_id"
+  },
+  {
+    "url": "http://localhost:3000/auth/github",
+    "role": "student",
+    "status": 302,
+    "location": "https://github.com/login/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgithub%2Fcallback&scope=profile%2Cemail&client_id=dummy_github_client_id"
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d3",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d4",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d5",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d6",
+    "role": "student",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/auth/google",
+    "role": "writer",
+    "status": 302,
+    "location": "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgoogle%2Fcallback&scope=profile%20email&client_id=dummy_google_client_id"
+  },
+  {
+    "url": "http://localhost:3000/auth/github",
+    "role": "writer",
+    "status": 302,
+    "location": "https://github.com/login/oauth/authorize?response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fgithub%2Fcallback&scope=profile%2Cemail&client_id=dummy_github_client_id"
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d1",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d2",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d3",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d4",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d5",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  },
+  {
+    "url": "http://localhost:3000/login?returnTo=%2Fdeal%3FwriterId%3D64f1a2b3c4d5e6f7a8b9c0d6",
+    "role": "writer",
+    "status": 200,
+    "location": null
+  }
+]

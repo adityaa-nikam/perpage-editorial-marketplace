@@ -1,6 +1,6 @@
 <%- include('partials/head', { 
-  pageTitle: 'Create a deal | PerPage', 
-  metaDescription: 'Commission an academic writing assignment on PerPage with transparent per-page pricing.',
+  pageTitle: 'Create an editing deal | PerPage', 
+  metaDescription: 'Commission document editing and feedback on PerPage with transparent per-page pricing.',
   robots: 'noindex, nofollow'
 }) %>
 <%- include('partials/navbar') %>
@@ -10,7 +10,7 @@
 
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-xs text-[var(--text-muted)]" aria-label="Breadcrumb">
-      <a href="/writers" class="hover:text-[var(--text-ink)] transition-colors">Writers</a>
+      <a href="/writers" class="hover:text-[var(--text-ink)] transition-colors">Editors</a>
       <span aria-hidden="true">/</span>
       <a href="/writers/<%= writer._id %>" class="hover:text-[var(--text-ink)] transition-colors"><%= writer.name %></a>
       <span aria-hidden="true">/</span>
@@ -18,10 +18,14 @@
     </nav>
 
     <!-- Header -->
-    <div class="space-y-1.5">
-      <h1 class="type-h1">Create a deal</h1>
-      <p class="type-body text-sm text-[var(--text-muted)]">
-        Choose your page count, add notes, and upload your brief. <%= firstName %> will accept or decline.
+    <div class="space-y-1.5 border-b border-[var(--border-color)] pb-5">
+      <div class="section-eyebrow">
+        <span class="eyebrow-caret">^</span>
+        <span class="eyebrow-label">Editing Agreement</span>
+      </div>
+      <h1 class="type-h1 mt-1">Create a deal</h1>
+      <p class="type-body text-sm text-[var(--text-muted)] prose-measure">
+        Choose your page count, add editing notes, and upload your draft. <%= firstName %> will accept or decline.
       </p>
     </div>
 
@@ -33,6 +37,9 @@
           <span>There was a problem with your submission:</span>
         </div>
         <ul class="list-disc list-inside space-y-1 text-xs pl-6">
+          <% if (errors.ownWork) { %>
+            <li><a href="#ownWork" class="underline hover:text-[var(--text-ink)]"><%= errors.ownWork %></a></li>
+          <% } %>
           <% if (errors.pages) { %>
             <li><a href="#pages" class="underline hover:text-[var(--text-ink)]"><%= errors.pages %></a></li>
           <% } %>
@@ -104,7 +111,7 @@
             <!-- Field 2: Notes (Optional) -->
             <div>
               <div class="flex items-center justify-between mb-1">
-                <label for="userNotes" class="form-label mb-0">Assignment Notes (Optional)</label>
+                <label for="userNotes" class="form-label mb-0">Editing Notes (Optional)</label>
                 <span class="text-[11px] text-[var(--text-muted)]" :class="notesLength > 2000 ? 'text-[var(--semantic-danger-text)] font-semibold' : ''" aria-live="polite">
                   <span x-text="notesLength"><%= (values.userNotes || '').length %></span>/2000
                 </span>
@@ -116,10 +123,10 @@
                 maxlength="2000"
                 x-model="notes"
                 aria-describedby="userNotes-hint<%= errors.userNotes ? ' userNotes-error' : '' %>"
-                placeholder="Topic, referencing style, syllabus criteria, or specific requirements..."
+                placeholder="Topic, areas for feedback, referencing style, or specific questions..."
                 class="form-textarea <%= errors.userNotes ? 'border-[var(--semantic-danger-border)]' : '' %>"
               ><%= values.userNotes || '' %></textarea>
-              <p id="userNotes-hint" class="form-hint">Topic, referencing style, anything the writer should know.</p>
+              <p id="userNotes-hint" class="form-hint">Topic, citation style, anything the editor should know.</p>
               <% if (errors.userNotes) { %>
                 <p id="userNotes-error" class="form-error">
                   <%- icon('alert-circle', { class: 'w-3.5 h-3.5' }) %>
@@ -128,9 +135,9 @@
               <% } %>
             </div>
 
-            <!-- Field 3: Brief Upload (File-drop-zone) -->
+            <!-- Field 3: Draft Upload (File-drop-zone) -->
             <div>
-              <label for="file" class="form-label">Assignment Brief</label>
+              <label for="file" class="form-label">Draft Document</label>
               <div 
                 class="file-dropzone relative transition-colors focus-within:ring-2 focus-within:ring-[var(--accent)] focus-within:ring-offset-2"
                 :class="{ 'border-[var(--accent)] bg-[var(--accent-subtle)]': isDragging, 'border-[var(--semantic-danger-border)]': clientFileError || '<%= errors.file ? '1' : '' %>' }"
@@ -145,7 +152,7 @@
                   </div>
                   <div>
                     <p class="text-xs sm:text-sm font-medium text-[var(--text-ink)]">
-                      Upload your brief as a PDF, up to <%= FILE_MAX_MB %> MB.
+                      Upload your draft as a PDF, up to <%= FILE_MAX_MB %> MB.
                     </p>
                     <p class="text-xs text-[var(--text-muted)] mt-0.5">
                       Drag and drop your file here, or select from your device
@@ -206,6 +213,32 @@
               <% } %>
             </div>
 
+            <!-- Guardrail B: Required ownWork Checkbox -->
+            <div class="pt-1">
+              <label for="ownWork" class="flex items-start gap-3 cursor-pointer select-none">
+                <input 
+                  type="checkbox" 
+                  id="ownWork" 
+                  name="ownWork" 
+                  required 
+                  class="form-checkbox mt-0.5 <%= errors.ownWork ? 'border-[var(--semantic-danger-border)]' : '' %>"
+                  <%= values.ownWork ? 'checked' : '' %>
+                >
+                <span class="text-xs sm:text-sm text-[var(--text-ink)] leading-snug">
+                  This is my own work. I'm asking for editing or feedback, not for someone to write it for me.
+                </span>
+              </label>
+              <% if (errors.ownWork) { %>
+                <p id="ownWork-error" class="form-error mt-1.5">
+                  <%- icon('alert-circle', { class: 'w-3.5 h-3.5' }) %>
+                  <%= errors.ownWork %>
+                </p>
+              <% } %>
+              <p class="text-[11px] text-[var(--text-muted)] mt-1.5 ml-7">
+                Read our <a href="/acceptable-use" target="_blank" class="underline hover:text-[var(--text-ink)]">Acceptable Use Policy</a> for guidelines on outside help.
+              </p>
+            </div>
+
             <!-- Submit Action -->
             <div class="pt-3 space-y-3 border-t border-[var(--border-color)]">
               <button 
@@ -239,9 +272,9 @@
 
       <!-- Right Column: Sticky Summary Card -->
       <aside class="lg:col-span-5 lg:sticky lg:top-24 space-y-6">
-        <div class="card p-6 space-y-6">
+        <div class="card card-ticket p-6 space-y-6">
           
-          <!-- Writer Row -->
+          <!-- Editor Row -->
           <div class="flex items-center gap-3 pb-5 border-b border-[var(--border-color)]">
             <div class="avatar avatar-lg shrink-0" aria-hidden="true">
               <% if (writer.profilePic) { %>
@@ -263,19 +296,19 @@
           <div class="space-y-3 text-sm">
             <div class="flex items-center justify-between text-[var(--text-muted)]">
               <span>Rate</span>
-              <span class="font-medium text-[var(--text-ink)]">₹<%= writer.pricePerPage %> per page</span>
+              <span class="font-medium text-[var(--text-ink)] tabular-nums">₹<%= writer.pricePerPage %> per page</span>
             </div>
 
             <!-- Alpine Dynamic Rows -->
             <div class="flex items-center justify-between text-[var(--text-muted)]" x-cloak>
               <span>Pages</span>
-              <span class="font-medium text-[var(--text-ink)]" x-text="pages">1</span>
+              <span class="font-medium text-[var(--text-ink)] tabular-nums" x-text="pages">1</span>
             </div>
 
             <div class="card-muted p-3 space-y-1 rounded-md" x-cloak>
               <div class="flex items-center justify-between">
                 <span class="text-xs text-[var(--text-muted)]">Estimated total</span>
-                <span class="text-base font-semibold text-[var(--text-ink)]" x-text="'₹' + new Intl.NumberFormat('en-IN').format(estimatedTotal)">
+                <span class="text-base font-semibold text-[var(--text-ink)] tabular-nums" x-text="'₹' + new Intl.NumberFormat('en-IN').format(estimatedTotal)">
                   ₹<%= writer.pricePerPage %>
                 </span>
               </div>
@@ -304,22 +337,22 @@
               <div class="stepper-step">
                 <div class="stepper-marker">1</div>
                 <div class="stepper-content">
-                  <p class="text-xs font-medium text-[var(--text-ink)]">Writer reviews your request</p>
-                  <p class="text-[11px] text-[var(--text-muted)]">Checks your prompt brief and instructions.</p>
+                  <p class="text-xs font-medium text-[var(--text-ink)]">Editor reviews your request</p>
+                  <p class="text-[11px] text-[var(--text-muted)]">Checks your draft document and editing notes.</p>
                 </div>
               </div>
               <div class="stepper-step">
                 <div class="stepper-marker">2</div>
                 <div class="stepper-content">
                   <p class="text-xs font-medium text-[var(--text-ink)]">Accepts or declines</p>
-                  <p class="text-[11px] text-[var(--text-muted)]">Confirms availability to work on your assignment.</p>
+                  <p class="text-[11px] text-[var(--text-muted)]">Confirms availability to edit your draft.</p>
                 </div>
               </div>
               <div class="stepper-step">
                 <div class="stepper-marker">3</div>
                 <div class="stepper-content">
-                  <p class="text-xs font-medium text-[var(--text-ink)]">Uploads the final file</p>
-                  <p class="text-[11px] text-[var(--text-muted)]">Submits deliverables upon completion.</p>
+                  <p class="text-xs font-medium text-[var(--text-ink)]">Uploads the edited document</p>
+                  <p class="text-[11px] text-[var(--text-muted)]">Submits edited draft and feedback upon completion.</p>
                 </div>
               </div>
               <div class="stepper-step">

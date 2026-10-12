@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PerPage — Visual Refinement Contact Sheet (Before & After)</title>
+  <style>
+    :root {
+      --bg-background: #F7F6F2;
+      --bg-surface: #FFFFFF;
+      --bg-surface-muted: #EFECE6;
+      --text-ink: #111215;
+      --text-muted: #5C6270;
+      --border-color: #E2DDD5;
+      --border-strong: #C4BDB2;
+      --accent: #2533D6;
+      --accent-subtle: #ECEEFE;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-background: #0E0F12;
+        --bg-surface: #17181C;
+        --bg-surface-muted: #1F2127;
+        --text-ink: #F0F2F6;
+        --text-muted: #8B92A0;
+        --border-color: #21252D;
+        --border-strong: #333844;
+        --accent: #6E7BFF;
+        --accent-subtle: #181B38;
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-background);
+      color: var(--text-ink);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      padding: 40px 24px;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .sheet-hero {
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 32px;
+      margin-bottom: 48px;
+    }
+
+    .index-stamp {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .index-stamp .index-num {
+      background: var(--bg-surface-muted);
+      border: 1px solid var(--border-color);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text-ink);
+    }
+
+    .hero-title {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .hero-desc {
+      color: var(--text-muted);
+      font-size: 15px;
+      max-width: 800px;
+    }
+
+    .page-section {
+      margin-bottom: 64px;
+      padding-top: 24px;
+      border-top: 2px solid var(--border-color);
+    }
+
+    .page-header {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .variants-container {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .comparison-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .comparison-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-surface-muted);
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-ink);
+    }
+
+    .variant-tag {
+      font-family: var(--font-mono);
+      letter-spacing: 0.04em;
+    }
+
+    .dimension-tag {
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border-color);
+    }
+
+    @media (max-width: 1024px) {
+      .comparison-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .comparison-column {
+      background: var(--bg-surface);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .column-header {
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 11px;
+      font-family: var(--font-mono);
+    }
+
+    .before-header {
+      background: rgba(180, 80, 80, 0.04);
+    }
+
+    .after-header {
+      background: rgba(50, 180, 80, 0.04);
+    }
+
+    .header-pill {
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid;
+    }
+
+    .before-header .header-pill {
+      background: #FEE2E2;
+      color: #991B1B;
+      border-color: #F87171;
+    }
+
+    .after-header .header-pill {
+      background: #D1FAE5;
+      color: #065F46;
+      border-color: #34D399;
+    }
+
+    .meta-label {
+      color: var(--text-muted);
+    }
+
+    .image-wrapper {
+      padding: 16px;
+      background: var(--bg-background);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 240px;
+      overflow: auto;
+    }
+
+    .image-wrapper img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      display: block;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .missing-notice {
+      padding: 40px;
+      font-style: italic;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="sheet-hero">
+      <div class="index-stamp">
+        <span class="index-num">PROOF // AUDIT</span>
+        <span>Visual Refinement Verification Artifact</span>
+      </div>
+      <h1 class="hero-title">PerPage Visual Refinement Contact Sheet</h1>
+      <p class="hero-desc">
+        Deterministic side-by-side comparison of all 11 routes across 4 viewports/themes (Desktop Light, Desktop Dark, Mobile Light, Mobile Dark). 
+        All refinements adhere strictly to the Editorial Architectural Indexing brand motif, 4px grid spacing, tabular numerals, and WCAG AA contrast.
+      </p>
+    </header>
+
+    <main>
+      
+    <section class="page-section" id="section-home">
+      <header class="page-header">
+        <div class="index-stamp">
+          <span class="index-num">01</span>
+          <span>PAGE SPECIFICATION // HOME</span>
+        </div>
+        <h2 class="section-title">Landing Page (/)</h2>
+      </header>
+
+      <div class="variants-container">
+  
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Light (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/home-light-1440.png" alt="Landing Page (/) Before Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/home-light-1440.png" alt="Landing Page (/) After Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Dark (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/home-dark-1440.png" alt="Landing Page (/) Before Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/home-dark-1440.png" alt="Landing Page (/) After Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Light (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/home-light-390.png" alt="Landing Page (/) Before Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/home-light-390.png" alt="Landing Page (/) After Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Dark (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/home-dark-390.png" alt="Landing Page (/) Before Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/home-dark-390.png" alt="Landing Page (/) After Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+    <section class="page-section" id="section-writers">
+      <header class="page-header">
+        <div class="index-stamp">
+          <span class="index-num">02</span>
+          <span>PAGE SPECIFICATION // WRITERS</span>
+        </div>
+        <h2 class="section-title">Writers Directory (/writers)</h2>
+      </header>
+
+      <div class="variants-container">
+  
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Light (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/writers-light-1440.png" alt="Writers Directory (/writers) Before Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/writers-light-1440.png" alt="Writers Directory (/writers) After Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Dark (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/writers-dark-1440.png" alt="Writers Directory (/writers) Before Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/writers-dark-1440.png" alt="Writers Directory (/writers) After Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Light (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/writers-light-390.png" alt="Writers Directory (/writers) Before Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/writers-light-390.png" alt="Writers Directory (/writers) After Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Dark (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/writers-dark-390.png" alt="Writers Directory (/writers) Before Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/writers-dark-390.png" alt="Writers Directory (/writers) After Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+    <section class="page-section" id="section-writer-profile">
+      <header class="page-header">
+        <div class="index-stamp">
+          <span class="index-num">03</span>
+          <span>PAGE SPECIFICATION // WRITER-PROFILE</span>
+        </div>
+        <h2 class="section-title">Writer Profile (/writers/:id)</h2>
+      </header>
+
+      <div class="variants-container">
+  
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Light (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/writer-profile-light-1440.png" alt="Writer Profile (/writers/:id) Before Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/writer-profile-light-1440.png" alt="Writer Profile (/writers/:id) After Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Dark (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/writer-profile-dark-1440.png" alt="Writer Profile (/writers/:id) Before Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/writer-profile-dark-1440.png" alt="Writer Profile (/writers/:id) After Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Light (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/writer-profile-light-390.png" alt="Writer Profile (/writers/:id) Before Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/writer-profile-light-390.png" alt="Writer Profile (/writers/:id) After Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Dark (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/writer-profile-dark-390.png" alt="Writer Profile (/writers/:id) Before Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/writer-profile-dark-390.png" alt="Writer Profile (/writers/:id) After Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+    <section class="page-section" id="section-about">
+      <header class="page-header">
+        <div class="index-stamp">
+          <span class="index-num">04</span>
+          <span>PAGE SPECIFICATION // ABOUT</span>
+        </div>
+        <h2 class="section-title">About Manifesto (/about)</h2>
+      </header>
+
+      <div class="variants-container">
+  
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Light (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/about-light-1440.png" alt="About Manifesto (/about) Before Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/about-light-1440.png" alt="About Manifesto (/about) After Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Dark (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/about-dark-1440.png" alt="About Manifesto (/about) Before Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/about-dark-1440.png" alt="About Manifesto (/about) After Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Light (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/about-light-390.png" alt="About Manifesto (/about) Before Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/about-light-390.png" alt="About Manifesto (/about) After Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Dark (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/about-dark-390.png" alt="About Manifesto (/about) Before Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/about-dark-390.png" alt="About Manifesto (/about) After Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+    <section class="page-section" id="section-login">
+      <header class="page-header">
+        <div class="index-stamp">
+          <span class="index-num">05</span>
+          <span>PAGE SPECIFICATION // LOGIN</span>
+        </div>
+        <h2 class="section-title">Authentication: Sign In (/login)</h2>
+      </header>
+
+      <div class="variants-container">
+  
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Light (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/login-light-1440.png" alt="Authentication: Sign In (/login) Before Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/login-light-1440.png" alt="Authentication: Sign In (/login) After Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Dark (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/login-dark-1440.png" alt="Authentication: Sign In (/login) Before Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/login-dark-1440.png" alt="Authentication: Sign In (/login) After Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Light (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/login-light-390.png" alt="Authentication: Sign In (/login) Before Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/login-light-390.png" alt="Authentication: Sign In (/login) After Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Dark (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/login-dark-390.png" alt="Authentication: Sign In (/login) Before Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/login-dark-390.png" alt="Authentication: Sign In (/login) After Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+    <section class="page-section" id="section-register">
+      <header class="page-header">
+        <div class="index-stamp">
+          <span class="index-num">06</span>
+          <span>PAGE SPECIFICATION // REGISTER</span>
+        </div>
+        <h2 class="section-title">Authentication: Register (/register)</h2>
+      </header>
+
+      <div class="variants-container">
+  
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Light (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/register-light-1440.png" alt="Authentication: Register (/register) Before Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/register-light-1440.png" alt="Authentication: Register (/register) After Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Dark (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/register-dark-1440.png" alt="Authentication: Register (/register) Before Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/register-dark-1440.png" alt="Authentication: Register (/register) After Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Light (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/register-light-390.png" alt="Authentication: Register (/register) Before Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/register-light-390.png" alt="Authentication: Register (/register) After Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Dark (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/register-dark-390.png" alt="Authentication: Register (/register) Before Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/register-dark-390.png" alt="Authentication: Register (/register) After Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+    <section class="page-section" id="section-deal">
+      <header class="page-header">
+        <div class="index-stamp">
+          <span class="index-num">07</span>
+          <span>PAGE SPECIFICATION // DEAL</span>
+        </div>
+        <h2 class="section-title">Deal Creation Form (/deal)</h2>
+      </header>
+
+      <div class="variants-container">
+  
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Light (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/deal-light-1440.png" alt="Deal Creation Form (/deal) Before Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/deal-light-1440.png" alt="Deal Creation Form (/deal) After Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Dark (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/deal-dark-1440.png" alt="Deal Creation Form (/deal) Before Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/deal-dark-1440.png" alt="Deal Creation Form (/deal) After Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Light (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/deal-light-390.png" alt="Deal Creation Form (/deal) Before Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/deal-light-390.png" alt="Deal Creation Form (/deal) After Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Dark (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/deal-dark-390.png" alt="Deal Creation Form (/deal) Before Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/deal-dark-390.png" alt="Deal Creation Form (/deal) After Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+    <section class="page-section" id="section-dashboard-student">
+      <header class="page-header">
+        <div class="index-stamp">
+          <span class="index-num">08</span>
+          <span>PAGE SPECIFICATION // DASHBOARD-STUDENT</span>
+        </div>
+        <h2 class="section-title">Student Dashboard (/dashboard)</h2>
+      </header>
+
+      <div class="variants-container">
+  
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Light (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/dashboard-student-light-1440.png" alt="Student Dashboard (/dashboard) Before Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/dashboard-student-light-1440.png" alt="Student Dashboard (/dashboard) After Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Dark (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/dashboard-student-dark-1440.png" alt="Student Dashboard (/dashboard) Before Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/dashboard-student-dark-1440.png" alt="Student Dashboard (/dashboard) After Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Light (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/dashboard-student-light-390.png" alt="Student Dashboard (/dashboard) Before Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/dashboard-student-light-390.png" alt="Student Dashboard (/dashboard) After Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Dark (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/dashboard-student-dark-390.png" alt="Student Dashboard (/dashboard) Before Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/dashboard-student-dark-390.png" alt="Student Dashboard (/dashboard) After Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+    <section class="page-section" id="section-dashboard-writer">
+      <header class="page-header">
+        <div class="index-stamp">
+          <span class="index-num">09</span>
+          <span>PAGE SPECIFICATION // DASHBOARD-WRITER</span>
+        </div>
+        <h2 class="section-title">Writer Dashboard (/dashboard)</h2>
+      </header>
+
+      <div class="variants-container">
+  
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Light (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/dashboard-writer-light-1440.png" alt="Writer Dashboard (/dashboard) Before Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/dashboard-writer-light-1440.png" alt="Writer Dashboard (/dashboard) After Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Dark (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/dashboard-writer-dark-1440.png" alt="Writer Dashboard (/dashboard) Before Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/dashboard-writer-dark-1440.png" alt="Writer Dashboard (/dashboard) After Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Light (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/dashboard-writer-light-390.png" alt="Writer Dashboard (/dashboard) Before Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/dashboard-writer-light-390.png" alt="Writer Dashboard (/dashboard) After Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Dark (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/dashboard-writer-dark-390.png" alt="Writer Dashboard (/dashboard) Before Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/dashboard-writer-dark-390.png" alt="Writer Dashboard (/dashboard) After Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+    <section class="page-section" id="section-profile-own">
+      <header class="page-header">
+        <div class="index-stamp">
+          <span class="index-num">10</span>
+          <span>PAGE SPECIFICATION // PROFILE-OWN</span>
+        </div>
+        <h2 class="section-title">Account Settings (/profile/:id)</h2>
+      </header>
+
+      <div class="variants-container">
+  
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Light (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/profile-own-light-1440.png" alt="Account Settings (/profile/:id) Before Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/profile-own-light-1440.png" alt="Account Settings (/profile/:id) After Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Dark (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/profile-own-dark-1440.png" alt="Account Settings (/profile/:id) Before Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/profile-own-dark-1440.png" alt="Account Settings (/profile/:id) After Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Light (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/profile-own-light-390.png" alt="Account Settings (/profile/:id) Before Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/profile-own-light-390.png" alt="Account Settings (/profile/:id) After Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Dark (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/profile-own-dark-390.png" alt="Account Settings (/profile/:id) Before Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/profile-own-dark-390.png" alt="Account Settings (/profile/:id) After Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+    <section class="page-section" id="section-404">
+      <header class="page-header">
+        <div class="index-stamp">
+          <span class="index-num">11</span>
+          <span>PAGE SPECIFICATION // 404</span>
+        </div>
+        <h2 class="section-title">Not Found Error Page (/404)</h2>
+      </header>
+
+      <div class="variants-container">
+  
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Light (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/404-light-1440.png" alt="Not Found Error Page (/404) Before Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/404-light-1440.png" alt="Not Found Error Page (/404) After Desktop Light (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Desktop Dark (1440px)</span>
+          <span class="dimension-tag">1440px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/404-dark-1440.png" alt="Not Found Error Page (/404) Before Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/404-dark-1440.png" alt="Not Found Error Page (/404) After Desktop Dark (1440px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Light (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/404-light-390.png" alt="Not Found Error Page (/404) Before Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/404-light-390.png" alt="Not Found Error Page (/404) After Mobile Light (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="comparison-card">
+        <div class="comparison-bar">
+          <span class="variant-tag">Mobile Dark (390px)</span>
+          <span class="dimension-tag">390px</span>
+        </div>
+        <div class="comparison-grid">
+          <div class="comparison-column">
+            <div class="column-header before-header">
+              <span class="header-pill">BEFORE</span>
+              <span class="meta-label">Baseline Template</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="before/404-dark-390.png" alt="Not Found Error Page (/404) Before Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+          <div class="comparison-column">
+            <div class="column-header after-header">
+              <span class="header-pill">AFTER</span>
+              <span class="meta-label">Refined Architectural</span>
+            </div>
+            <div class="image-wrapper">
+              <img src="after/404-dark-390.png" alt="Not Found Error Page (/404) After Mobile Dark (390px)" loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+  
+    </main>
+  </div>
+</body>
+</html>

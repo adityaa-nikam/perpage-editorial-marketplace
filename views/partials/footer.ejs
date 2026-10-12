@@ -4,15 +4,16 @@
       <!-- Brand & Mission Column -->
       <div class="md:col-span-1 space-y-3">
         <a href="/home" class="flex items-center gap-2 text-decoration-none">
-          <span class="w-6 h-6 rounded-md bg-[var(--text-ink)] text-[var(--bg-surface)] flex items-center justify-center font-serif-display font-bold text-sm tracking-tighter">
-            P
+          <span class="w-6 h-6 rounded-md border border-[var(--border-color)] bg-[var(--bg-surface-muted)] flex items-center justify-center overflow-hidden shrink-0">
+            <img src="/logo.png" alt="PerPage" class="theme-logo-light w-4 h-4 object-contain" />
+            <img src="/logo-white.png" alt="PerPage" class="theme-logo-dark w-4 h-4 object-contain" />
           </span>
           <span class="font-serif-display text-xl text-[var(--text-ink)] tracking-tight">
             PerPage<span class="text-[var(--accent)] font-sans text-xs ml-0.5 font-bold">.</span>
           </span>
         </a>
         <p class="text-xs text-[var(--text-muted)] leading-relaxed">
-          Calm, transparent academic writing &amp; research collaboration. Transparent per-page pricing, direct writer assignment, and secure draft delivery.
+          Demonstration marketplace for document editing and feedback on your own writing. Transparent per-page pricing, direct editor selection, and private draft delivery.
         </p>
       </div>
 
@@ -21,9 +22,9 @@
         <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Platform</h3>
         <ul class="space-y-2 text-xs">
           <li><a href="/home" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Home</a></li>
-          <li><a href="/writers" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Browse Writers</a></li>
+          <li><a href="/writers" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Browse Editors</a></li>
           <li><a href="/about" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">How It Works</a></li>
-          <li><a href="/dashboard" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Student &amp; Writer Dashboard</a></li>
+          <li><a href="/dashboard" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Client &amp; Editor Dashboard</a></li>
         </ul>
       </div>
 
@@ -31,9 +32,9 @@
       <div class="space-y-3">
         <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Editorial Standards</h3>
         <ul class="space-y-2 text-xs">
+          <li><a href="/acceptable-use" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Acceptable Use Policy</a></li>
           <li><a href="/about" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">About Our Mission</a></li>
-          <li><a href="/writers" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Writer Verification</a></li>
-          <li><a href="/about#academic-integrity" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Academic Honor Code</a></li>
+          <li><a href="/acceptable-use" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] transition-colors">Editorial Guidelines</a></li>
           <li><a href="https://github.com/adityaa-nikam/perpage-academic-help-platform" target="_blank" rel="noopener noreferrer" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] inline-flex items-center gap-1 transition-colors">
             Source Repository
             <%- icon('arrow-up-right', { class: 'w-3 h-3' }) %>
@@ -41,12 +42,12 @@
         </ul>
       </div>
 
-      <!-- Legal & Architecture -->
+      <!-- Legal & Platform Info -->
       <div class="space-y-3">
-        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Academic Project</h3>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Demonstration Project</h3>
         <ul class="space-y-2 text-xs text-[var(--text-muted)]">
           <li><span>Stack: Node.js, Express 5, EJS, MongoDB</span></li>
-          <li><span>Storage: AWS S3 Encrypted Presigned URLs</span></li>
+          <li><span>Storage: Private storage with time-limited links</span></li>
           <li><span>Session Store: Connect-Mongo TTL</span></li>
           <li><a href="/health" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] inline-flex items-center gap-1 transition-colors">
             System Health Check
@@ -62,7 +63,7 @@
         &copy; <%= new Date().getFullYear() %> PerPage. Designed in the <span class="text-[var(--text-ink)] font-medium">Paper &amp; Ink</span> editorial style.
       </p>
       <p class="text-center sm:text-right text-[11px] max-w-md">
-        Educational demonstration project. No real financial payments are processed. Built for academic workflow evaluation.
+        Educational demonstration project. No real payments are processed in this demo. Built for document editing workflow evaluation.
       </p>
     </div>
   </div>

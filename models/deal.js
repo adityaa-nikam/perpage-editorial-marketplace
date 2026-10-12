@@ -46,7 +46,16 @@ const dealSchema = new mongoose.Schema({
     default: Date.now
   },
   acceptedAt: Date,
-  completedAt: Date
+  completedAt: Date,
+  paymentStatus: {
+    type: String,
+    enum: ['unpaid', 'paid', 'refunded'],
+    default: 'unpaid'
+  },
+  razorpayOrderId: String,
+  razorpayPaymentId: String,
+  razorpaySignature: String,
+  paidAt: Date
 });
 
 const Deal = mongoose.model('Deal', dealSchema);

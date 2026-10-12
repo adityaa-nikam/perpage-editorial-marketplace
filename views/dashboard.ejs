@@ -1,8 +1,9 @@
 <%- include('partials/head', { 
   pageTitle: 'Dashboard | PerPage', 
-  metaDescription: 'Manage your commissioned academic writing projects, review requests, and download completed papers.',
+  metaDescription: 'Manage your document editing projects, review incoming client requests, and download completed edited drafts.',
   robots: 'noindex, nofollow'
 }) %>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <%- include('partials/navbar') %>
 
 <% 
@@ -16,38 +17,109 @@
   const maxMb = locals.FILE_MAX_MB || 10;
 %>
 
-<main id="main-content" class="py-10 sm:py-14" x-data="dashboardApp()">
+<main 
+  id="main-content" 
+  class="py-10 sm:py-14" 
+  x-data="dashboardApp()"
+  data-has-notice="<%= safeNotice ? 'true' : 'false' %>"
+  data-notice-success="<%= (safeNotice && safeNotice.type === 'success') ? 'true' : 'false' %>"
+  data-user-name="<%= (user && user.name) || '' %>"
+  data-user-email="<%= (user && user.email) || '' %>"
+  data-user-phone="<%= (user && user.phone) || '' %>"
+>
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
-    <!-- Header Section -->
-    <div class="space-y-2 border-b border-[var(--border-color)] pb-6">
-      <div class="flex items-center gap-2">
-        <span class="type-eyebrow">Dashboard</span>
-        <% if (isWriter) { %>
-          <span class="badge badge-accent">
-            <%- icon('user', { class: 'w-3 h-3' }) %>
-            Academic Writer
-          </span>
-        <% } else { %>
-          <span class="badge badge-neutral">
-            <%- icon('user', { class: 'w-3 h-3' }) %>
-            Student Client
-          </span>
-        <% } %>
-      </div>
+    <!-- Header Section with Integrated Stats Desk -->
+    <div class="border-b border-[var(--border-color)] pb-6">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
+        
+        <!-- Left Side: Desk Eyebrow, Welcome Title, Role Badge & Subtitle -->
+        <div class="space-y-1.5 shrink-0">
+          <div class="flex items-center gap-2.5">
+            <div class="section-eyebrow">
+              <span class="eyebrow-num">01</span>
+              <span class="eyebrow-rule"></span>
+              <span class="eyebrow-label"><%= isWriter ? 'Editor Registry Desk' : 'Client Commission Desk' %></span>
+            </div>
+            <% if (isWriter) { %>
+              <span class="badge badge-accent text-[11px]">
+                <%- icon('user', { class: 'w-3 h-3' }) %>
+                Freelance Editor
+              </span>
+            <% } else { %>
+              <span class="badge badge-neutral text-[11px]">
+                <%- icon('user', { class: 'w-3 h-3' }) %>
+                Client
+              </span>
+            <% } %>
+          </div>
 
-      <h1 class="type-h1">Welcome back, <%= firstName %></h1>
-      <p class="type-body text-sm text-[var(--text-muted)]">
-        <%= isWriter ? 'Your requests from students' : 'Your deals with writers' %>
-      </p>
+          <h1 class="type-h1 text-2xl sm:text-3xl tracking-tight">Welcome back, <%= firstName %></h1>
+          <p class="type-body text-xs sm:text-sm text-[var(--text-muted)]">
+            <%= isWriter ? 'Your requests from clients' : 'Your deals with editors' %>
+          </p>
+        </div>
+
+        <!-- Right Side: Deal Numbers Boxes in the empty space right of Welcome -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2.5 w-full sm:w-auto shrink-0 sm:ml-auto">
+          <a 
+            href="/dashboard?status=pending<%= locals.hasBothViews ? '&view=' + safeView : '' %>" 
+            class="card p-2.5 sm:py-2.5 sm:px-3 hover:border-[var(--border-strong)] transition-all group text-center min-w-[76px] sm:min-w-[85px] <%= safeStatus === 'pending' ? 'border-[var(--accent)] ring-1 ring-[var(--accent)]' : '' %>"
+            title="Filter by Pending"
+          >
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] group-hover:text-[var(--text-ink)]">Pending</div>
+            <div class="text-xl sm:text-2xl font-bold mt-0.5 font-mono text-[var(--text-ink)] tabular-nums"><%= safeCounts.pending %></div>
+          </a>
+
+          <a 
+            href="/dashboard?status=active<%= locals.hasBothViews ? '&view=' + safeView : '' %>" 
+            class="card p-2.5 sm:py-2.5 sm:px-3 hover:border-[var(--border-strong)] transition-all group text-center min-w-[76px] sm:min-w-[85px] <%= safeStatus === 'active' ? 'border-[var(--accent)] ring-1 ring-[var(--accent)]' : '' %>"
+            title="Filter by Active"
+          >
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] group-hover:text-[var(--text-ink)]">Active</div>
+            <div class="text-xl sm:text-2xl font-bold mt-0.5 font-mono text-[var(--text-ink)] tabular-nums"><%= safeCounts.active %></div>
+          </a>
+
+          <a 
+            href="/dashboard?status=delivered<%= locals.hasBothViews ? '&view=' + safeView : '' %>" 
+            class="card p-2.5 sm:py-2.5 sm:px-3 hover:border-[var(--border-strong)] transition-all group text-center min-w-[76px] sm:min-w-[85px] <%= safeStatus === 'delivered' ? 'border-[var(--accent)] ring-1 ring-[var(--accent)]' : '' %>"
+            title="Filter by Delivered"
+          >
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] group-hover:text-[var(--text-ink)]">Delivered</div>
+            <div class="text-xl sm:text-2xl font-bold mt-0.5 font-mono text-[var(--text-ink)] tabular-nums"><%= safeCounts.delivered %></div>
+          </a>
+
+          <a 
+            href="/dashboard?status=completed<%= locals.hasBothViews ? '&view=' + safeView : '' %>" 
+            class="card p-2.5 sm:py-2.5 sm:px-3 hover:border-[var(--border-strong)] transition-all group text-center min-w-[76px] sm:min-w-[85px] <%= safeStatus === 'completed' ? 'border-[var(--accent)] ring-1 ring-[var(--accent)]' : '' %>"
+            title="Filter by Completed"
+          >
+            <div class="text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] group-hover:text-[var(--text-ink)]">Completed</div>
+            <div class="text-xl sm:text-2xl font-bold mt-0.5 font-mono text-[var(--text-ink)] tabular-nums"><%= safeCounts.completed %></div>
+          </a>
+        </div>
+
+      </div>
     </div>
 
-    <!-- Writer-only Rate Notice -->
+    <!-- Required Guardrail Statement for Editors -->
+    <% if (isWriter) { %>
+      <div class="p-3.5 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] text-xs text-[var(--text-muted)] flex items-start gap-2.5">
+        <span class="text-[var(--accent)] mt-0.5 shrink-0">
+          <%- icon('info', { class: 'w-4 h-4' }) %>
+        </span>
+        <div class="leading-relaxed">
+          <span class="font-medium text-[var(--text-ink)]">Platform scope:</span> You give feedback and edits on the client's own text. You do not write documents from scratch.
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Editor-only Rate Notice -->
     <% if (isWriter && (!user.pricePerPage || user.pricePerPage <= 0)) { %>
       <div class="alert alert-info" role="region" aria-label="Rate notice">
         <%- icon('info', { class: 'w-4 h-4 shrink-0' }) %>
         <div class="flex-1 text-xs sm:text-sm">
-          <span>Set your rate so students can create deals with you.</span>
+          <span>Set your rate so clients can create deals with you.</span>
           <a href="/profile/<%= user._id %>" class="font-medium underline ml-1 hover:text-[var(--text-ink)]">
             Update profile &rarr;
           </a>
@@ -94,25 +166,30 @@
       </div>
     <% } %>
 
-    <!-- Stat Blocks Row -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-      <a href="/dashboard?status=pending<%= locals.hasBothViews ? '&view=' + safeView : '' %>" class="card p-4 hover:border-[var(--border-strong)] transition-colors group">
-        <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] group-hover:text-[var(--text-ink)]">Pending</div>
-        <div class="text-2xl font-semibold mt-1 font-mono text-[var(--text-ink)]"><%= safeCounts.pending %></div>
-      </a>
-      <a href="/dashboard?status=active<%= locals.hasBothViews ? '&view=' + safeView : '' %>" class="card p-4 hover:border-[var(--border-strong)] transition-colors group">
-        <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] group-hover:text-[var(--text-ink)]">Active</div>
-        <div class="text-2xl font-semibold mt-1 font-mono text-[var(--text-ink)]"><%= safeCounts.active %></div>
-      </a>
-      <a href="/dashboard?status=delivered<%= locals.hasBothViews ? '&view=' + safeView : '' %>" class="card p-4 hover:border-[var(--border-strong)] transition-colors group">
-        <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] group-hover:text-[var(--text-ink)]">Delivered</div>
-        <div class="text-2xl font-semibold mt-1 font-mono text-[var(--text-ink)]"><%= safeCounts.delivered %></div>
-      </a>
-      <a href="/dashboard?status=completed<%= locals.hasBothViews ? '&view=' + safeView : '' %>" class="card p-4 hover:border-[var(--border-strong)] transition-colors group">
-        <div class="text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] group-hover:text-[var(--text-ink)]">Completed</div>
-        <div class="text-2xl font-semibold mt-1 font-mono text-[var(--text-ink)]"><%= safeCounts.completed %></div>
-      </a>
-    </div>
+    <!-- In-App Notification Alerts -->
+    <% if (locals.userNotifications && locals.userNotifications.some(n => !n.read)) { %>
+      <% const unreadList = locals.userNotifications.filter(n => !n.read); %>
+      <div class="space-y-2.5">
+        <% unreadList.slice(0, 3).forEach(notif => { %>
+          <div class="flex items-center justify-between gap-3 p-3.5 rounded-xl border border-[var(--border-strong)] bg-[var(--card)] shadow-xs">
+            <div class="flex items-center gap-3 min-w-0">
+              <span class="p-2 rounded-full bg-[var(--muted)] text-[var(--text-ink)] shrink-0 flex items-center justify-center">
+                <%- icon('bell', { class: 'w-4 h-4' }) %>
+              </span>
+              <div class="min-w-0">
+                <p class="text-xs font-semibold text-[var(--text-ink)]"><%= notif.title %></p>
+                <p class="text-xs text-[var(--text-muted)] truncate"><%= notif.message %></p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <a href="<%= notif.link || '/dashboard' %>" class="btn btn-primary btn-sm text-xs py-1 px-3 rounded-full">
+                View &rarr;
+              </a>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } %>
 
     <!-- Toolbar (Tabs + Status Filter Pills) -->
     <div class="space-y-4">
@@ -152,11 +229,11 @@
           <% statuses.forEach(st => { %>
             <a 
               href="/dashboard?status=<%= st.key %><%= locals.hasBothViews ? '&view=' + safeView : '' %>"
-              class="chip <%= safeStatus === st.key ? 'bg-[var(--accent-subtle)] text-[var(--accent)] border-[var(--accent-subtle-border)]' : 'hover:border-[var(--border-strong)]' %>"
+              class="chip <%= safeStatus === st.key ? 'is-active' : '' %>"
               <%= safeStatus === st.key ? 'aria-current="page"' : '' %>
             >
-              <%= st.label %>
-              <span class="text-[10px] font-mono px-1 py-0.2 rounded-full bg-[var(--bg-surface-muted)] text-[var(--text-muted)] ml-1">
+              <span><%= st.label %></span>
+              <span class="chip-badge tabular-nums">
                 <%= st.count %>
               </span>
             </a>
@@ -169,376 +246,462 @@
       </div>
     </div>
 
-    <!-- Deals Listing (Stacked Cards, 1px border, 12px radius) -->
+    <!-- Deals Listing (2-Column Grid on md+, Stacked on mobile) -->
     <% if (safeDeals.length > 0) { %>
-      <div class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
         <% safeDeals.forEach((deal, index) => { %>
           <% 
             const isIncoming = safeView === 'incoming';
             const counterpart = isIncoming ? (deal.userId || {}) : (deal.writerId || {});
-            const counterpartName = counterpart.name || (isIncoming ? 'Student Client' : 'Academic Writer');
+            const counterpartName = counterpart.name || (isIncoming ? 'Client' : 'Freelance Editor');
             const counterpartInitials = counterpartName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'U';
             const dealIdShort = deal._id ? deal._id.toString().slice(-6).toUpperCase() : '000000';
             const dateStr = deal.createdAt ? new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium' }).format(new Date(deal.createdAt)) : '';
             const isDeclined = deal.status === 'rejected';
             const isPending = deal.status === 'pending';
+            const isCompleted = deal.status === 'completed';
             const hasFinal = Boolean(deal.freshFinalLink || deal.finalFileLink);
             const isAccepted = ['accepted', 'in-progress'].includes(deal.status);
             const ratePerPage = (deal.pages && deal.totalPrice) ? Math.round(deal.totalPrice / deal.pages) : null;
           %>
 
-          <article class="card p-5 sm:p-6 space-y-5" x-data="{ expanded: false }">
+          <article class="card card-ticket p-4 sm:p-5 flex flex-col justify-between h-full space-y-4" x-data="{ expanded: false }">
             
-            <!-- Header Row -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-4">
-              <div class="flex items-center gap-3 min-w-0">
-                <div class="avatar avatar-md shrink-0" aria-hidden="true">
-                  <% if (counterpart.profilePic) { %>
-                    <img src="<%= counterpart.profilePic %>" alt="<%= counterpartName %>">
-                  <% } else { %>
-                    <span><%= counterpartInitials %></span>
-                  <% } %>
-                </div>
-
-                <div class="min-w-0">
-                  <div class="flex items-center gap-2">
-                    <% if (!isIncoming && counterpart._id) { %>
-                      <a href="/writers/<%= counterpart._id %>" class="text-sm font-semibold text-[var(--text-ink)] hover:text-[var(--accent)] truncate">
-                        <%= counterpartName %>
-                      </a>
+            <!-- Top Content Container -->
+            <div class="space-y-4">
+              <!-- Header Row -->
+              <div class="flex items-start sm:items-center justify-between gap-3 border-b border-[var(--border-color)] pb-3">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="avatar avatar-md shrink-0" aria-hidden="true">
+                    <% if (counterpart.profilePic) { %>
+                      <img src="<%= counterpart.profilePic %>" alt="<%= counterpartName %>">
                     <% } else { %>
-                      <span class="text-sm font-semibold text-[var(--text-ink)] truncate">
-                        <%= counterpartName %>
-                      </span>
+                      <span><%= counterpartInitials %></span>
                     <% } %>
-                    <span class="text-xs text-[var(--text-muted)] font-mono">#<%= dealIdShort %></span>
-                  </div>
-                  <time datetime="<%= deal.createdAt ? new Date(deal.createdAt).toISOString() : '' %>" class="text-xs text-[var(--text-muted)]">
-                    Created <%= dateStr %>
-                  </time>
-                </div>
-              </div>
-
-              <!-- Status Badge -->
-              <div class="shrink-0">
-                <% if (isDeclined) { %>
-                  <span class="badge badge-danger">
-                    <%- icon('x', { class: 'w-3 h-3' }) %>
-                    Declined
-                  </span>
-                <% } else if (isPending) { %>
-                  <span class="badge badge-warning">
-                    <%- icon('clock', { class: 'w-3 h-3' }) %>
-                    Pending
-                  </span>
-                <% } else if (hasFinal || deal.status === 'submitted') { %>
-                  <span class="badge badge-success">
-                    <%- icon('check', { class: 'w-3 h-3' }) %>
-                    Delivered
-                  </span>
-                <% } else if (deal.status === 'completed') { %>
-                  <span class="badge badge-success">
-                    <%- icon('shield-check', { class: 'w-3 h-3' }) %>
-                    Completed
-                  </span>
-                <% } else { %>
-                  <span class="badge badge-accent">
-                    <%- icon('loader', { class: 'w-3 h-3' }) %>
-                    Accepted
-                  </span>
-                <% } %>
-              </div>
-            </div>
-
-            <!-- Facts Row -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-              <div>
-                <span class="text-[var(--text-muted)] block">Pages</span>
-                <span class="font-medium font-mono text-[var(--text-ink)]"><%= deal.pages %> pages</span>
-              </div>
-              <% if (ratePerPage) { %>
-                <div>
-                  <span class="text-[var(--text-muted)] block">Rate</span>
-                  <span class="font-medium font-mono text-[var(--text-ink)]">₹<%= ratePerPage %> / page</span>
-                </div>
-              <% } %>
-              <div>
-                <span class="text-[var(--text-muted)] block">Total</span>
-                <span class="font-semibold font-mono text-[var(--text-ink)]">₹<%= Number(deal.totalPrice || 0).toLocaleString('en-IN') %></span>
-              </div>
-            </div>
-
-            <!-- Compact Stepper (Reachable Flow: Pending -> Accepted -> Delivered) -->
-            <div class="pt-2">
-              <% if (isDeclined) { %>
-                <div class="flex items-center gap-2 text-xs text-[var(--semantic-danger-text)] bg-[var(--semantic-danger-bg)] p-2.5 rounded-md border border-[var(--semantic-danger-border)]">
-                  <%- icon('alert-circle', { class: 'w-3.5 h-3.5 shrink-0' }) %>
-                  <span>This assignment request was declined.</span>
-                </div>
-              <% } else { %>
-                <div class="timeline-stepper py-1" aria-label="Progress">
-                  <!-- Step 1: Pending -->
-                  <div class="stepper-step <%= isPending ? 'is-current' : 'is-complete' %>" <%= isPending ? 'aria-current="step"' : '' %>>
-                    <div class="stepper-indicator">
-                      <% if (isPending) { %>1<% } else { %><%- icon('check', { class: 'w-3 h-3' }) %><% } %>
-                    </div>
-                    <div class="stepper-label text-[11px] mt-1">Pending</div>
-                    <div class="stepper-line"></div>
                   </div>
 
-                  <!-- Step 2: Accepted -->
-                  <div class="stepper-step <%= (isAccepted && !hasFinal) ? 'is-current' : (hasFinal || deal.status === 'completed' ? 'is-complete' : '') %>" <%= (isAccepted && !hasFinal) ? 'aria-current="step"' : '' %>>
-                    <div class="stepper-indicator">
-                      <% if (hasFinal || deal.status === 'completed') { %><%- icon('check', { class: 'w-3 h-3' }) %><% } else { %>2<% } %>
-                    </div>
-                    <div class="stepper-label text-[11px] mt-1">Accepted</div>
-                    <div class="stepper-line"></div>
-                  </div>
-
-                  <!-- Step 3: Delivered -->
-                  <div class="stepper-step <%= hasFinal ? 'is-current is-complete' : '' %>" <%= hasFinal ? 'aria-current="step"' : '' %>>
-                    <div class="stepper-indicator">
-                      <% if (hasFinal) { %><%- icon('check', { class: 'w-3 h-3' }) %><% } else { %>3<% } %>
-                    </div>
-                    <div class="stepper-label text-[11px] mt-1">Delivered</div>
-                  </div>
-                </div>
-              <% } %>
-            </div>
-
-            <!-- Expandable Details (Alpine Disclosure) -->
-            <div class="pt-2 border-t border-[var(--border-color)]">
-              <button 
-                type="button" 
-                @click="expanded = !expanded" 
-                :aria-expanded="expanded.toString()"
-                aria-controls="details-<%= deal._id %>"
-                class="flex items-center justify-between w-full text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-ink)] py-1"
-              >
-                <span>Assignment Details &amp; Brief Files</span>
-                <span :class="expanded ? 'rotate-180' : ''" class="transition-transform duration-150">
-                  <%- icon('chevron-down', { class: 'w-3.5 h-3.5' }) %>
-                </span>
-              </button>
-
-              <div 
-                id="details-<%= deal._id %>" 
-                x-show="expanded" 
-                x-cloak 
-                class="mt-3 pt-3 border-t border-[var(--border-color)] space-y-3 text-xs"
-              >
-                <!-- Assignment Notes -->
-                <div>
-                  <span class="font-medium text-[var(--text-ink)] block mb-1">Student Notes:</span>
-                  <% if (deal.userNotes && deal.userNotes.trim()) { %>
-                    <p class="p-2.5 rounded bg-[var(--bg-surface-muted)] text-[var(--text-ink)] whitespace-pre-wrap"><%= deal.userNotes %></p>
-                  <% } else { %>
-                    <p class="text-[var(--text-muted)] italic">No specific notes provided.</p>
-                  <% } %>
-                </div>
-
-                <!-- Brief Files -->
-                <div>
-                  <span class="font-medium text-[var(--text-ink)] block mb-1">Brief Documents:</span>
-                  <% if (deal.briefLinks && deal.briefLinks.length > 0) { %>
-                    <div class="space-y-1.5">
-                      <% deal.briefLinks.forEach(b => { %>
-                        <div class="flex items-center justify-between p-2 rounded bg-[var(--bg-surface-muted)]">
-                          <div class="flex items-center gap-2 truncate min-w-0">
-                            <%- icon('file-text', { class: 'w-3.5 h-3.5 shrink-0 text-[var(--accent)]' }) %>
-                            <span class="truncate" title="<%= b.filename %>"><%= b.filename %></span>
-                          </div>
-                          <% if (b.url) { %>
-                            <a href="<%= b.url %>" target="_blank" download class="btn btn-ghost btn-sm text-xs shrink-0">
-                              <%- icon('download', { class: 'w-3 h-3 mr-1' }) %>
-                              Download
-                            </a>
-                          <% } else { %>
-                            <span class="text-[11px] text-[var(--text-muted)] italic">Download link unavailable</span>
-                          <% } %>
-                        </div>
-                      <% }) %>
-                    </div>
-                  <% } else { %>
-                    <p class="text-[var(--text-muted)] italic">No initial brief attached.</p>
-                  <% } %>
-                </div>
-
-                <!-- Final Deliverable File (if available) -->
-                <% if (hasFinal) { %>
-                  <div>
-                    <span class="font-medium text-[var(--text-ink)] block mb-1">Delivered Document:</span>
-                    <div class="flex items-center justify-between p-2 rounded bg-[var(--semantic-success-bg)] border border-[var(--semantic-success-border)] text-[var(--semantic-success-text)]">
-                      <div class="flex items-center gap-2 truncate min-w-0">
-                        <%- icon('file-text', { class: 'w-3.5 h-3.5 shrink-0' }) %>
-                        <span class="truncate font-medium" title="<%= deal.finalFilename %>"><%= deal.finalFilename %></span>
-                      </div>
-                      <% if (deal.freshFinalLink) { %>
-                        <a href="<%= deal.freshFinalLink %>" target="_blank" download class="btn btn-secondary btn-sm text-xs shrink-0 bg-[var(--bg-surface)]">
-                          <%- icon('download', { class: 'w-3 h-3 mr-1' }) %>
-                          Download
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-2">
+                      <% if (!isIncoming && counterpart._id) { %>
+                        <a href="/writers/<%= counterpart._id %>" class="text-sm font-semibold text-[var(--text-ink)] hover:text-[var(--accent)] truncate">
+                          <%= counterpartName %>
                         </a>
                       <% } else { %>
-                        <span class="text-[11px] text-[var(--text-muted)] italic">Download link unavailable</span>
+                        <span class="text-sm font-semibold text-[var(--text-ink)] truncate">
+                          <%= counterpartName %>
+                        </span>
                       <% } %>
+                      <span class="text-xs text-[var(--text-muted)] font-mono tabular-nums shrink-0">#<%= dealIdShort %></span>
+                    </div>
+                    <time datetime="<%= deal.createdAt ? new Date(deal.createdAt).toISOString() : '' %>" class="text-xs text-[var(--text-muted)] tabular-nums block">
+                      Created <%= dateStr %>
+                    </time>
+                  </div>
+                </div>
+
+                <!-- Status Badge -->
+                <div class="shrink-0">
+                  <% if (isDeclined) { %>
+                    <span class="badge badge-danger">
+                      <%- icon('x', { class: 'w-3 h-3' }) %>
+                      Declined
+                    </span>
+                  <% } else if (isPending) { %>
+                    <span class="badge badge-warning">
+                      <%- icon('clock', { class: 'w-3 h-3' }) %>
+                      Pending
+                    </span>
+                  <% } else if (isCompleted) { %>
+                    <span class="badge badge-success">
+                      <%- icon('shield-check', { class: 'w-3 h-3' }) %>
+                      Completed
+                    </span>
+                  <% } else if (hasFinal || deal.status === 'submitted') { %>
+                    <span class="badge badge-success">
+                      <%- icon('check', { class: 'w-3 h-3' }) %>
+                      Delivered
+                    </span>
+                  <% } else { %>
+                    <span class="badge badge-accent">
+                      <%- icon('loader', { class: 'w-3 h-3' }) %>
+                      Accepted
+                    </span>
+                  <% } %>
+                </div>
+              </div>
+
+              <!-- Facts Row -->
+              <div class="grid grid-cols-3 gap-2 text-xs">
+                <div>
+                  <span class="text-[var(--text-muted)] block text-[11px]">Pages</span>
+                  <span class="font-medium font-mono text-[var(--text-ink)] tabular-nums"><%= deal.pages %> pages</span>
+                </div>
+                <div>
+                  <span class="text-[var(--text-muted)] block text-[11px]">Rate</span>
+                  <span class="font-medium font-mono text-[var(--text-ink)] tabular-nums"><%= ratePerPage ? ('₹' + ratePerPage + ' / page') : '—' %></span>
+                </div>
+                <div>
+                  <span class="text-[var(--text-muted)] block text-[11px]">Total</span>
+                  <span class="font-semibold font-mono text-[var(--text-ink)] tabular-nums">₹<%= Number(deal.totalPrice || 0).toLocaleString('en-IN') %></span>
+                </div>
+
+                <!-- Razorpay Payment Status & Action Strip -->
+                <div class="col-span-3 flex flex-wrap items-center justify-between gap-2.5 pt-2.5 mt-0.5 border-t border-[var(--border-color)]">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-[var(--text-muted)] text-[11px] font-medium flex items-center gap-1">
+                      <%- icon('credit-card', { class: 'w-3 h-3 text-[var(--text-muted)]' }) %>
+                      Payment:
+                    </span>
+                    <% if (deal.paymentStatus === 'paid') { %>
+                      <span class="badge badge-success text-[10px] inline-flex items-center gap-1 font-medium">
+                        <%- icon('check', { class: 'w-3 h-3' }) %>
+                        Paid via Razorpay
+                      </span>
+                      <button 
+                        type="button" 
+                        @click="openReceiptModal('<%= deal._id %>')" 
+                        class="btn btn-secondary btn-sm text-[10px] py-0.5 px-2.5 rounded-full inline-flex items-center gap-1 hover:border-[#0284c7] transition-all cursor-pointer font-mono"
+                        title="Cross-check official Razorpay payment receipt"
+                      >
+                        <%- icon('receipt', { class: 'w-2.5 h-2.5 text-[#0284c7]' }) %>
+                        <span><%= isIncoming ? 'Cross-Check Receipt' : 'View Receipt' %></span>
+                      </button>
+                      <% if (deal.razorpayPaymentId) { %>
+                        <span class="text-[10px] font-mono text-[var(--text-muted)] truncate max-w-[110px]" title="<%= deal.razorpayPaymentId %>">
+                          #<%= deal.razorpayPaymentId.slice(-8) %>
+                        </span>
+                      <% } %>
+                    <% } else { %>
+                      <span class="badge badge-warning text-[10px]">Unpaid</span>
+                      <span class="text-[10px] text-[var(--text-muted)] hidden sm:inline font-mono opacity-80">UPI • Cards • NetBanking</span>
+                    <% } %>
+                  </div>
+
+                  <% if (!isIncoming && deal.paymentStatus !== 'paid' && !isDeclined) { %>
+                    <button 
+                      type="button" 
+                      @click="initiatePayment('<%= deal._id %>', <%= deal.totalPrice %>, '<%= counterpartName %>')"
+                      class="btn btn-razorpay btn-sm rounded-full inline-flex items-center gap-2 shadow-sm text-xs py-1.5 px-3.5 cursor-pointer shrink-0"
+                      id="pay-btn-<%= deal._id %>"
+                      aria-label="Pay ₹<%= Number(deal.totalPrice || 0).toLocaleString('en-IN') %> with Razorpay"
+                    >
+                      <%- icon('razorpay', { class: 'w-3.5 h-3.5 fill-current text-sky-200 shrink-0' }) %>
+                      <span class="font-semibold tracking-tight">Pay ₹<%= Number(deal.totalPrice || 0).toLocaleString('en-IN') %></span>
+                      <span class="text-[9px] font-medium uppercase tracking-wider bg-white/20 py-0.5 px-1.5 rounded-full">Razorpay</span>
+                    </button>
+                  <% } else if (isIncoming && deal.paymentStatus === 'paid') { %>
+                    <!-- For editor: direct cross-check receipt button on right -->
+                    <button 
+                      type="button" 
+                      @click="openReceiptModal('<%= deal._id %>')" 
+                      class="btn btn-secondary btn-sm rounded-full text-xs py-1 px-3 inline-flex items-center gap-1.5 cursor-pointer shrink-0 hover:border-[#0284c7]"
+                    >
+                      <%- icon('shield-check', { class: 'w-3.5 h-3.5 text-[#0284c7]' }) %>
+                      <span>Check Receipt</span>
+                    </button>
+                  <% } %>
+                </div>
+              </div>
+
+              <!-- Compact Stepper (Reachable Flow: Pending -> Accepted -> Delivered -> Completed) -->
+              <div class="pt-1">
+                <% if (isDeclined) { %>
+                  <div class="flex items-center gap-2 text-xs text-[var(--semantic-danger-text)] bg-[var(--semantic-danger-bg)] p-2.5 rounded-md border border-[var(--semantic-danger-border)]">
+                    <%- icon('alert-circle', { class: 'w-3.5 h-3.5 shrink-0' }) %>
+                    <span>This editing request was declined.</span>
+                  </div>
+                <% } else { %>
+                  <div class="timeline-stepper w-full py-1" aria-label="Progress">
+                    <!-- Step 1: Pending -->
+                    <div class="stepper-step <%= isPending ? 'is-current' : 'is-complete' %>" <%= isPending ? 'aria-current="step"' : '' %>>
+                      <div class="stepper-indicator">
+                        <% if (isPending) { %>1<% } else { %><%- icon('check', { class: 'w-3 h-3' }) %><% } %>
+                      </div>
+                      <div class="stepper-label text-[11px] mt-1">Pending</div>
+                      <div class="stepper-line"></div>
+                    </div>
+
+                    <!-- Step 2: Accepted -->
+                    <div class="stepper-step <%= (isAccepted && !hasFinal && !isCompleted) ? 'is-current' : (hasFinal || isCompleted ? 'is-complete' : '') %>" <%= (isAccepted && !hasFinal && !isCompleted) ? 'aria-current="step"' : '' %>>
+                      <div class="stepper-indicator">
+                        <% if (hasFinal || isCompleted) { %><%- icon('check', { class: 'w-3 h-3' }) %><% } else { %>2<% } %>
+                      </div>
+                      <div class="stepper-label text-[11px] mt-1">Accepted</div>
+                      <div class="stepper-line"></div>
+                    </div>
+
+                    <!-- Step 3: Delivered -->
+                    <div class="stepper-step <%= (hasFinal && !isCompleted) ? 'is-current is-complete' : (isCompleted ? 'is-complete' : '') %>" <%= (hasFinal && !isCompleted) ? 'aria-current="step"' : '' %>>
+                      <div class="stepper-indicator">
+                        <% if (hasFinal || isCompleted) { %><%- icon('check', { class: 'w-3 h-3' }) %><% } else { %>3<% } %>
+                      </div>
+                      <div class="stepper-label text-[11px] mt-1">Delivered</div>
+                      <div class="stepper-line"></div>
+                    </div>
+
+                    <!-- Step 4: Completed -->
+                    <div class="stepper-step <%= isCompleted ? 'is-current is-complete' : '' %>" <%= isCompleted ? 'aria-current="step"' : '' %>>
+                      <div class="stepper-indicator">
+                        <% if (isCompleted) { %><%- icon('check', { class: 'w-3 h-3' }) %><% } else { %>4<% } %>
+                      </div>
+                      <div class="stepper-label text-[11px] mt-1">Completed</div>
                     </div>
                   </div>
                 <% } %>
               </div>
+
+              <!-- Expandable Details (Alpine Disclosure) -->
+              <div class="pt-1.5 border-t border-[var(--border-color)]">
+                <button 
+                  type="button" 
+                  @click="expanded = !expanded" 
+                  :aria-expanded="expanded.toString()"
+                  aria-controls="details-<%= deal._id %>"
+                  class="flex items-center justify-between w-full text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-ink)] py-1"
+                >
+                  <span>Document Details &amp; Draft Files</span>
+                  <span :class="expanded ? 'rotate-180' : ''" class="transition-transform duration-150">
+                    <%- icon('chevron-down', { class: 'w-3.5 h-3.5' }) %>
+                  </span>
+                </button>
+
+                <div 
+                  id="details-<%= deal._id %>" 
+                  x-show="expanded" 
+                  x-cloak 
+                  class="mt-2.5 pt-2.5 border-t border-[var(--border-color)] space-y-3 text-xs"
+                >
+                  <!-- Client Notes -->
+                  <div>
+                    <span class="font-medium text-[var(--text-ink)] block mb-1">Client Notes:</span>
+                    <% if (deal.userNotes && deal.userNotes.trim()) { %>
+                      <p class="p-2.5 rounded bg-[var(--bg-surface-muted)] text-[var(--text-ink)] whitespace-pre-wrap"><%= deal.userNotes %></p>
+                    <% } else { %>
+                      <p class="text-[var(--text-muted)] italic">No specific notes provided.</p>
+                    <% } %>
+                  </div>
+
+                  <!-- Draft Files -->
+                  <div>
+                    <span class="font-medium text-[var(--text-ink)] block mb-1">Draft Documents:</span>
+                    <% if (deal.briefLinks && deal.briefLinks.length > 0) { %>
+                      <div class="space-y-1.5">
+                        <% deal.briefLinks.forEach(b => { %>
+                          <div class="flex items-center justify-between p-2 rounded bg-[var(--bg-surface-muted)] gap-2">
+                            <div class="flex items-center gap-2 truncate min-w-0">
+                              <%- icon('file-text', { class: 'w-3.5 h-3.5 shrink-0 text-[var(--accent)]' }) %>
+                              <span class="truncate" title="<%= b.filename %>"><%= b.filename %></span>
+                            </div>
+                            <% if (b.url) { %>
+                              <a href="<%= b.url %>" target="_blank" download class="btn btn-ghost btn-sm text-xs shrink-0">
+                                <%- icon('download', { class: 'w-3 h-3 mr-1' }) %>
+                                Download
+                              </a>
+                            <% } else { %>
+                              <span class="text-[11px] text-[var(--text-muted)] italic">Download link unavailable</span>
+                            <% } %>
+                          </div>
+                        <% }) %>
+                      </div>
+                    <% } else { %>
+                      <p class="text-[var(--text-muted)] italic">No initial draft attached.</p>
+                    <% } %>
+                  </div>
+
+                  <!-- Final Deliverable File (if available) -->
+                  <% if (hasFinal) { %>
+                    <div>
+                      <span class="font-medium text-[var(--text-ink)] block mb-1">Delivered Edited Document:</span>
+                      <div class="flex items-center justify-between p-2 rounded bg-[var(--semantic-success-bg)] border border-[var(--semantic-success-border)] text-[var(--semantic-success-text)] gap-2">
+                        <div class="flex items-center gap-2 truncate min-w-0">
+                          <%- icon('file-text', { class: 'w-3.5 h-3.5 shrink-0' }) %>
+                          <span class="truncate font-medium" title="<%= deal.finalFilename %>"><%= deal.finalFilename %></span>
+                        </div>
+                        <% if (deal.freshFinalLink) { %>
+                          <a href="<%= deal.freshFinalLink %>" target="_blank" download class="btn btn-secondary btn-sm text-xs shrink-0 bg-[var(--bg-surface)]">
+                            <%- icon('download', { class: 'w-3 h-3 mr-1' }) %>
+                            Download
+                          </a>
+                        <% } else { %>
+                          <span class="text-[11px] text-[var(--text-muted)] italic">Download link unavailable</span>
+                        <% } %>
+                      </div>
+                    </div>
+                  <% } %>
+                </div>
+              </div>
             </div>
 
-            <!-- Actions Area (Right on desktop, stacked on mobile) -->
-            <div class="pt-3 border-t border-[var(--border-color)] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <p class="text-[11px] text-[var(--text-muted)]">
-                Files are stored privately and shared through time-limited links. No real payments are processed in this demo.
-              </p>
-
-              <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
-                <!-- STUDENT VIEW ACTIONS -->
-                <% if (!isIncoming) { %>
-                  <% if (hasFinal && deal.freshFinalLink) { %>
-                    <div class="text-right">
-                      <a href="<%= deal.freshFinalLink %>" target="_blank" download class="btn btn-primary btn-sm">
-                        <%- icon('download', { class: 'w-3.5 h-3.5' }) %>
-                        Download final file
-                      </a>
-                      <span class="block text-[10px] text-[var(--text-muted)] mt-1">
-                        Download links are time-limited and refreshed each time you open this page.
+            <!-- Actions Area (Pinned to bottom with mt-auto for consistent height across all cards) -->
+            <div class="pt-3 border-t border-[var(--border-color)] space-y-2.5 mt-auto">
+              <div class="flex items-center justify-between gap-2 min-h-[36px]">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <!-- CLIENT VIEW ACTIONS -->
+                  <% if (!isIncoming) { %>
+                    <% if (isCompleted) { %>
+                      <div class="flex items-center gap-2">
+                        <% if (deal.freshFinalLink) { %>
+                          <a href="<%= deal.freshFinalLink %>" target="_blank" download class="btn btn-secondary btn-sm text-xs py-1.5 px-3">
+                            <%- icon('download', { class: 'w-3.5 h-3.5 mr-1' }) %>
+                            Download file
+                          </a>
+                        <% } %>
+                        <span class="badge badge-success text-xs">
+                          <%- icon('shield-check', { class: 'w-3.5 h-3.5' }) %>
+                          Completed
+                        </span>
+                      </div>
+                    <% } else if (hasFinal && deal.freshFinalLink) { %>
+                      <div class="flex items-center gap-2 flex-wrap">
+                        <a href="<%= deal.freshFinalLink %>" target="_blank" download class="btn btn-secondary btn-sm text-xs py-1.5 px-3 shrink-0">
+                          <%- icon('download', { class: 'w-3.5 h-3.5 mr-1' }) %>
+                          Download edited file
+                        </a>
+                        <form action="/deal/<%= deal._id %>/complete" method="POST" class="inline shrink-0" @submit="submitComplete($event, '<%= deal._id %>')">
+                          <button type="submit" class="btn btn-primary btn-sm text-xs py-1.5 px-3" id="complete-btn-<%= deal._id %>">
+                            <%- icon('check', { class: 'w-3.5 h-3.5 mr-1' }) %>
+                            Confirm and complete
+                          </button>
+                        </form>
+                      </div>
+                    <% } else if (isPending) { %>
+                      <span class="text-xs text-[var(--text-muted)] italic">
+                        Waiting for the editor to respond.
                       </span>
-                    </div>
-                  <% } else if (isPending) { %>
-                    <span class="text-xs text-[var(--text-muted)] italic">
-                      Waiting for the writer to respond.
-                    </span>
-                  <% } else if (isAccepted) { %>
-                    <span class="text-xs text-[var(--text-muted)] italic">
-                      Writer is preparing your final draft.
-                    </span>
-                  <% } else if (isDeclined) { %>
-                    <span class="text-xs text-[var(--semantic-danger-text)] italic">
-                      This request was declined.
-                    </span>
-                  <% } %>
+                    <% } else if (isAccepted) { %>
+                      <span class="text-xs text-[var(--text-muted)] italic">
+                        Editor is reviewing your draft.
+                      </span>
+                    <% } else if (isDeclined) { %>
+                      <span class="text-xs text-[var(--semantic-danger-text)] italic">
+                        This request was declined.
+                      </span>
+                    <% } %>
 
-                  <% if (counterpart._id) { %>
-                    <a href="/writers/<%= counterpart._id %>" class="btn btn-ghost btn-sm text-xs">
-                      View writer profile &nearr;
-                    </a>
-                  <% } %>
+                  <!-- EDITOR VIEW ACTIONS -->
+                  <% } else { %>
+                    <!-- 1. Pending: Accept / Decline -->
+                    <% if (isPending) { %>
+                      <form action="/deal/accept/<%= deal._id %>" method="POST" class="inline" @submit="submitAccept($event)">
+                        <button type="submit" class="btn btn-primary btn-sm text-xs py-1.5 px-3">
+                          <%- icon('check', { class: 'w-3.5 h-3.5' }) %>
+                          Accept
+                        </button>
+                      </form>
 
-                <!-- WRITER VIEW ACTIONS -->
-                <% } else { %>
-                  <!-- 1. Pending: Accept / Decline -->
-                  <% if (isPending) { %>
-                    <form action="/deal/accept/<%= deal._id %>" method="POST" class="inline" @submit="submitAccept($event)">
-                      <button type="submit" class="btn btn-primary btn-sm">
-                        <%- icon('check', { class: 'w-3.5 h-3.5' }) %>
-                        Accept
-                      </button>
-                    </form>
-
-                    <!-- Decline Button: Triggers Alpine confirmation modal -->
-                    <button 
-                      type="button" 
-                      @click="openDeclineModal('<%= deal._id %>')" 
-                      class="btn btn-secondary btn-sm text-[var(--semantic-danger-text)] hover:bg-[var(--semantic-danger-bg)]"
-                      id="decline-btn-<%= deal._id %>"
-                    >
-                      <%- icon('x', { class: 'w-3.5 h-3.5' }) %>
-                      Decline
-                    </button>
-
-                  <!-- 2. Accepted: Inline File Upload Drop-Zone -->
-                  <% } else if (isAccepted && !hasFinal) { %>
-                    <div class="w-full sm:max-w-md pt-2" x-data="finalUploadWidget({ dealId: '<%= deal._id %>', maxMb: <%= maxMb %> })">
-                      <form 
-                        action="/deal/upload-final" 
-                        method="POST" 
-                        enctype="multipart/form-data" 
-                        class="space-y-3"
-                        @submit="handleFinalSubmit($event)"
+                      <!-- Decline Button: Triggers Alpine confirmation modal -->
+                      <button 
+                        type="button" 
+                        @click="openDeclineModal('<%= deal._id %>')" 
+                        class="btn btn-secondary btn-sm text-xs py-1.5 px-3 text-[var(--semantic-danger-text)] hover:bg-[var(--semantic-danger-bg)]"
+                        id="decline-btn-<%= deal._id %>"
                       >
-                        <input type="hidden" name="dealId" value="<%= deal._id %>">
+                        <%- icon('x', { class: 'w-3.5 h-3.5' }) %>
+                        Decline
+                      </button>
 
-                        <div 
-                          class="file-dropzone py-3 px-4 relative transition-colors"
-                          :class="{ 'border-[var(--accent)] bg-[var(--accent-subtle)]': isDragging, 'border-[var(--semantic-danger-border)]': clientError }"
-                          @dragover.prevent="isDragging = true"
-                          @dragleave.prevent="isDragging = false"
-                          @drop.prevent="handleDrop($event)"
+                    <!-- 2. Accepted: Inline File Upload Drop-Zone -->
+                    <% } else if (isAccepted && !hasFinal) { %>
+                      <div class="w-full pt-1" x-data="finalUploadWidget({ dealId: '<%= deal._id %>', maxMb: <%= maxMb %> })">
+                        <form 
+                          action="/deal/upload-final" 
+                          method="POST" 
+                          enctype="multipart/form-data" 
+                          class="space-y-3"
+                          @submit="handleFinalSubmit($event)"
                         >
-                          <!-- Empty Prompt -->
-                          <div x-show="!selectedFile" class="space-y-1.5 text-center">
-                            <p class="text-xs font-medium text-[var(--text-ink)]">
-                              Upload final paper as PDF, up to <%= maxMb %> MB.
-                            </p>
-                            <input 
-                              type="file" 
-                              name="finalPdf" 
-                              id="finalPdf-<%= deal._id %>"
-                              aria-label="Upload final deliverable PDF"
-                              accept="application/pdf,.pdf" 
-                              required 
-                              x-ref="finalInput"
-                              @change="handleFileChange($event)"
-                              class="block w-full text-xs text-[var(--text-muted)] file:mr-2 file:py-1 file:px-2.5 file:rounded file:border file:border-[var(--border-color)] file:text-xs file:bg-[var(--bg-surface)] file:text-[var(--text-ink)] cursor-pointer"
-                            >
+                          <input type="hidden" name="dealId" value="<%= deal._id %>">
+
+                          <div 
+                            class="file-dropzone py-3 px-4 relative transition-colors"
+                            :class="{ 'border-[var(--accent)] bg-[var(--accent-subtle)]': isDragging, 'border-[var(--semantic-danger-border)]': clientError }"
+                            @dragover.prevent="isDragging = true"
+                            @dragleave.prevent="isDragging = false"
+                            @drop.prevent="handleDrop($event)"
+                          >
+                            <!-- Empty Prompt -->
+                            <div x-show="!selectedFile" class="space-y-1.5 text-center">
+                              <p class="text-xs font-medium text-[var(--text-ink)]">
+                                Upload edited document as PDF, up to <%= maxMb %> MB.
+                              </p>
+                              <input 
+                                type="file" 
+                                name="finalPdf" 
+                                id="finalPdf-<%= deal._id %>"
+                                aria-label="Upload edited document PDF"
+                                accept="application/pdf,.pdf" 
+                                required 
+                                x-ref="finalInput"
+                                @change="handleFileChange($event)"
+                                class="block w-full text-xs text-[var(--text-muted)] file:mr-2 file:py-1 file:px-2.5 file:rounded file:border file:border-[var(--border-color)] file:text-xs file:bg-[var(--bg-surface)] file:text-[var(--text-ink)] cursor-pointer"
+                              >
+                            </div>
+
+                            <!-- Selected File Row -->
+                            <div x-show="selectedFile" x-cloak class="flex items-center justify-between gap-2 p-2 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded text-left">
+                              <div class="flex items-center gap-2 min-w-0">
+                                <%- icon('file-text', { class: 'w-3.5 h-3.5 shrink-0 text-[var(--accent)]' }) %>
+                                <span class="text-xs truncate max-w-[160px]" :title="selectedFile?.name" x-text="selectedFile?.name"></span>
+                              </div>
+                              <button type="button" @click="clearFile()" class="btn btn-ghost btn-sm text-[var(--semantic-danger-text)] text-xs">
+                                Remove
+                              </button>
+                            </div>
                           </div>
 
-                          <!-- Selected File Row -->
-                          <div x-show="selectedFile" x-cloak class="flex items-center justify-between gap-2 p-2 bg-[var(--bg-surface)] border border-[var(--border-color)] rounded text-left">
-                            <div class="flex items-center gap-2 min-w-0">
-                              <%- icon('file-text', { class: 'w-3.5 h-3.5 shrink-0 text-[var(--accent)]' }) %>
-                              <span class="text-xs truncate max-w-[160px]" :title="selectedFile?.name" x-text="selectedFile?.name"></span>
-                            </div>
-                            <button type="button" @click="clearFile()" class="btn btn-ghost btn-sm text-[var(--semantic-danger-text)] text-xs">
-                              Remove
+                          <!-- Client Validation Error -->
+                          <template x-if="clientError">
+                            <p class="text-xs text-[var(--semantic-danger-text)] flex items-center gap-1">
+                              <%- icon('alert-circle', { class: 'w-3.5 h-3.5' }) %>
+                              <span x-text="clientError"></span>
+                            </p>
+                          </template>
+
+                          <div class="flex items-center justify-between gap-2">
+                            <span class="text-[11px] text-[var(--text-muted)]" x-show="isUploading" x-cloak>
+                              Keep this page open until the upload finishes.
+                            </span>
+                            <button 
+                              type="submit" 
+                              class="btn btn-primary btn-sm ml-auto"
+                              :disabled="isUploading"
+                              :aria-busy="isUploading ? 'true' : 'false'"
+                            >
+                              <span x-show="!isUploading" class="flex items-center gap-1.5">
+                                <%- icon('upload', { class: 'w-3.5 h-3.5' }) %>
+                                Upload edited document
+                              </span>
+                              <span x-show="isUploading" x-cloak class="flex items-center gap-1.5">
+                                <%- icon('loader', { class: 'w-3.5 h-3.5 animate-spin' }) %>
+                                Uploading
+                              </span>
                             </button>
                           </div>
-                        </div>
+                        </form>
+                      </div>
 
-                        <!-- Client Validation Error -->
-                        <template x-if="clientError">
-                          <p class="text-xs text-[var(--semantic-danger-text)] flex items-center gap-1">
-                            <%- icon('alert-circle', { class: 'w-3.5 h-3.5' }) %>
-                            <span x-text="clientError"></span>
-                          </p>
-                        </template>
-
-                        <div class="flex items-center justify-between gap-2">
-                          <span class="text-[11px] text-[var(--text-muted)]" x-show="isUploading" x-cloak>
-                            Keep this page open until the upload finishes.
-                          </span>
-                          <button 
-                            type="submit" 
-                            class="btn btn-primary btn-sm ml-auto"
-                            :disabled="isUploading"
-                            :aria-busy="isUploading ? 'true' : 'false'"
-                          >
-                            <span x-show="!isUploading" class="flex items-center gap-1.5">
-                              <%- icon('upload', { class: 'w-3.5 h-3.5' }) %>
-                              Upload final file
-                            </span>
-                            <span x-show="isUploading" x-cloak class="flex items-center gap-1.5">
-                              <%- icon('loader', { class: 'w-3.5 h-3.5 animate-spin' }) %>
-                              Uploading
-                            </span>
-                          </button>
-                        </div>
-                      </form>
-                    </div>
-
-                  <!-- 3. Delivered or Completed -->
-                  <% } else if (hasFinal) { %>
-                    <% if (deal.freshFinalLink) { %>
-                      <a href="<%= deal.freshFinalLink %>" target="_blank" download class="btn btn-secondary btn-sm">
-                        <%- icon('download', { class: 'w-3.5 h-3.5' }) %>
-                        Download delivered draft
-                      </a>
-                    <% } else { %>
-                      <span class="text-xs text-[var(--text-muted)] italic">Download link unavailable</span>
+                    <!-- 3. Delivered or Completed -->
+                    <% } else if (hasFinal) { %>
+                      <% if (deal.freshFinalLink) { %>
+                        <a href="<%= deal.freshFinalLink %>" target="_blank" download class="btn btn-secondary btn-sm text-xs py-1.5 px-3">
+                          <%- icon('download', { class: 'w-3.5 h-3.5' }) %>
+                          Download edited document
+                        </a>
+                      <% } else { %>
+                        <span class="text-xs text-[var(--text-muted)] italic">Download link unavailable</span>
+                      <% } %>
                     <% } %>
                   <% } %>
+                </div>
+              </div>
+
+              <!-- Footer Row: Private notice & Editor Profile Link -->
+              <div class="flex items-center justify-between gap-2 pt-1 border-t border-[var(--border-color)]/60 text-[11px] text-[var(--text-muted)]">
+                <span class="truncate">Private links &bull; Demo mode</span>
+                <% if (counterpart._id) { %>
+                  <a href="/writers/<%= counterpart._id %>" class="hover:text-[var(--text-ink)] shrink-0 inline-flex items-center gap-0.5 text-[var(--accent)] font-medium">
+                    View editor profile &nearr;
+                  </a>
                 <% } %>
               </div>
             </div>
@@ -606,9 +769,9 @@
           <h2 class="type-h3 text-base">No requests yet</h2>
           <p class="text-xs sm:text-sm text-[var(--text-muted)] max-w-sm mx-auto">
             <% if (!user.pricePerPage || user.pricePerPage <= 0) { %>
-              Students will see you once your rate is set.
+              Clients will see you once your rate is set.
             <% } else { %>
-              You haven't received any assignment requests from students yet.
+              You haven't received any editing requests from clients yet.
             <% } %>
           </p>
           <div class="pt-2">
@@ -623,11 +786,11 @@
           </div>
           <h2 class="type-h3 text-base">No deals yet</h2>
           <p class="text-xs sm:text-sm text-[var(--text-muted)] max-w-sm mx-auto">
-            You haven't commissioned any academic writing assignments yet. Browse academic writers and calculate transparent rates upfront.
+            You haven't commissioned any document editing deals yet. Browse freelance editors and calculate transparent rates upfront.
           </p>
           <div class="pt-2">
             <a href="/writers" class="btn btn-primary btn-sm">
-              Browse writers
+              Browse editors
             </a>
           </div>
         <% } %>
@@ -672,7 +835,7 @@
 
       <div class="py-4 space-y-3">
         <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-          The student will see this deal as declined. This cannot be undone.
+          The client will see this deal as declined. This cannot be undone.
         </p>
       </div>
 
@@ -698,32 +861,315 @@
     </div>
   </div>
 
+  <!-- Alpine Complete Confirmation Modal -->
+  <div 
+    x-show="completeModalOpen" 
+    x-cloak
+    @keydown.escape.window="closeCompleteModal()"
+    x-transition:enter="transition ease-out duration-150"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-100"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="modal-backdrop"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="complete-modal-title"
+  >
+    <div 
+      @click.away="closeCompleteModal()" 
+      x-transition:enter="transition ease-out duration-150"
+      x-transition:enter-start="transform opacity-0 scale-95"
+      x-transition:enter-end="transform opacity-100 scale-100"
+      x-transition:leave="transition ease-in duration-100"
+      x-transition:leave-start="transform opacity-100 scale-100"
+      x-transition:leave-end="transform opacity-0 scale-95"
+      class="modal-dialog"
+      x-ref="completeDialog"
+    >
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
+        <h2 id="complete-modal-title" class="type-h4">Mark this deal as completed?</h2>
+        <button type="button" @click="closeCompleteModal()" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] cursor-pointer" aria-label="Close dialog">
+          <%- icon('x', { class: 'w-4 h-4' }) %>
+        </button>
+      </div>
+
+      <div class="py-4 space-y-3">
+        <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+          Mark this deal as completed? This confirms you received the file.
+        </p>
+      </div>
+
+      <div class="pt-3 border-t border-[var(--border-color)] flex items-center justify-end gap-2">
+        <button type="button" @click="closeCompleteModal()" class="btn btn-secondary btn-sm" x-ref="cancelCompleteBtn">
+          Cancel
+        </button>
+        <form :action="'/deal/' + activeCompleteId + '/complete'" method="POST" class="inline" @submit="isCompleting = true">
+          <button 
+            type="submit" 
+            class="btn btn-primary btn-sm"
+            :disabled="isCompleting"
+            :aria-busy="isCompleting ? 'true' : 'false'"
+          >
+            <span x-show="!isCompleting">Confirm and complete</span>
+            <span x-show="isCompleting" x-cloak class="flex items-center gap-1.5">
+              <%- icon('loader', { class: 'w-3 h-3 animate-spin' }) %>
+              Completing...
+            </span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- Official Razorpay Payment Receipt & Cross-Check Modal (Alpine) -->
+  <div 
+    x-show="receiptModalOpen" 
+    x-cloak
+    @keydown.escape.window="closeReceiptModal()"
+    x-transition:enter="transition ease-out duration-150"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-100"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="modal-backdrop z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-xs"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="receipt-modal-title"
+  >
+    <div 
+      @click.away="closeReceiptModal()" 
+      x-transition:enter="transition ease-out duration-150"
+      x-transition:enter-start="transform opacity-0 scale-95"
+      x-transition:enter-end="transform opacity-100 scale-100"
+      x-transition:leave="transition ease-in duration-100"
+      x-transition:leave-start="transform opacity-100 scale-100"
+      x-transition:leave-end="transform opacity-0 scale-95"
+      class="w-full max-w-md bg-[var(--card)] rounded-2xl border border-[var(--border-strong)] shadow-2xl overflow-hidden relative"
+      x-ref="receiptDialog"
+    >
+      <!-- Top Razorpay Gateway Strip -->
+      <div class="bg-gradient-to-r from-[#0c2340] via-[#004dc0] to-[#0284c7] text-white px-5 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center border border-white/20 shadow-xs">
+            <%- icon('razorpay', { class: 'w-4.5 h-4.5 fill-current text-white' }) %>
+          </div>
+          <div>
+            <h2 id="receipt-modal-title" class="text-sm font-semibold text-white leading-tight flex items-center gap-1.5">
+              <span>Payment Receipt</span>
+              <span class="text-[9px] uppercase tracking-wider py-0.5 px-1.5 rounded bg-white/20 font-mono">Settled</span>
+            </h2>
+            <p class="text-[10px] text-white/80">Processed via Razorpay Gateway</p>
+          </div>
+        </div>
+        <button type="button" @click="closeReceiptModal()" class="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer" aria-label="Close receipt">
+          <%- icon('x', { class: 'w-4 h-4' }) %>
+        </button>
+      </div>
+
+      <!-- Loading State -->
+      <div x-show="isLoadingReceipt" class="py-14 text-center space-y-3">
+        <%- icon('loader', { class: 'w-7 h-7 animate-spin mx-auto text-[#0284c7]' }) %>
+        <p class="text-xs text-[var(--text-muted)]">Fetching payment transaction from Razorpay...</p>
+      </div>
+
+      <!-- Receipt Content (Styled to match Razorpay's official checkout slip) -->
+      <div x-show="!isLoadingReceipt && receiptData" class="p-5 space-y-4 text-xs">
+        
+        <!-- Success Banner -->
+        <div class="bg-[var(--semantic-success-bg)] border border-[var(--semantic-success-border)] text-[var(--semantic-success-text)] rounded-xl p-3 flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center shrink-0">
+            <%- icon('shield-check', { class: 'w-4 h-4' }) %>
+          </div>
+          <div class="min-w-0">
+            <p class="font-semibold text-xs text-[var(--semantic-success-text)]">Payment Captured &amp; Settled</p>
+            <p class="text-[11px] opacity-90 truncate font-mono">HMAC SHA256 Signature Validated</p>
+          </div>
+        </div>
+
+        <!-- Receipt Card -->
+        <div class="bg-[var(--bg-surface-muted)] rounded-xl p-4 border border-[var(--border-color)] space-y-3 font-sans">
+          <div class="flex items-start justify-between gap-3 border-b border-[var(--border-color)] pb-3">
+            <div>
+              <span class="text-[10px] font-mono uppercase tracking-wider text-[var(--text-muted)] block">Platform Merchant</span>
+              <span class="font-bold text-sm text-[var(--text-ink)]">PerPage</span>
+              <span class="text-[11px] text-[var(--text-muted)] block font-mono" x-text="'Deal #' + (receiptData?.dealShortId || '')"></span>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-mono uppercase tracking-wider text-[var(--text-muted)] block">Total Amount</span>
+              <span class="text-2xl font-bold font-mono text-[var(--text-ink)] tabular-nums" x-text="'₹' + Number(receiptData?.amount || 0).toLocaleString('en-IN')"></span>
+            </div>
+          </div>
+
+          <!-- Transaction Fields Grid -->
+          <div class="grid grid-cols-2 gap-2.5 text-xs pt-0.5">
+            <div>
+              <span class="text-[10px] text-[var(--text-muted)] block">Date &amp; Time</span>
+              <span class="font-medium text-[var(--text-ink)]" x-text="receiptData?.paidAt"></span>
+            </div>
+            <div>
+              <span class="text-[10px] text-[var(--text-muted)] block">Receipt Reference</span>
+              <span class="font-mono text-[11px] text-[var(--text-ink)]" x-text="receiptData?.receiptNumber"></span>
+            </div>
+
+            <div class="col-span-2 pt-1.5 border-t border-[var(--border-color)]">
+              <span class="text-[10px] text-[var(--text-muted)] block">Razorpay Payment ID (Cross-Check Key)</span>
+              <div class="flex items-center justify-between gap-2 mt-1 p-2 rounded bg-[var(--bg-surface)] border border-[var(--border-color)] font-mono text-[11px]">
+                <span class="truncate text-[var(--text-ink)] select-all font-semibold" x-text="receiptData?.paymentId"></span>
+                <button 
+                  type="button" 
+                  @click="copyPaymentId(receiptData?.paymentId)" 
+                  class="btn btn-secondary btn-sm text-[10px] py-0.5 px-2.5 shrink-0 flex items-center gap-1 cursor-pointer font-sans"
+                >
+                  <span x-show="!receiptCopied" class="flex items-center gap-1">
+                    <%- icon('copy', { class: 'w-3 h-3' }) %> Copy ID
+                  </span>
+                  <span x-show="receiptCopied" x-cloak class="text-green-500 font-medium">Copied!</span>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <span class="text-[10px] text-[var(--text-muted)] block">Client (Payer)</span>
+              <span class="font-medium text-[var(--text-ink)] truncate block" x-text="receiptData?.client?.name"></span>
+              <span class="text-[10px] text-[var(--text-muted)] truncate block font-mono" x-text="receiptData?.client?.email"></span>
+            </div>
+
+            <div>
+              <span class="text-[10px] text-[var(--text-muted)] block">Editor (Recipient)</span>
+              <span class="font-medium text-[var(--text-ink)] truncate block" x-text="receiptData?.editor?.name"></span>
+              <span class="text-[10px] text-[var(--text-muted)] truncate block font-mono" x-text="receiptData?.editor?.email"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cross-Check & Email Dispatch Info Strip -->
+        <div class="space-y-2 p-3 rounded-xl bg-[var(--bg-surface-muted)] text-[11px] text-[var(--text-muted)] leading-relaxed border border-[var(--border-color)]">
+          <p class="flex items-start gap-2">
+            <%- icon('mail', { class: 'w-3.5 h-3.5 text-[#0284c7] shrink-0 mt-0.5' }) %>
+            <span><strong>Customer Email:</strong> An automated confirmation receipt was sent by Razorpay to <strong class="text-[var(--text-ink)]" x-text="receiptData?.client?.email || 'the customer'"></strong>.</span>
+          </p>
+          <p class="flex items-start gap-2">
+            <%- icon('shield-check', { class: 'w-3.5 h-3.5 text-[#0284c7] shrink-0 mt-0.5' }) %>
+            <span><strong>Editor Cross-Check:</strong> Freelance editors can cross-check this Payment ID against their Razorpay settlement summary.</span>
+          </p>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="flex items-center justify-between gap-2 pt-2 border-t border-[var(--border-color)]">
+          <button 
+            type="button" 
+            @click="printReceipt()" 
+            class="btn btn-secondary btn-sm inline-flex items-center gap-1.5 text-xs"
+          >
+            <%- icon('download', { class: 'w-3.5 h-3.5' }) %>
+            <span>Print Receipt</span>
+          </button>
+
+          <button 
+            type="button" 
+            @click="closeReceiptModal()" 
+            class="btn btn-primary btn-sm text-xs"
+          >
+            Done
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <script>
   function dashboardApp() {
+    const el = document.getElementById('main-content');
+    const hasNotice = el ? el.getAttribute('data-has-notice') === 'true' : false;
+    const isNoticeSuccess = el ? el.getAttribute('data-notice-success') === 'true' : false;
+    const userName = el ? (el.getAttribute('data-user-name') || '') : '';
+    const userEmail = el ? (el.getAttribute('data-user-email') || '') : '';
+    const userPhone = el ? (el.getAttribute('data-user-phone') || '') : '';
+
     return {
-      toastOpen: <%= safeNotice ? 'true' : 'false' %>,
+      toastOpen: hasNotice,
       declineModalOpen: false,
       activeDeclineId: '',
+      completeModalOpen: false,
+      activeCompleteId: '',
       activeTriggerEl: null,
       isDeclining: false,
+      isCompleting: false,
+      receiptModalOpen: false,
+      activeReceiptDealId: '',
+      receiptData: null,
+      isLoadingReceipt: false,
+      receiptCopied: false,
 
       init() {
-        <% if (safeNotice && safeNotice.type === 'success') { %>
+        if (isNoticeSuccess) {
           setTimeout(() => {
             this.toastOpen = false;
           }, 6000);
-        <% } %>
+        }
+
+        // Auto-open receipt modal if URL contains ?receiptDealId=...
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const receiptParam = urlParams.get('receiptDealId') || urlParams.get('receipt');
+          if (receiptParam) {
+            this.openReceiptModal(receiptParam);
+          }
+        } catch (e) {}
 
         // Clean notice query code from URL with history.replaceState so refresh does not re-trigger
-        <% if (safeNotice) { %>
+        if (hasNotice) {
           try {
             const url = new URL(window.location.href);
-            ['created', 'accepted', 'rejected', 'uploaded', 'error'].forEach(k => url.searchParams.delete(k));
+            ['created', 'accepted', 'rejected', 'uploaded', 'completed', 'error'].forEach(k => url.searchParams.delete(k));
             window.history.replaceState({}, document.title, url.pathname + (url.search ? url.search : ''));
           } catch (e) {}
-        <% } %>
+        }
+      },
+
+      async openReceiptModal(dealId) {
+        this.activeReceiptDealId = dealId;
+        this.receiptModalOpen = true;
+        this.isLoadingReceipt = true;
+        this.receiptCopied = false;
+        try {
+          const res = await fetch('/payment/receipt/' + dealId);
+          const data = await res.json();
+          if (data.success) {
+            this.receiptData = data.receipt;
+          } else {
+            alert(data.message || 'Could not load receipt details.');
+            this.receiptModalOpen = false;
+          }
+        } catch (e) {
+          alert('Failed to connect to receipt service.');
+          this.receiptModalOpen = false;
+        } finally {
+          this.isLoadingReceipt = false;
+        }
+      },
+
+      closeReceiptModal() {
+        this.receiptModalOpen = false;
+        this.receiptData = null;
+        this.activeReceiptDealId = '';
+      },
+
+      copyPaymentId(id) {
+        if (!id) return;
+        navigator.clipboard.writeText(id).then(() => {
+          this.receiptCopied = true;
+          setTimeout(() => { this.receiptCopied = false; }, 2000);
+        });
+      },
+
+      printReceipt() {
+        window.print();
       },
 
       openDeclineModal(dealId) {
@@ -747,11 +1193,121 @@
         }
       },
 
+      openCompleteModal(dealId) {
+        this.activeCompleteId = dealId;
+        this.activeTriggerEl = document.getElementById('complete-btn-' + dealId);
+        this.completeModalOpen = true;
+        this.isCompleting = false;
+        this.$nextTick(() => {
+          if (this.$refs.cancelCompleteBtn) {
+            this.$refs.cancelCompleteBtn.focus();
+          }
+        });
+      },
+
+      closeCompleteModal() {
+        this.completeModalOpen = false;
+        this.activeCompleteId = '';
+        if (this.activeTriggerEl) {
+          this.activeTriggerEl.focus();
+          this.activeTriggerEl = null;
+        }
+      },
+
+      submitComplete(event, dealId) {
+        event.preventDefault();
+        this.openCompleteModal(dealId);
+      },
+
       submitAccept(event) {
         const btn = event.target.querySelector('button[type="submit"]');
         if (btn) {
           btn.disabled = true;
           btn.setAttribute('aria-busy', 'true');
+        }
+      },
+
+      async initiatePayment(dealId, amount, editorName) {
+        try {
+          const res = await fetch('/payment/create-order', {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({ dealId })
+          });
+
+          const data = await res.json();
+          if (!res.ok || !data.success) {
+            alert(data.message || 'Unable to start payment. Please check your connection.');
+            return;
+          }
+
+          if (typeof window.Razorpay === 'undefined') {
+            alert('Razorpay Checkout SDK is still loading. Please check your internet connection.');
+            return;
+          }
+
+          const options = {
+            key: data.keyId,
+            amount: data.order.amount,
+            currency: data.order.currency || 'INR',
+            name: 'PerPage',
+            description: 'Editorial Review with ' + (editorName || 'Editor'),
+            order_id: data.order.id && !data.order.id.startsWith('order_test_') ? data.order.id : undefined,
+            prefill: {
+              name: userName,
+              email: userEmail,
+              contact: userPhone
+            },
+            notes: {
+              dealId: dealId,
+              platform: 'PerPage',
+              receipt: 'deal_' + dealId
+            },
+            theme: {
+              color: '#0c2340'
+            },
+            send_sms_hash: true,
+            handler: async (response) => {
+              try {
+                const verifyRes = await fetch('/payment/verify', {
+                  method: 'POST',
+                  headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    dealId: dealId,
+                    razorpay_order_id: response.razorpay_order_id || data.order.id,
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_signature: response.razorpay_signature || 'demo_signature'
+                  })
+                });
+                const verifyData = await verifyRes.json();
+                if (verifyData.success) {
+                  // Direct to dashboard with receipt trigger
+                  window.location.href = '/dashboard?paid=1&receiptDealId=' + dealId;
+                } else {
+                  alert(verifyData.message || 'Payment verification failed.');
+                }
+              } catch (e) {
+                alert('Verification request failed. Please refresh your dashboard.');
+              }
+            },
+            modal: {
+              ondismiss: () => {
+                console.log('Razorpay payment modal closed by user');
+              }
+            }
+          };
+
+          const rzp = new window.Razorpay(options);
+          rzp.open();
+        } catch (err) {
+          console.error('Payment initiation error:', err);
+          alert('Could not open payment window. Please try again.');
         }
       }
     };

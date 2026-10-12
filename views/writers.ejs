@@ -1,6 +1,6 @@
 <%- include('partials/head', { 
-  pageTitle: 'Choose Your Writer — PerPage', 
-  metaDescription: 'Browse academic writers and subject specialists with upfront per-page rates and verified completed deal counts.',
+  pageTitle: 'Choose Your Editor — PerPage', 
+  metaDescription: 'Browse editors with upfront per-page rates and completed deal counts.',
   canonical: canonical,
   noindex: noindex 
 }) %>
@@ -15,9 +15,9 @@
         <div class="flex items-start gap-3">
           <%- icon('alert-circle', { class: 'w-5 h-5 flex-shrink-0 mt-0.5' }) %>
           <div class="space-y-1">
-            <h2 class="text-sm font-semibold text-[var(--text-ink)]">Unable to load writers</h2>
+            <h2 class="text-sm font-semibold text-[var(--text-ink)]">Unable to load editors</h2>
             <p class="text-xs text-[var(--text-muted)]">
-              A temporary database issue prevented loading writer profiles. Please refresh or try again shortly.
+              A temporary database issue prevented loading editor profiles. Please refresh or try again shortly.
             </p>
             <div class="pt-2">
               <a href="/writers" class="btn btn-secondary btn-sm">Try again</a>
@@ -29,10 +29,14 @@
 
     <!-- Page Header -->
     <div class="space-y-2 border-b border-[var(--border-color)] pb-6">
-      <span class="type-eyebrow">Writers</span>
-      <h1 class="type-h1">Choose your writer</h1>
-      <p class="type-body text-sm text-[var(--text-muted)] max-w-2xl">
-        Browse writer profiles, review transparent per-page rates, and create a deal directly with your chosen specialist.
+      <div class="section-eyebrow">
+        <span class="eyebrow-num">01</span>
+        <span class="eyebrow-rule"></span>
+        <span class="eyebrow-label">Editor Directory</span>
+      </div>
+      <h1 class="type-h1">Choose your editor</h1>
+      <p class="type-body text-sm text-[var(--text-muted)] max-w-2xl prose-measure">
+        Browse editor profiles, review transparent per-page rates, and create an editing deal directly with your chosen editor.
       </p>
     </div>
 
@@ -55,7 +59,7 @@
                 value="<%= q || '' %>"
                 x-model="searchQuery"
                 maxlength="80"
-                placeholder="Search by writer name or keywords..."
+                placeholder="Search by editor name or keywords..."
                 class="form-input pl-9 pr-8 text-sm w-full"
               >
               <button 
@@ -116,9 +120,9 @@
         <div class="flex flex-wrap items-center gap-2">
           <span class="text-[var(--text-muted)] font-medium">
             <% if (totalCount === 1) { %>
-              Showing 1 writer
+              Showing 1 editor
             <% } else { %>
-              Showing <%= totalCount %> writers
+              Showing <%= totalCount %> editors
             <% } %>
           </span>
 
@@ -179,12 +183,12 @@
                     </h2>
                     <div class="mt-1">
                       <% if (completedCount > 0) { %>
-                        <span class="badge badge-neutral text-[11px]">
-                          Completed deals: <%= completedCount %>
+                        <span class="badge badge-neutral text-[11px] tabular-nums">
+                          Completed: <%= completedCount %>
                         </span>
                       <% } else { %>
                         <span class="badge badge-neutral text-[11px]">
-                          New on PerPage
+                          New Fellow
                         </span>
                       <% } %>
                     </div>
@@ -193,13 +197,13 @@
 
                 <div class="text-right flex-shrink-0">
                   <% if (writer.pricePerPage && writer.pricePerPage > 0) { %>
-                    <div class="text-sm font-semibold text-[var(--text-ink)]">
+                    <div class="text-sm font-semibold text-[var(--text-ink)] tabular-nums">
                       ₹<%= writer.pricePerPage %>
                     </div>
                     <div class="text-[11px] text-[var(--text-muted)]">per page</div>
                   <% } else { %>
-                    <span class="badge badge-neutral text-[11px]">
-                      Rate not set
+                    <span class="badge badge-neutral text-[11px] font-mono">
+                      Rate on inquiry
                     </span>
                   <% } %>
                 </div>
@@ -212,8 +216,8 @@
                     <%= writer.bio %>
                   </p>
                 <% } else { %>
-                  <p class="type-body text-xs text-[var(--text-muted)] italic">
-                    No bio yet
+                  <p class="type-body text-xs text-[var(--text-muted)] italic opacity-80">
+                    Specialist active. Detailed background pending.
                   </p>
                 <% } %>
               </div>
@@ -241,7 +245,7 @@
           return '/writers?' + params.toString();
         }
       %>
-        <nav class="pagination pt-6 flex items-center justify-between" aria-label="Writers directory pagination">
+        <nav class="pagination pt-6 flex items-center justify-between" aria-label="Editors directory pagination">
           <div>
             <% if (currentPage > 1) { %>
               <a href="<%= buildPageUrl(currentPage - 1) %>" class="btn btn-secondary btn-sm">
@@ -293,9 +297,9 @@
 
         <% if (hasActiveFilters) { %>
           <div class="space-y-1.5">
-            <h2 class="type-h3 text-base">No writers match your search</h2>
+            <h2 class="type-h3 text-base">No editors match your search</h2>
             <p class="type-body text-xs text-[var(--text-muted)] max-w-sm mx-auto">
-              We couldn't find any writers matching your search keywords or filter criteria. Try clearing filters or adjusting terms.
+              We couldn't find any editors matching your search keywords or filter criteria. Try clearing filters or adjusting terms.
             </p>
           </div>
           <div class="pt-2">
@@ -305,14 +309,14 @@
           </div>
         <% } else { %>
           <div class="space-y-1.5">
-            <h2 class="type-h3 text-base">No writers registered yet</h2>
+            <h2 class="type-h3 text-base">No editors registered yet</h2>
             <p class="type-body text-xs text-[var(--text-muted)] max-w-sm mx-auto">
-              There are currently no writers listed in the directory. Create an account to become a writer on PerPage.
+              There are currently no editors listed in the directory. Create an account to become an editor on PerPage.
             </p>
           </div>
           <div class="pt-2">
             <a href="/register" class="btn btn-primary btn-sm">
-              Become a writer
+              Become an editor
             </a>
           </div>
         <% } %>
