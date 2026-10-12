@@ -928,6 +928,26 @@ html:not(.js) .proof-wavy-hero path {
   transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
 }
 
+/* Inputs with embedded leading or trailing icons */
+.form-input.has-search-icon,
+.form-input.pl-9,
+.form-input.pl-10,
+.form-input.\!pl-10,
+.form-input.\!pl-9,
+[class*="pl-10"].form-input,
+[class*="pl-9"].form-input {
+  padding-left: 2.5rem !important;
+}
+
+.form-input.pr-8,
+.form-input.pr-9,
+.form-input.\!pr-8,
+.form-input.\!pr-9,
+[class*="pr-8"].form-input,
+[class*="pr-7"].form-input {
+  padding-right: 2.25rem !important;
+}
+
 .form-input::placeholder,
 .form-textarea::placeholder {
   color: var(--text-muted);
