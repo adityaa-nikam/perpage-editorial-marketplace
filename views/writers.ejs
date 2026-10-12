@@ -40,8 +40,8 @@
       </p>
     </div>
 
-    <!-- Search & Filter Toolbar (Works purely with GET, enhanced by Alpine) -->
-    <div class="card p-4 sm:p-5" x-data="{ searchQuery: '<%= q || '' %>' }">
+    <!-- Search & Filter Toolbar (Compact reduced width) -->
+    <div class="max-w-2xl card p-3.5 sm:p-4" x-data="{ searchQuery: '<%= q || '' %>' }">
       <form action="/writers" method="GET" class="space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 sm:gap-4 items-end">
           
