@@ -776,25 +776,38 @@
     class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll"
     x-data="{
       activeStep: 1,
+      timer: null,
+      isPaused: false,
+      isVisible: true,
       init() {
+        this.startAutoSwitch();
         if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          const steps = [1, 2, 3];
-          steps.forEach(s => {
-            const el = document.getElementById('step-trigger-' + s);
-            if (el) {
-              const obs = new IntersectionObserver((entries) => {
-                entries.forEach(e => {
-                  if (e.isIntersecting) {
-                    this.activeStep = s;
-                  }
-                });
-              }, { threshold: 0.6 });
-              obs.observe(el);
-            }
-          });
+          const sectionEl = document.getElementById('how-it-works');
+          if (sectionEl) {
+            const obs = new IntersectionObserver((entries) => {
+              entries.forEach(e => {
+                this.isVisible = e.isIntersecting;
+              });
+            }, { threshold: 0.15 });
+            obs.observe(sectionEl);
+          }
         }
+      },
+      startAutoSwitch() {
+        if (this.timer) clearInterval(this.timer);
+        this.timer = setInterval(() => {
+          if (!this.isPaused && this.isVisible) {
+            this.activeStep = this.activeStep >= 3 ? 1 : this.activeStep + 1;
+          }
+        }, 1800);
+      },
+      setStep(s) {
+        this.activeStep = s;
+        this.startAutoSwitch();
       }
     }"
+    @mouseenter="isPaused = true"
+    @mouseleave="isPaused = false"
   >
     <div class="section-header-rule">
       <div class="section-eyebrow">
@@ -820,17 +833,43 @@
         <!-- Step 1 -->
         <div 
           id="step-trigger-1"
-          class="how-step-item"
+          class="how-step-item group"
           :aria-current="activeStep === 1 ? 'step' : null"
+          @click="setStep(1)"
+          role="button"
+          tabindex="0"
+          @keydown.enter="setStep(1)"
+          @keydown.space.prevent="setStep(1)"
         >
           <div class="flex items-start gap-4">
-            <span class="font-serif italic text-3xl font-bold text-[var(--text-ink)] tabular-nums shrink-0 leading-none">01</span>
+            <span 
+              class="font-serif italic text-3xl font-bold tabular-nums shrink-0 leading-none transition-colors duration-200"
+              :class="activeStep === 1 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-ink)]'"
+            >01</span>
             <div class="space-y-2 flex-1">
               <div class="flex items-center gap-2">
-                <h3 class="type-h3 text-xl">Browse editors</h3>
-                <span x-show="activeStep === 1" class="hidden lg:inline text-[10px] font-semibold text-[var(--accent)] uppercase tracking-wider">Active Step</span>
+                <h3 
+                  class="type-h3 text-xl transition-colors duration-200"
+                  :class="activeStep === 1 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-ink)]'"
+                >Browse editors</h3>
+                <span 
+                  x-show="activeStep === 1" 
+                  x-transition:enter="transition ease-out duration-250"
+                  x-transition:enter-start="opacity-0 translate-x-1"
+                  x-transition:enter-end="opacity-100 translate-x-0"
+                  x-transition:leave="transition ease-in duration-150"
+                  x-transition:leave-start="opacity-100 translate-x-0"
+                  x-transition:leave-end="opacity-0"
+                  class="hidden lg:inline-flex items-center gap-1.5 text-[10px] font-semibold text-[var(--accent)] uppercase tracking-wider font-mono"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse"></span>
+                  Active Step
+                </span>
               </div>
-              <p class="type-small text-[var(--text-muted)] leading-relaxed prose-measure">
+              <p 
+                class="type-small leading-relaxed prose-measure transition-colors duration-200"
+                :class="activeStep === 1 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)]'"
+              >
                 Compare editor profiles, bios and per-page rates. Choose a specialist suited to your subject matter.
               </p>
 
@@ -852,17 +891,43 @@
         <!-- Step 2 -->
         <div 
           id="step-trigger-2"
-          class="how-step-item"
+          class="how-step-item group"
           :aria-current="activeStep === 2 ? 'step' : null"
+          @click="setStep(2)"
+          role="button"
+          tabindex="0"
+          @keydown.enter="setStep(2)"
+          @keydown.space.prevent="setStep(2)"
         >
           <div class="flex items-start gap-4">
-            <span class="font-serif italic text-3xl font-bold text-[var(--text-ink)] tabular-nums shrink-0 leading-none">02</span>
+            <span 
+              class="font-serif italic text-3xl font-bold tabular-nums shrink-0 leading-none transition-colors duration-200"
+              :class="activeStep === 2 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-ink)]'"
+            >02</span>
             <div class="space-y-2 flex-1">
               <div class="flex items-center gap-2">
-                <h3 class="type-h3 text-xl">Create a deal</h3>
-                <span x-show="activeStep === 2" class="hidden lg:inline text-[10px] font-semibold text-[var(--accent)] uppercase tracking-wider">Active Step</span>
+                <h3 
+                  class="type-h3 text-xl transition-colors duration-200"
+                  :class="activeStep === 2 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-ink)]'"
+                >Create a deal</h3>
+                <span 
+                  x-show="activeStep === 2" 
+                  x-transition:enter="transition ease-out duration-250"
+                  x-transition:enter-start="opacity-0 translate-x-1"
+                  x-transition:enter-end="opacity-100 translate-x-0"
+                  x-transition:leave="transition ease-in duration-150"
+                  x-transition:leave-start="opacity-100 translate-x-0"
+                  x-transition:leave-end="opacity-0"
+                  class="hidden lg:inline-flex items-center gap-1.5 text-[10px] font-semibold text-[var(--accent)] uppercase tracking-wider font-mono"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse"></span>
+                  Active Step
+                </span>
               </div>
-              <p class="type-small text-[var(--text-muted)] leading-relaxed prose-measure">
+              <p 
+                class="type-small leading-relaxed prose-measure transition-colors duration-200"
+                :class="activeStep === 2 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)]'"
+              >
                 Specify your draft page count, include editing instructions, and upload your document in PDF format.
               </p>
 
@@ -881,17 +946,43 @@
         <!-- Step 3 -->
         <div 
           id="step-trigger-3"
-          class="how-step-item"
+          class="how-step-item group"
           :aria-current="activeStep === 3 ? 'step' : null"
+          @click="setStep(3)"
+          role="button"
+          tabindex="0"
+          @keydown.enter="setStep(3)"
+          @keydown.space.prevent="setStep(3)"
         >
           <div class="flex items-start gap-4">
-            <span class="font-serif italic text-3xl font-bold text-[var(--text-ink)] tabular-nums shrink-0 leading-none">03</span>
+            <span 
+              class="font-serif italic text-3xl font-bold tabular-nums shrink-0 leading-none transition-colors duration-200"
+              :class="activeStep === 3 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-ink)]'"
+            >03</span>
             <div class="space-y-2 flex-1">
               <div class="flex items-center gap-2">
-                <h3 class="type-h3 text-xl">Track to delivery</h3>
-                <span x-show="activeStep === 3" class="hidden lg:inline text-[10px] font-semibold text-[var(--accent)] uppercase tracking-wider">Active Step</span>
+                <h3 
+                  class="type-h3 text-xl transition-colors duration-200"
+                  :class="activeStep === 3 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-ink)]'"
+                >Track to delivery</h3>
+                <span 
+                  x-show="activeStep === 3" 
+                  x-transition:enter="transition ease-out duration-250"
+                  x-transition:enter-start="opacity-0 translate-x-1"
+                  x-transition:enter-end="opacity-100 translate-x-0"
+                  x-transition:leave="transition ease-in duration-150"
+                  x-transition:leave-start="opacity-100 translate-x-0"
+                  x-transition:leave-end="opacity-0"
+                  class="hidden lg:inline-flex items-center gap-1.5 text-[10px] font-semibold text-[var(--accent)] uppercase tracking-wider font-mono"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse"></span>
+                  Active Step
+                </span>
               </div>
-              <p class="type-small text-[var(--text-muted)] leading-relaxed prose-measure">
+              <p 
+                class="type-small leading-relaxed prose-measure transition-colors duration-200"
+                :class="activeStep === 3 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)]'"
+              >
                 Once the editor delivers, download your edited draft and feedback from your dashboard.
               </p>
 
@@ -915,68 +1006,128 @@
       <div class="hidden lg:block lg:col-span-6">
         <div class="how-sticky-card p-7 space-y-6">
           <div class="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
-            <span class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider">
-              Step <span x-text="activeStep">1</span> of 3 Preview
+            <span class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider font-mono">
+              Step <span x-text="activeStep" class="text-[var(--text-ink)] font-bold">1</span> of 3 Preview
             </span>
-            <span class="badge badge-neutral text-[10px]">Sample</span>
-          </div>
-
-          <!-- Preview State 1: Browse Profile -->
-          <div x-show="activeStep === 1" x-transition:enter="transition ease-out duration-200" class="space-y-4">
-            <div class="flex items-center gap-3">
-              <div class="avatar avatar-md">AS</div>
-              <div>
-                <div class="font-semibold text-[var(--text-ink)] text-sm">Ananya Sharma</div>
-                <div class="text-xs text-[var(--text-muted)]">Freelance Academic &amp; Technical Editor</div>
+            <div class="flex items-center gap-2">
+              <span class="badge badge-neutral text-[10px]">Sample</span>
+              <!-- Mini 3-step progress dots -->
+              <div class="flex items-center gap-1.5 ml-1" role="tablist" aria-label="Step indicator">
+                <button 
+                  type="button" 
+                  @click.stop="setStep(1)" 
+                  class="h-1.5 rounded-full transition-all duration-300 focus:outline-none cursor-pointer"
+                  :class="activeStep === 1 ? 'w-5 bg-[var(--accent)]' : 'w-2 bg-[var(--border-strong)] hover:bg-[var(--text-muted)]'"
+                  aria-label="Go to step 1"
+                ></button>
+                <button 
+                  type="button" 
+                  @click.stop="setStep(2)" 
+                  class="h-1.5 rounded-full transition-all duration-300 focus:outline-none cursor-pointer"
+                  :class="activeStep === 2 ? 'w-5 bg-[var(--accent)]' : 'w-2 bg-[var(--border-strong)] hover:bg-[var(--text-muted)]'"
+                  aria-label="Go to step 2"
+                ></button>
+                <button 
+                  type="button" 
+                  @click.stop="setStep(3)" 
+                  class="h-1.5 rounded-full transition-all duration-300 focus:outline-none cursor-pointer"
+                  :class="activeStep === 3 ? 'w-5 bg-[var(--accent)]' : 'w-2 bg-[var(--border-strong)] hover:bg-[var(--text-muted)]'"
+                  aria-label="Go to step 3"
+                ></button>
               </div>
-            </div>
-            <p class="text-xs text-[var(--text-muted)] leading-relaxed">
-              Specializing in document structure, clarity, grammar polish, and reference formatting with consistent per-page pricing.
-            </p>
-            <div class="p-3 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
-              <span class="text-xs text-[var(--text-muted)]">Fixed Rate</span>
-              <span class="font-mono text-xs font-bold text-[var(--text-ink)] tabular-nums">₹45 / page</span>
-            </div>
-          </div>
-
-          <!-- Preview State 2: Create Deal & Upload -->
-          <div x-show="activeStep === 2" x-transition:enter="transition ease-out duration-200" class="space-y-4" style="display: none;">
-            <div class="space-y-1">
-              <div class="text-sm font-semibold text-[var(--text-ink)]">Commission Request</div>
-              <div class="text-xs text-[var(--text-muted)]">Report draft submission</div>
-            </div>
-            <div class="p-4 rounded-md border border-dashed border-[var(--border-strong)] bg-[var(--bg-surface-muted)] flex items-center justify-between text-xs">
-              <div class="flex items-center gap-2.5 truncate">
-                <%- icon('file-text', { class: 'w-4 h-4 text-[var(--accent)] shrink-0' }) %>
-                <span class="font-mono text-xs text-[var(--text-ink)] truncate">report-draft.pdf</span>
-              </div>
-              <span class="text-[11px] text-[var(--text-muted)] shrink-0">1.8 MB</span>
-            </div>
-            <div class="p-3 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
-              <span class="text-xs text-[var(--text-muted)]">Calculated Total (12 pgs × ₹45)</span>
-              <span class="font-mono text-xs font-bold text-[var(--text-ink)] tabular-nums">₹540</span>
             </div>
           </div>
 
-          <!-- Preview State 3: Tracked Delivery -->
-          <div x-show="activeStep === 3" x-transition:enter="transition ease-out duration-200" class="space-y-4" style="display: none;">
-            <div class="flex items-center justify-between">
-              <div class="text-sm font-semibold text-[var(--text-ink)]">Delivery Completed</div>
-              <span class="badge badge-success text-[10px] font-mono">DELIVERED</span>
-            </div>
-            <div class="p-3.5 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] space-y-2 text-xs">
-              <div class="flex items-center justify-between font-medium text-[var(--text-ink)]">
-                <span>Edited document &amp; feedback attached</span>
-                <span class="text-[var(--semantic-success-text)]">Ready</span>
+          <!-- Relative Container for silky-smooth cross-fade with no layout shift -->
+          <div class="relative min-h-[190px]">
+            
+            <!-- Preview State 1: Browse Profile -->
+            <div 
+              x-show="activeStep === 1" 
+              x-transition:enter="transition ease-out duration-300 transform"
+              x-transition:enter-start="opacity-0 translate-y-2 scale-[0.99]"
+              x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+              x-transition:leave="transition ease-in duration-200 transform absolute inset-0 pointer-events-none"
+              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+              x-transition:leave-end="opacity-0 -translate-y-2 scale-[0.99]"
+              class="space-y-4"
+            >
+              <div class="flex items-center gap-3">
+                <div class="avatar avatar-md">AS</div>
+                <div>
+                  <div class="font-semibold text-[var(--text-ink)] text-sm">Ananya Sharma</div>
+                  <div class="text-xs text-[var(--text-muted)]">Freelance Academic &amp; Technical Editor</div>
+                </div>
               </div>
-              <div class="flex items-center gap-2 text-[var(--accent)] font-medium">
-                <%- icon('download', { class: 'w-3.5 h-3.5 shrink-0' }) %>
-                <span class="font-mono text-[11px]">report-draft-edited.pdf</span>
+              <p class="text-xs text-[var(--text-muted)] leading-relaxed">
+                Specializing in document structure, clarity, grammar polish, and reference formatting with consistent per-page pricing.
+              </p>
+              <div class="p-3 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
+                <span class="text-xs text-[var(--text-muted)]">Fixed Rate</span>
+                <span class="font-mono text-xs font-bold text-[var(--text-ink)] tabular-nums">₹45 / page</span>
               </div>
             </div>
-            <div class="text-[11px] text-[var(--text-muted)]">
-              Files are shared through private time-limited download links from your dashboard.
+
+            <!-- Preview State 2: Create Deal & Upload -->
+            <div 
+              x-show="activeStep === 2" 
+              x-transition:enter="transition ease-out duration-300 transform"
+              x-transition:enter-start="opacity-0 translate-y-2 scale-[0.99]"
+              x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+              x-transition:leave="transition ease-in duration-200 transform absolute inset-0 pointer-events-none"
+              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+              x-transition:leave-end="opacity-0 -translate-y-2 scale-[0.99]"
+              class="space-y-4"
+              x-cloak
+            >
+              <div class="space-y-1">
+                <div class="text-sm font-semibold text-[var(--text-ink)]">Commission Request</div>
+                <div class="text-xs text-[var(--text-muted)]">Report draft submission</div>
+              </div>
+              <div class="p-4 rounded-md border border-dashed border-[var(--border-strong)] bg-[var(--bg-surface-muted)] flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2.5 truncate">
+                  <%- icon('file-text', { class: 'w-4 h-4 text-[var(--accent)] shrink-0' }) %>
+                  <span class="font-mono text-xs text-[var(--text-ink)] truncate">report-draft.pdf</span>
+                </div>
+                <span class="text-[11px] text-[var(--text-muted)] shrink-0">1.8 MB</span>
+              </div>
+              <div class="p-3 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
+                <span class="text-xs text-[var(--text-muted)]">Calculated Total (12 pgs × ₹45)</span>
+                <span class="font-mono text-xs font-bold text-[var(--text-ink)] tabular-nums">₹540</span>
+              </div>
             </div>
+
+            <!-- Preview State 3: Tracked Delivery -->
+            <div 
+              x-show="activeStep === 3" 
+              x-transition:enter="transition ease-out duration-300 transform"
+              x-transition:enter-start="opacity-0 translate-y-2 scale-[0.99]"
+              x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+              x-transition:leave="transition ease-in duration-200 transform absolute inset-0 pointer-events-none"
+              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+              x-transition:leave-end="opacity-0 -translate-y-2 scale-[0.99]"
+              class="space-y-4"
+              x-cloak
+            >
+              <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold text-[var(--text-ink)]">Delivery Completed</div>
+                <span class="badge badge-success text-[10px] font-mono">DELIVERED</span>
+              </div>
+              <div class="p-3.5 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] space-y-2 text-xs">
+                <div class="flex items-center justify-between font-medium text-[var(--text-ink)]">
+                  <span>Edited document &amp; feedback attached</span>
+                  <span class="text-[var(--semantic-success-text)]">Ready</span>
+                </div>
+                <div class="flex items-center gap-2 text-[var(--accent)] font-medium">
+                  <%- icon('download', { class: 'w-3.5 h-3.5 shrink-0' }) %>
+                  <span class="font-mono text-[11px]">report-draft-edited.pdf</span>
+                </div>
+              </div>
+              <div class="text-[11px] text-[var(--text-muted)]">
+                Files are shared through private time-limited download links from your dashboard.
+              </div>
+            </div>
+
           </div>
         </div>
       </div>

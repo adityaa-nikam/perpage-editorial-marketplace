@@ -2393,9 +2393,10 @@ html:not(.js) .hero-anim-status-delivered {
    ========================================================================== */
 
 .how-step-item {
-  padding: 2rem 0;
+  padding: 1.75rem 0;
   border-bottom: 1px solid var(--border-color);
-  transition: opacity 200ms ease-out;
+  transition: opacity 250ms ease, transform 250ms ease;
+  cursor: pointer;
 }
 
 .how-step-item:last-child {
@@ -2407,7 +2408,11 @@ html:not(.js) .hero-anim-status-delivered {
 }
 
 .how-step-item:not([aria-current="step"]) {
-  opacity: 0.78;
+  opacity: 0.45;
+}
+
+.how-step-item:not([aria-current="step"]):hover {
+  opacity: 0.85;
 }
 
 .dark .how-step-item[aria-current="step"] h3 {
@@ -2425,7 +2430,7 @@ html:not(.js) .hero-anim-status-delivered {
 
 .dark .how-step-item[aria-current="step"] p {
   color: var(--foreground) !important;
-  opacity: 0.92;
+  opacity: 0.95;
 }
 
 .how-sticky-card {
@@ -2435,7 +2440,7 @@ html:not(.js) .hero-anim-status-delivered {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sheet);
-  transition: opacity 200ms ease-out, transform 200ms ease-out;
+  transition: opacity 250ms ease-out, transform 250ms ease-out;
 }
 
 @media (max-width: 1023px) {
