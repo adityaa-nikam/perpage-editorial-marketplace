@@ -1381,26 +1381,35 @@ html.js .reveal-on-scroll.is-revealed {
    VIEW TRANSITION CIRCULAR THEME REVEAL
    ========================================================================== */
 
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
+@keyframes vt-reveal {
+  from {
+    clip-path: circle(0px at var(--vt-x, 90vw) var(--vt-y, 30px));
+  }
+  to {
+    clip-path: circle(var(--vt-r, 150vmax) at var(--vt-x, 90vw) var(--vt-y, 30px));
+  }
 }
 
 ::view-transition-old(root) {
+  animation: none;
   z-index: 1;
 }
 
 ::view-transition-new(root) {
-  z-index: 9999;
+  animation: vt-reveal 420ms cubic-bezier(0.4, 0, 0.2, 1);
+  mix-blend-mode: normal;
+  z-index: 99999;
 }
 
 .dark::view-transition-old(root) {
+  animation: none;
   z-index: 1;
 }
 
 .dark::view-transition-new(root) {
-  z-index: 9999;
+  animation: vt-reveal 420ms cubic-bezier(0.4, 0, 0.2, 1);
+  mix-blend-mode: normal;
+  z-index: 99999;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1408,6 +1417,20 @@ html.js .reveal-on-scroll.is-revealed {
   ::view-transition-new(root) {
     animation: none !important;
   }
+}
+
+/* Theme Toggle Icons */
+.dark .theme-icon-light {
+  display: none !important;
+}
+.dark .theme-icon-dark {
+  display: flex !important;
+}
+html:not(.dark) .theme-icon-light {
+  display: flex !important;
+}
+html:not(.dark) .theme-icon-dark {
+  display: none !important;
 }
 
 /* Dropdown */

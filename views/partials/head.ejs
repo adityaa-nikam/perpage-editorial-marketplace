@@ -51,6 +51,17 @@
           document.documentElement.classList.remove('dark');
         }
       } catch (e) {}
+      window.__toggleTheme = function(e) {
+        var isDark = document.documentElement.classList.contains('dark');
+        var nextDark = !isDark;
+        if (nextDark) {
+          document.documentElement.classList.add('dark');
+          try { localStorage.setItem('theme', 'dark'); } catch (_) {}
+        } else {
+          document.documentElement.classList.remove('dark');
+          try { localStorage.setItem('theme', 'light'); } catch (_) {}
+        }
+      };
     })();
   </script>
 
