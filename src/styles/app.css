@@ -553,7 +553,7 @@ html.js .reveal-on-scroll.is-revealed {
   margin-bottom: 2rem;
 }
 
-/* Hero Hand-Drawn Wavy Proofreader Underline with Infinite Smooth Scroll Wave */
+/* Hero Hand-Drawn Wavy Proofreader Underline with Scroll-Driven Draw Animation */
 .proof-wavy-hero {
   position: relative;
   display: inline-block;
@@ -568,39 +568,6 @@ html.js .reveal-on-scroll.is-revealed {
   height: 0.28em;
   pointer-events: none;
   overflow: visible;
-  will-change: transform;
-}
-
-@keyframes proofDrawWavy {
-  0% {
-    stroke-dashoffset: 100;
-  }
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes proofWaveScroll {
-  0% {
-    transform: translateX(0);
-  }
-  50% {
-    transform: translateX(2px) scaleY(1.08);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-@keyframes proofWavePulse {
-  0%, 100% {
-    filter: drop-shadow(0 0 0px rgba(225, 29, 72, 0));
-    opacity: 0.9;
-  }
-  50% {
-    filter: drop-shadow(0 1px 2px rgba(225, 29, 72, 0.35));
-    opacity: 1;
-  }
 }
 
 .proof-wavy-hero path {
@@ -611,11 +578,12 @@ html.js .reveal-on-scroll.is-revealed {
   fill: none;
   stroke-dasharray: 100;
   stroke-dashoffset: 100;
-  animation: 
-    proofDrawWavy 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards,
-    proofWaveScroll 2.8s ease-in-out 1.4s infinite,
-    proofWavePulse 2.8s ease-in-out 1.4s infinite;
-  will-change: stroke-dashoffset, transform;
+  will-change: stroke-dashoffset;
+}
+
+/* Fallback draw animation for non-JS / static mode */
+html:not(.js) .proof-wavy-hero path {
+  stroke-dashoffset: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -624,7 +592,6 @@ html.js .reveal-on-scroll.is-revealed {
   }
   .proof-wavy-hero path {
     stroke-dashoffset: 0 !important;
-    animation: none !important;
   }
 }
 

@@ -628,6 +628,21 @@
         section.style.setProperty("--gp-caption-hit", p < 0.08 ? "auto" : "none");
         section.dataset.gpEntered = String(p >= 0.9);
 
+        // Real-time scroll-driven drawing of the red proofreader underline
+        const heroWavyPath = section.querySelector('.proof-wavy-hero path');
+        if (heroWavyPath) {
+          if (isStatic) {
+            heroWavyPath.style.strokeDashoffset = '0';
+          } else if (p < 0.74) {
+            heroWavyPath.style.strokeDashoffset = '100';
+          } else if (p >= 0.74 && p <= 0.94) {
+            const drawT = (p - 0.74) / 0.20;
+            heroWavyPath.style.strokeDashoffset = String(Math.max(0, Math.min(100, Math.round((1 - drawT) * 100))));
+          } else {
+            heroWavyPath.style.strokeDashoffset = '0';
+          }
+        }
+
       }
 
       function layout() {
@@ -712,54 +727,32 @@
       window.addEventListener("resize", resize);
       motion.addEventListener("change", resize);
 
-      // Visible, graceful draw animation for wavy underline under "Improve"
-      const wavyHero = section.querySelector('.proof-wavy-hero');
-      if (wavyHero && 'IntersectionObserver' in window) {
-        const wavyObserver = new IntersectionObserver((entries) => {
+      // Observe all wavy underlines across the page (hero and bottom CTA)
+      // When scrolled into view, smoothly draw the red pen stroke
+      const allWavyElements = document.querySelectorAll('.proof-wavy-hero');
+      if (allWavyElements.length && 'IntersectionObserver' in window) {
+        const wavyScrollObserver = new IntersectionObserver((entries) => {
           entries.forEach(entry => {
+            const path = entry.target.querySelector('path');
+            if (!path) return;
             if (entry.isIntersecting) {
-              const path = wavyHero.querySelector('path');
-              if (path && (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
-                path.style.animation = 'none';
-                void path.offsetWidth;
-                path.style.animation = 'proofDrawWavy 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards';
+              if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                path.style.transition = 'stroke-dashoffset 0.85s cubic-bezier(0.16, 1, 0.3, 1)';
+                path.style.strokeDashoffset = '0';
+              } else {
+                path.style.strokeDashoffset = '0';
               }
-              wavyObserver.unobserve(entry.target);
+            } else {
+              // Reset when scrolled above/below viewport so re-entering draws it again
+              if (entry.boundingClientRect.top > window.innerHeight || entry.boundingClientRect.bottom < 0) {
+                path.style.transition = 'none';
+                path.style.strokeDashoffset = '100';
+              }
             }
           });
-        }, { threshold: 0.1 });
-        wavyObserver.observe(wavyHero);
-      }
+        }, { threshold: 0.15 });
 
-      // Scroll-driven slide animation: red wavy underline slides to its right side on scroll down
-      const wavySvgs = document.querySelectorAll('.proof-wavy-hero svg');
-      if (wavySvgs.length) {
-        let wavyTicking = false;
-        function updateWavySlide() {
-          if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            wavySvgs.forEach(svg => { svg.style.transform = 'none'; });
-            wavyTicking = false;
-            return;
-          }
-          const scrollY = window.scrollY || window.pageYOffset || 0;
-          wavySvgs.forEach(svg => {
-            const parent = svg.closest('.proof-wavy-hero');
-            if (!parent) return;
-            const elemTop = parent.offsetTop || 0;
-            const relativeScroll = Math.max(0, scrollY - Math.max(0, elemTop - 250));
-            const shiftX = Math.min(relativeScroll * 0.45, 140);
-            svg.style.transform = `translateX(${shiftX}px)`;
-          });
-          wavyTicking = false;
-        }
-
-        window.addEventListener('scroll', () => {
-          if (!wavyTicking) {
-            window.requestAnimationFrame(updateWavySlide);
-            wavyTicking = true;
-          }
-        }, { passive: true });
-        updateWavySlide();
+        allWavyElements.forEach(el => wavyScrollObserver.observe(el));
       }
 
       frame();
