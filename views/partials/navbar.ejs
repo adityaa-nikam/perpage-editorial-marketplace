@@ -52,12 +52,16 @@
       <% } %>
       window.__toggleTheme = (event) => this.toggleTheme(event);
     },
+    isTogglingTheme: false,
     toggleTheme(event) {
+      if (this.isTogglingTheme) return;
+      this.isTogglingTheme = true;
+
       const nextDark = !this.isDark;
 
-      // 1. Calculate transition center coordinates safely
-      let x = window.innerWidth - 40;
-      let y = 30;
+      // 1. Calculate transition center coordinates safely from button center
+      let x = window.innerWidth - 48;
+      let y = 32;
       try {
         if (event) {
           const rawTarget = event.currentTarget || event.target;
@@ -80,7 +84,7 @@
         Math.max(y, window.innerHeight - y)
       ));
 
-      // 2. Synchronous reliable state applicator
+      // 2. State applicator
       const applyTheme = () => {
         this.isDark = nextDark;
         if (nextDark) {
@@ -97,10 +101,12 @@
       // If user prefers reduced motion, toggle immediately without transition
       if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         applyTheme();
+        this.isTogglingTheme = false;
         return;
       }
 
       // 3. Native View Transition API (Chromium 111+, Safari 18+)
+      // Hardware-accelerated circular reveal radiating outwards from the button
       if (typeof document.startViewTransition === 'function') {
         try {
           document.documentElement.style.setProperty('--vt-x', `${x}px`);
@@ -122,22 +128,62 @@
                     ]
                   },
                   {
-                    duration: 420,
-                    easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+                    duration: 480,
+                    easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
                     pseudoElement: '::view-transition-new(root)'
                   }
                 );
               } catch (_) {}
             }).catch(() => {});
           }
+
+          if (transition && transition.finished) {
+            transition.finished.finally(() => {
+              this.isTogglingTheme = false;
+            });
+          } else {
+            setTimeout(() => { this.isTogglingTheme = false; }, 500);
+          }
           return;
         } catch (e) {
-          // If View Transition fails, immediately fall through to direct apply
+          // Fall through to fallback if View Transitions throws
         }
       }
 
-      // 4. Universal immediate application for all browsers
-      applyTheme();
+      // 4. Smooth expanding circle fallback for browsers without View Transitions
+      try {
+        const circle = document.createElement('div');
+        circle.style.position = 'fixed';
+        circle.style.top = `${y}px`;
+        circle.style.left = `${x}px`;
+        circle.style.width = '4px';
+        circle.style.height = '4px';
+        circle.style.borderRadius = '50%';
+        circle.style.backgroundColor = nextDark ? '#0b0f17' : '#ffffff';
+        circle.style.transform = 'translate(-50%, -50%) scale(0)';
+        circle.style.pointerEvents = 'none';
+        circle.style.zIndex = '999999';
+        circle.style.transition = 'transform 440ms cubic-bezier(0.22, 1, 0.36, 1)';
+        document.body.appendChild(circle);
+
+        requestAnimationFrame(() => {
+          circle.style.transform = `translate(-50%, -50%) scale(${(endRadius * 2) / 4})`;
+        });
+
+        setTimeout(() => {
+          applyTheme();
+          circle.style.opacity = '0';
+          circle.style.transition = 'opacity 180ms ease-out';
+          setTimeout(() => {
+            circle.remove();
+            this.isTogglingTheme = false;
+          }, 200);
+        }, 380);
+        return;
+      } catch (_) {
+        applyTheme();
+        this.isTogglingTheme = false;
+      }
     },
     playSwitchSound() {
       try {
@@ -222,7 +268,6 @@
       <button 
         type="button" 
         @click="toggleTheme($event)"
-        onclick="if(window.__toggleTheme)window.__toggleTheme(event)"
         class="nav-theme-toggle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)] relative cursor-pointer overflow-hidden"
         aria-label="Toggle color theme"
       >
@@ -407,7 +452,6 @@
       <button 
         type="button" 
         @click="toggleTheme($event)"
-        onclick="if(window.__toggleTheme)window.__toggleTheme(event)"
         class="nav-theme-toggle relative cursor-pointer overflow-hidden"
         aria-label="Toggle theme"
       >

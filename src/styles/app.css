@@ -1366,36 +1366,38 @@ html:not(.js) .proof-wavy-hero path {
 
 /* ==========================================================================
    VIEW TRANSITION CIRCULAR THEME REVEAL
+   Smooth hardware-accelerated circular reveal expanding outwards from button
    ========================================================================== */
 
-@keyframes vt-reveal {
-  from {
-    clip-path: circle(0px at var(--vt-x, 90vw) var(--vt-y, 30px));
-  }
-  to {
-    clip-path: circle(var(--vt-r, 150vmax) at var(--vt-x, 90vw) var(--vt-y, 30px));
-  }
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-image-pair(root) {
+  isolation: auto;
 }
 
 ::view-transition-old(root) {
-  animation: none;
   z-index: 1;
 }
 
 ::view-transition-new(root) {
-  animation: vt-reveal 420ms cubic-bezier(0.4, 0, 0.2, 1);
-  mix-blend-mode: normal;
   z-index: 99999;
 }
 
-.dark::view-transition-old(root) {
+.dark::view-transition-old(root),
+.dark::view-transition-new(root) {
   animation: none;
+  mix-blend-mode: normal;
+}
+
+.dark::view-transition-old(root) {
   z-index: 1;
 }
 
 .dark::view-transition-new(root) {
-  animation: vt-reveal 420ms cubic-bezier(0.4, 0, 0.2, 1);
-  mix-blend-mode: normal;
   z-index: 99999;
 }
 
