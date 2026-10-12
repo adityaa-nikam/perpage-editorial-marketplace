@@ -188,17 +188,30 @@
         </div>
       </div>
 
-      <!-- Right Column: Interactive PerPage Workflow Component (Vercel Monochrome Aesthetics) -->
+      <!-- Right Column: Interactive PerPage Workflow Component (Smooth 2s Auto-Switching) -->
       <div 
         class="lg:col-span-5"
         x-data="{
           activeStep: 1,
+          timer: null,
+          isPaused: false,
           steps: [
             { id: 1, tag: '01', title: 'Price', desc: 'Upfront rates' },
             { id: 2, tag: '02', title: 'Pair', desc: 'Editor match' },
             { id: 3, tag: '03', title: 'Revise', desc: 'Tracked changes' },
             { id: 4, tag: '04', title: 'Deliver', desc: 'Final draft' }
           ],
+          init() {
+            this.startAutoSwitch();
+          },
+          startAutoSwitch() {
+            if (this.timer) clearInterval(this.timer);
+            this.timer = setInterval(() => {
+              if (!this.isPaused) {
+                this.nextStep();
+              }
+            }, 2000);
+          },
           setStep(step) {
             this.activeStep = step;
           },
@@ -209,6 +222,8 @@
             this.activeStep = this.activeStep <= 1 ? 4 : this.activeStep - 1;
           }
         }"
+        @mouseenter="isPaused = true"
+        @mouseleave="isPaused = false"
       >
         <div class="workflow-card-container">
           <div class="workflow-card">
