@@ -1,278 +1,65 @@
 <%- include('partials/head', { 
   pageTitle: 'Editor Leaderboard — Live Rankings | PerPage', 
-  metaDescription: 'Real-time competitive leaderboard of freelance editors ranked top to bottom by completed works, client ratings, and reviews.',
+  metaDescription: 'Competitive rankings of freelance editors ordered top to bottom by completed works, client ratings, and reviews.',
   canonical: '/leaderboard',
   noindex: false 
 }) %>
 <%- include('partials/navbar') %>
 
-<main id="main-content" class="py-10 sm:py-14 min-h-[80vh]" 
-  x-data="{
-    editors: <%- JSON.stringify(leaderboard || []) %>,
-    searchQuery: '',
-    activeFilter: 'all',
-    lastSync: 'Just now',
-    isRefreshing: false,
-    async fetchLiveLeaderboard() {
-      this.isRefreshing = true;
-      try {
-        const res = await fetch('/api/leaderboard');
-        if (res.ok) {
-          const data = await res.json();
-          if (data && Array.isArray(data.leaderboard)) {
-            this.editors = data.leaderboard;
-            const now = new Date();
-            this.lastSync = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-          }
-        }
-      } catch (e) {
-        console.warn('Leaderboard sync notice:', e);
-      } finally {
-        this.isRefreshing = false;
-      }
-    },
-    get filteredEditors() {
-      let list = this.editors;
-      if (this.activeFilter === 'podium') {
-        list = list.filter(e => e.rank <= 3);
-      } else if (this.activeFilter === 'active') {
-        list = list.filter(e => e.completedCount > 0);
-      } else if (this.activeFilter === 'new') {
-        list = list.filter(e => e.completedCount === 0);
-      }
-      if (this.searchQuery.trim()) {
-        const q = this.searchQuery.toLowerCase();
-        list = list.filter(e => 
-          (e.name && e.name.toLowerCase().includes(q)) || 
-          (e.bio && e.bio.toLowerCase().includes(q))
-        );
-      }
-      return list;
-    },
-    get topThree() {
-      return this.editors.slice(0, 3);
-    },
-    init() {
-      setInterval(() => {
-        this.fetchLiveLeaderboard();
-      }, 20000);
-    }
-  }"
->
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+<main id="main-content" class="py-8 sm:py-12 min-h-[80vh]">
+  <!-- Centered, sleek layout with reduced width for info section -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 space-y-8" x-data="leaderboardApp()">
 
-    <!-- Header & Live Status Bar -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[var(--border-color)] pb-6">
-      <div class="space-y-2">
-        <div class="section-eyebrow flex items-center gap-2">
-          <span class="eyebrow-num">05</span>
-          <span class="eyebrow-rule"></span>
-          <span class="eyebrow-label">Rankings</span>
-        </div>
-        <h1 class="type-h1 flex items-center gap-3">
-          Editor Leaderboard
-          <span class="text-2xl select-none" title="Competitive Leaderboard">🏆</span>
-        </h1>
-        <p class="type-body text-sm text-[var(--text-muted)] max-w-2xl prose-measure">
-          Live competitive rankings of editors ordered top to bottom by completed works. Newly registered editors join the board with a zero count.
-        </p>
+    <!-- Sleek Reduced-Width Info & Header Section -->
+    <div class="max-w-2xl mx-auto text-center space-y-3 pb-2">
+      <div class="section-eyebrow flex items-center justify-center gap-2">
+        <span class="eyebrow-num">05</span>
+        <span class="eyebrow-rule"></span>
+        <span class="eyebrow-label">Rankings</span>
       </div>
-
-      <!-- Live Sync Pill & Manual Refresh -->
-      <div class="flex items-center gap-3 shrink-0">
-        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-[var(--border-color)] bg-[var(--bg-surface-muted)] text-xs text-[var(--text-ink)] shadow-xs">
+      <h1 class="type-h1 text-2xl sm:text-3xl flex items-center justify-center gap-2">
+        <span>Editor Leaderboard</span>
+        <span class="text-2xl select-none" title="Competitive Leaderboard">🏆</span>
+      </h1>
+      <p class="type-body text-xs sm:text-sm text-[var(--text-muted)] max-w-lg mx-auto">
+        Live competitive rankings of editors ordered top to bottom by completed works. Newly registered editors join the board with a zero count.
+      </p>
+      
+      <!-- Live Status Indicator -->
+      <div class="pt-1 flex items-center justify-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[var(--border-color)] bg-[var(--bg-surface-muted)] text-[11px] text-[var(--text-ink)] shadow-xs">
           <span class="pulse-live"></span>
           <span class="font-medium">Live Rankings</span>
-          <span class="text-[var(--text-muted)] text-[11px] font-mono" x-text="'· ' + lastSync">· Just now</span>
-        </div>
+          <span class="text-[var(--text-muted)] font-mono" x-text="'· ' + lastSync">· Just now</span>
+        </span>
         <button 
           type="button" 
           @click="fetchLiveLeaderboard()" 
-          class="btn btn-secondary btn-sm flex items-center gap-1.5 cursor-pointer"
+          class="btn btn-secondary btn-sm text-xs py-1 px-2.5 inline-flex items-center gap-1 cursor-pointer"
           :disabled="isRefreshing"
           title="Refresh rankings now"
         >
           <span :class="{ 'animate-spin': isRefreshing }">
-            <%- icon('refresh-cw', { class: 'w-3.5 h-3.5' }) %>
+            <%- icon('refresh', { class: 'w-3 h-3' }) %>
           </span>
           <span x-text="isRefreshing ? 'Syncing...' : 'Sync'">Sync</span>
         </button>
       </div>
     </div>
 
-    <!-- Top 3 Podium Showcase (Only rendered when at least 1 editor exists) -->
-    <template x-if="topThree.length > 0">
-      <section class="space-y-4">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
-            <%- icon('trophy', { class: 'w-3.5 h-3.5 text-amber-500' }) %>
-            Podium Leaders
-          </h2>
-          <span class="text-xs text-[var(--text-muted)]">Ranks 1 · 2 · 3</span>
-        </div>
-
-        <!-- 3-Column Podium Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-end">
-          
-          <!-- Rank 2: Silver (Displayed Left on desktop) -->
-          <template x-if="topThree[1]">
-            <div class="podium-card podium-card-silver p-5 flex flex-col justify-between order-2 md:order-1 min-h-[260px]">
-              <div class="space-y-4">
-                <div class="flex items-start justify-between">
-                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs shadow-xs">
-                    🥈 2nd Place
-                  </span>
-                  <div class="text-right">
-                    <span class="text-xs font-semibold text-[var(--text-ink)] tabular-nums" x-text="topThree[1].pricePerPage > 0 ? '₹' + topThree[1].pricePerPage + '/page' : 'Flexible'"></span>
-                  </div>
-                </div>
-
-                <div class="text-center space-y-2 py-2">
-                  <div class="w-16 h-16 mx-auto rounded-full ring-2 ring-slate-300 dark:ring-slate-700 overflow-hidden bg-[var(--bg-surface-muted)] flex items-center justify-center font-bold text-lg text-[var(--text-ink)]">
-                    <template x-if="topThree[1].profilePic">
-                      <img :src="topThree[1].profilePic" :alt="topThree[1].name" class="w-full h-full object-cover">
-                    </template>
-                    <template x-if="!topThree[1].profilePic">
-                      <span x-text="(topThree[1].name || 'E').slice(0, 2).toUpperCase()"></span>
-                    </template>
-                  </div>
-                  <div>
-                    <h3 class="font-bold text-base text-[var(--text-ink)] truncate" x-text="topThree[1].name"></h3>
-                    <p class="text-xs text-[var(--text-muted)] line-clamp-1" x-text="topThree[1].bio || 'Editorial Fellow'"></p>
-                  </div>
-                </div>
-
-                <div class="flex items-center justify-center gap-3 pt-1 border-t border-[var(--border-color)] text-xs">
-                  <div class="flex items-center gap-1 font-semibold text-[var(--text-ink)]">
-                    <span class="text-base">🥈</span>
-                    <span class="tabular-nums" x-text="topThree[1].completedCount + ' completed'"></span>
-                  </div>
-                  <template x-if="topThree[1].averageRating > 0">
-                    <span class="text-amber-500 font-semibold" x-text="'★ ' + Number(topThree[1].averageRating).toFixed(1)"></span>
-                  </template>
-                </div>
-              </div>
-
-              <div class="pt-4 flex items-center gap-2">
-                <a :href="'/writers/' + topThree[1]._id" class="btn btn-secondary btn-sm flex-1 text-center">View Profile</a>
-                <a :href="'/deal?writerId=' + topThree[1]._id" class="btn btn-primary btn-sm flex-1 text-center">Hire Editor</a>
-              </div>
-            </div>
-          </template>
-
-          <!-- Rank 1: Gold (Center & Elevated) -->
-          <template x-if="topThree[0]">
-            <div class="podium-card podium-card-gold p-6 flex flex-col justify-between order-1 md:order-2 md:-translate-y-2 min-h-[300px]">
-              <div class="space-y-4">
-                <div class="flex items-start justify-between">
-                  <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-extrabold text-xs shadow-xs border border-amber-300/40">
-                    🥇 #1 Champion
-                  </span>
-                  <div class="text-right">
-                    <span class="text-xs font-semibold text-[var(--text-ink)] tabular-nums" x-text="topThree[0].pricePerPage > 0 ? '₹' + topThree[0].pricePerPage + '/page' : 'Flexible'"></span>
-                  </div>
-                </div>
-
-                <div class="text-center space-y-2.5 py-1">
-                  <div class="relative w-20 h-20 mx-auto">
-                    <div class="w-20 h-20 rounded-full ring-4 ring-amber-400 dark:ring-amber-500 overflow-hidden bg-[var(--bg-surface-muted)] flex items-center justify-center font-bold text-xl text-[var(--text-ink)] shadow-md">
-                      <template x-if="topThree[0].profilePic">
-                        <img :src="topThree[0].profilePic" :alt="topThree[0].name" class="w-full h-full object-cover">
-                      </template>
-                      <template x-if="!topThree[0].profilePic">
-                        <span x-text="(topThree[0].name || 'E').slice(0, 2).toUpperCase()"></span>
-                      </template>
-                    </div>
-                    <span class="absolute -bottom-2 -right-1 text-2xl select-none" title="Gold Trophy">🥇</span>
-                  </div>
-
-                  <div>
-                    <h3 class="font-extrabold text-lg text-[var(--text-ink)] truncate" x-text="topThree[0].name"></h3>
-                    <p class="text-xs text-[var(--text-muted)] line-clamp-1" x-text="topThree[0].bio || 'Lead Editorial Contender'"></p>
-                  </div>
-                </div>
-
-                <div class="flex items-center justify-center gap-3 pt-2 border-t border-[var(--border-color)] text-xs">
-                  <div class="flex items-center gap-1.5 font-bold text-[var(--text-ink)] bg-amber-500/10 px-2.5 py-1 rounded-full">
-                    <span class="text-base">🔥</span>
-                    <span class="tabular-nums font-mono text-sm" x-text="topThree[0].completedCount + ' works completed'"></span>
-                  </div>
-                  <template x-if="topThree[0].averageRating > 0">
-                    <span class="text-amber-500 font-bold" x-text="'★ ' + Number(topThree[0].averageRating).toFixed(1)"></span>
-                  </template>
-                </div>
-              </div>
-
-              <div class="pt-4 flex items-center gap-2">
-                <a :href="'/writers/' + topThree[0]._id" class="btn btn-secondary btn-sm flex-1 text-center">View Profile</a>
-                <a :href="'/deal?writerId=' + topThree[0]._id" class="btn btn-primary btn-sm flex-1 text-center font-bold shadow-xs">Hire #1 Editor</a>
-              </div>
-            </div>
-          </template>
-
-          <!-- Rank 3: Bronze (Displayed Right on desktop) -->
-          <template x-if="topThree[2]">
-            <div class="podium-card podium-card-bronze p-5 flex flex-col justify-between order-3 md:order-3 min-h-[260px]">
-              <div class="space-y-4">
-                <div class="flex items-start justify-between">
-                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 font-bold text-xs shadow-xs">
-                    🥉 3rd Place
-                  </span>
-                  <div class="text-right">
-                    <span class="text-xs font-semibold text-[var(--text-ink)] tabular-nums" x-text="topThree[2].pricePerPage > 0 ? '₹' + topThree[2].pricePerPage + '/page' : 'Flexible'"></span>
-                  </div>
-                </div>
-
-                <div class="text-center space-y-2 py-2">
-                  <div class="w-16 h-16 mx-auto rounded-full ring-2 ring-amber-600/40 dark:ring-amber-600/30 overflow-hidden bg-[var(--bg-surface-muted)] flex items-center justify-center font-bold text-lg text-[var(--text-ink)]">
-                    <template x-if="topThree[2].profilePic">
-                      <img :src="topThree[2].profilePic" :alt="topThree[2].name" class="w-full h-full object-cover">
-                    </template>
-                    <template x-if="!topThree[2].profilePic">
-                      <span x-text="(topThree[2].name || 'E').slice(0, 2).toUpperCase()"></span>
-                    </template>
-                  </div>
-                  <div>
-                    <h3 class="font-bold text-base text-[var(--text-ink)] truncate" x-text="topThree[2].name"></h3>
-                    <p class="text-xs text-[var(--text-muted)] line-clamp-1" x-text="topThree[2].bio || 'Editorial Fellow'"></p>
-                  </div>
-                </div>
-
-                <div class="flex items-center justify-center gap-3 pt-1 border-t border-[var(--border-color)] text-xs">
-                  <div class="flex items-center gap-1 font-semibold text-[var(--text-ink)]">
-                    <span class="text-base">🥉</span>
-                    <span class="tabular-nums" x-text="topThree[2].completedCount + ' completed'"></span>
-                  </div>
-                  <template x-if="topThree[2].averageRating > 0">
-                    <span class="text-amber-500 font-semibold" x-text="'★ ' + Number(topThree[2].averageRating).toFixed(1)"></span>
-                  </template>
-                </div>
-              </div>
-
-              <div class="pt-4 flex items-center gap-2">
-                <a :href="'/writers/' + topThree[2]._id" class="btn btn-secondary btn-sm flex-1 text-center">View Profile</a>
-                <a :href="'/deal?writerId=' + topThree[2]._id" class="btn btn-primary btn-sm flex-1 text-center">Hire Editor</a>
-              </div>
-            </div>
-          </template>
-
-        </div>
-      </section>
-    </template>
-
-    <!-- Filter & Search Toolbar -->
-    <div class="card p-4 sm:p-5">
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        <!-- Live Search Field -->
-        <div class="relative flex-1">
+    <!-- Reduced-Width Search & Filter Bar -->
+    <div class="max-w-2xl mx-auto card p-3 sm:p-4">
+      <div class="space-y-3">
+        <!-- Search Input -->
+        <div class="relative">
           <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none">
-            <%- icon('search', { class: 'w-4 h-4' }) %>
+            <%- icon('search', { class: 'w-3.5 h-3.5' }) %>
           </span>
           <input 
             type="text" 
             x-model="searchQuery"
             placeholder="Search editor by name or keywords..."
-            class="form-input pl-9 pr-8 text-sm w-full"
+            class="form-input pl-8 pr-7 text-xs sm:text-sm w-full py-1.5"
             maxlength="80"
           >
           <button 
@@ -281,17 +68,18 @@
             @click="searchQuery = ''" 
             class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-ink)] p-0.5"
             style="display: none;"
+            aria-label="Clear search"
           >
-            <%- icon('x', { class: 'w-3.5 h-3.5' }) %>
+            <%- icon('x', { class: 'w-3 h-3' }) %>
           </button>
         </div>
 
-        <!-- Filter Pills -->
-        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+        <!-- Filter Chips -->
+        <div class="flex items-center justify-center gap-1.5 flex-wrap text-xs">
           <button 
             type="button" 
             @click="activeFilter = 'all'" 
-            class="px-3 py-1.5 text-xs rounded-full font-medium transition-colors"
+            class="px-2.5 py-1 rounded-full font-medium transition-colors text-[11px]"
             :class="activeFilter === 'all' ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'bg-[var(--bg-surface-muted)] text-[var(--text-muted)] hover:text-[var(--text-ink)]'"
           >
             All Contenders
@@ -299,7 +87,7 @@
           <button 
             type="button" 
             @click="activeFilter = 'podium'" 
-            class="px-3 py-1.5 text-xs rounded-full font-medium transition-colors"
+            class="px-2.5 py-1 rounded-full font-medium transition-colors text-[11px]"
             :class="activeFilter === 'podium' ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'bg-[var(--bg-surface-muted)] text-[var(--text-muted)] hover:text-[var(--text-ink)]'"
           >
             Top 3 🏆
@@ -307,15 +95,15 @@
           <button 
             type="button" 
             @click="activeFilter = 'active'" 
-            class="px-3 py-1.5 text-xs rounded-full font-medium transition-colors"
+            class="px-2.5 py-1 rounded-full font-medium transition-colors text-[11px]"
             :class="activeFilter === 'active' ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'bg-[var(--bg-surface-muted)] text-[var(--text-muted)] hover:text-[var(--text-ink)]'"
           >
-            With Completed Works
+            Completed Works (1+)
           </button>
           <button 
             type="button" 
             @click="activeFilter = 'new'" 
-            class="px-3 py-1.5 text-xs rounded-full font-medium transition-colors"
+            class="px-2.5 py-1 rounded-full font-medium transition-colors text-[11px]"
             :class="activeFilter === 'new' ? 'bg-[var(--primary)] text-[var(--primary-foreground)]' : 'bg-[var(--bg-surface-muted)] text-[var(--text-muted)] hover:text-[var(--text-ink)]'"
           >
             New Contenders (0)
@@ -324,131 +112,304 @@
       </div>
     </div>
 
-    <!-- Complete Top-to-Bottom Leaderboard Table -->
+    <!-- Direct Server-Rendered Top 3 Podium (Directly visible immediately on page load) -->
+    <% if (leaderboard && leaderboard.length >= 3) { 
+        const top1 = leaderboard[0];
+        const top2 = leaderboard[1];
+        const top3 = leaderboard[2];
+    %>
+      <section class="space-y-3 pt-2" x-show="activeFilter === 'all' || activeFilter === 'podium'">
+        <div class="flex items-center justify-between px-1">
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-1.5">
+            <%- icon('trophy', { class: 'w-3.5 h-3.5 text-amber-500' }) %>
+            Podium Leaders
+          </h2>
+          <span class="text-[11px] text-[var(--text-muted)]">Ranks 1 · 2 · 3</span>
+        </div>
+
+        <!-- 3-Column Podium Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+          
+          <!-- Rank 2: Silver (Left) -->
+          <div class="podium-card podium-card-silver p-4 sm:p-5 flex flex-col justify-between order-2 md:order-1 min-h-[250px]">
+            <div class="space-y-3">
+              <div class="flex items-start justify-between">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs">
+                  🥈 2nd Place
+                </span>
+                <span class="text-xs font-semibold text-[var(--text-ink)] tabular-nums">
+                  <%= top2.pricePerPage > 0 ? ('₹' + top2.pricePerPage + '/page') : 'Flexible' %>
+                </span>
+              </div>
+
+              <div class="text-center space-y-1.5 py-1">
+                <div class="w-14 h-14 mx-auto rounded-full ring-2 ring-slate-300 dark:ring-slate-700 overflow-hidden bg-[var(--bg-surface-muted)] flex items-center justify-center font-bold text-base text-[var(--text-ink)]">
+                  <% if (top2.profilePic) { %>
+                    <img src="<%= top2.profilePic %>" alt="<%= top2.name %>" class="w-full h-full object-cover">
+                  <% } else { %>
+                    <span><%= (top2.name || 'E').slice(0, 2).toUpperCase() %></span>
+                  <% } %>
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm sm:text-base text-[var(--text-ink)] truncate"><%= top2.name %></h3>
+                  <p class="text-[11px] text-[var(--text-muted)] line-clamp-1"><%= top2.bio || 'Editorial Fellow' %></p>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-center gap-3 pt-2 border-t border-[var(--border-color)] text-xs">
+                <span class="font-semibold text-[var(--text-ink)]">
+                  🥈 <%= top2.completedCount %> completed
+                </span>
+                <% if (top2.averageRating > 0) { %>
+                  <span class="text-amber-500 font-semibold">★ <%= Number(top2.averageRating).toFixed(1) %></span>
+                <% } %>
+              </div>
+            </div>
+
+            <div class="pt-3 flex items-center gap-2">
+              <a href="/writers/<%= top2._id %>" class="btn btn-secondary btn-sm flex-1 text-center text-xs py-1">Profile</a>
+              <a href="/deal?writerId=<%= top2._id %>" class="btn btn-primary btn-sm flex-1 text-center text-xs py-1">Hire</a>
+            </div>
+          </div>
+
+          <!-- Rank 1: Gold (Center & Tallest) -->
+          <div class="podium-card podium-card-gold p-5 sm:p-6 flex flex-col justify-between order-1 md:order-2 md:-translate-y-2 min-h-[285px]">
+            <div class="space-y-3">
+              <div class="flex items-start justify-between">
+                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-extrabold text-xs shadow-xs border border-amber-300/40">
+                  🥇 #1 Champion
+                </span>
+                <span class="text-xs font-semibold text-[var(--text-ink)] tabular-nums">
+                  <%= top1.pricePerPage > 0 ? ('₹' + top1.pricePerPage + '/page') : 'Flexible' %>
+                </span>
+              </div>
+
+              <div class="text-center space-y-2 py-1">
+                <div class="relative w-16 h-16 mx-auto">
+                  <div class="w-16 h-16 rounded-full ring-4 ring-amber-400 dark:ring-amber-500 overflow-hidden bg-[var(--bg-surface-muted)] flex items-center justify-center font-bold text-lg text-[var(--text-ink)] shadow-md">
+                    <% if (top1.profilePic) { %>
+                      <img src="<%= top1.profilePic %>" alt="<%= top1.name %>" class="w-full h-full object-cover">
+                    <% } else { %>
+                      <span><%= (top1.name || 'E').slice(0, 2).toUpperCase() %></span>
+                    <% } %>
+                  </div>
+                  <span class="absolute -bottom-1.5 -right-1 text-xl select-none">🥇</span>
+                </div>
+
+                <div>
+                  <h3 class="font-extrabold text-base sm:text-lg text-[var(--text-ink)] truncate"><%= top1.name %></h3>
+                  <p class="text-[11px] text-[var(--text-muted)] line-clamp-1"><%= top1.bio || 'Lead Editorial Contender' %></p>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-center gap-3 pt-2 border-t border-[var(--border-color)] text-xs">
+                <div class="font-bold text-[var(--text-ink)] bg-amber-500/10 px-2.5 py-0.5 rounded-full">
+                  🔥 <span class="tabular-nums"><%= top1.completedCount %> works completed</span>
+                </div>
+                <% if (top1.averageRating > 0) { %>
+                  <span class="text-amber-500 font-bold">★ <%= Number(top1.averageRating).toFixed(1) %></span>
+                <% } %>
+              </div>
+            </div>
+
+            <div class="pt-3 flex items-center gap-2">
+              <a href="/writers/<%= top1._id %>" class="btn btn-secondary btn-sm flex-1 text-center text-xs py-1">Profile</a>
+              <a href="/deal?writerId=<%= top1._id %>" class="btn btn-primary btn-sm flex-1 text-center text-xs py-1 font-bold">Hire #1</a>
+            </div>
+          </div>
+
+          <!-- Rank 3: Bronze (Right) -->
+          <div class="podium-card podium-card-bronze p-4 sm:p-5 flex flex-col justify-between order-3 md:order-3 min-h-[250px]">
+            <div class="space-y-3">
+              <div class="flex items-start justify-between">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 font-bold text-xs">
+                  🥉 3rd Place
+                </span>
+                <span class="text-xs font-semibold text-[var(--text-ink)] tabular-nums">
+                  <%= top3.pricePerPage > 0 ? ('₹' + top3.pricePerPage + '/page') : 'Flexible' %>
+                </span>
+              </div>
+
+              <div class="text-center space-y-1.5 py-1">
+                <div class="w-14 h-14 mx-auto rounded-full ring-2 ring-amber-600/40 dark:ring-amber-600/30 overflow-hidden bg-[var(--bg-surface-muted)] flex items-center justify-center font-bold text-base text-[var(--text-ink)]">
+                  <% if (top3.profilePic) { %>
+                    <img src="<%= top3.profilePic %>" alt="<%= top3.name %>" class="w-full h-full object-cover">
+                  <% } else { %>
+                    <span><%= (top3.name || 'E').slice(0, 2).toUpperCase() %></span>
+                  <% } %>
+                </div>
+                <div>
+                  <h3 class="font-bold text-sm sm:text-base text-[var(--text-ink)] truncate"><%= top3.name %></h3>
+                  <p class="text-[11px] text-[var(--text-muted)] line-clamp-1"><%= top3.bio || 'Editorial Fellow' %></p>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-center gap-3 pt-2 border-t border-[var(--border-color)] text-xs">
+                <span class="font-semibold text-[var(--text-ink)]">
+                  🥉 <%= top3.completedCount %> completed
+                </span>
+                <% if (top3.averageRating > 0) { %>
+                  <span class="text-amber-500 font-semibold">★ <%= Number(top3.averageRating).toFixed(1) %></span>
+                <% } %>
+              </div>
+            </div>
+
+            <div class="pt-3 flex items-center gap-2">
+              <a href="/writers/<%= top3._id %>" class="btn btn-secondary btn-sm flex-1 text-center text-xs py-1">Profile</a>
+              <a href="/deal?writerId=<%= top3._id %>" class="btn btn-primary btn-sm flex-1 text-center text-xs py-1">Hire</a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    <% } %>
+
+    <!-- Complete Top-to-Bottom Leaderboard (Directly visible with all editors!) -->
     <div class="card overflow-hidden">
-      <div class="px-5 py-4 border-b border-[var(--border-color)] flex items-center justify-between">
-        <h2 class="text-sm font-semibold text-[var(--text-ink)] flex items-center gap-2">
+      <div class="px-4 sm:px-5 py-3 border-b border-[var(--border-color)] flex items-center justify-between">
+        <h2 class="text-xs sm:text-sm font-semibold text-[var(--text-ink)] flex items-center gap-2">
           <span>Overall Standings</span>
-          <span class="text-xs font-mono text-[var(--text-muted)]" x-text="'(' + filteredEditors.length + ' listed)'"></span>
+          <span class="text-[11px] font-mono text-[var(--text-muted)]">(<%= leaderboard ? leaderboard.length : 0 %> editors)</span>
         </h2>
-        <span class="text-xs text-[var(--text-muted)] hidden sm:inline">Ranked by count of completed works</span>
+        <span class="text-[11px] text-[var(--text-muted)] hidden sm:inline">Ordered by count of completed works</span>
       </div>
 
-      <!-- Empty state if no editors match -->
-      <template x-if="filteredEditors.length === 0">
-        <div class="p-12 text-center space-y-3">
-          <div class="w-12 h-12 mx-auto rounded-full bg-[var(--bg-surface-muted)] flex items-center justify-center text-[var(--text-muted)]">
-            <%- icon('users', { class: 'w-6 h-6' }) %>
-          </div>
-          <h3 class="text-base font-semibold text-[var(--text-ink)]">No editors match current filter</h3>
-          <p class="text-xs text-[var(--text-muted)] max-w-sm mx-auto">
-            Try clearing your search query or reset the filter pill above to view all contenders.
-          </p>
-          <div class="pt-2">
-            <button type="button" @click="searchQuery = ''; activeFilter = 'all'" class="btn btn-secondary btn-sm">Reset Filters</button>
-          </div>
-        </div>
-      </template>
-
-      <!-- Rankings List -->
-      <div class="divide-y divide-[var(--border-color)]">
-        <template x-for="(editor, index) in filteredEditors" :key="editor._id">
-          <div class="leaderboard-row p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            
-            <!-- Left Side: Rank, Trophy & Editor Profile -->
-            <div class="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-              
-              <!-- Rank Position & Trophy -->
-              <div class="w-12 flex-shrink-0 text-center">
-                <template x-if="editor.rank === 1">
-                  <div class="inline-flex flex-col items-center">
-                    <span class="text-xl select-none" title="Rank 1">🥇</span>
-                    <span class="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400">#1</span>
-                  </div>
-                </template>
-                <template x-if="editor.rank === 2">
-                  <div class="inline-flex flex-col items-center">
-                    <span class="text-xl select-none" title="Rank 2">🥈</span>
-                    <span class="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-400">#2</span>
-                  </div>
-                </template>
-                <template x-if="editor.rank === 3">
-                  <div class="inline-flex flex-col items-center">
-                    <span class="text-xl select-none" title="Rank 3">🥉</span>
-                    <span class="text-[10px] font-mono font-bold text-amber-700 dark:text-amber-500">#3</span>
-                  </div>
-                </template>
-                <template x-if="editor.rank > 3">
-                  <div class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[var(--bg-surface-muted)] text-xs font-mono font-semibold text-[var(--text-muted)]">
-                    <span x-text="'#' + editor.rank"></span>
-                  </div>
-                </template>
-              </div>
-
-              <!-- Avatar -->
-              <div class="w-10 h-10 rounded-full bg-[var(--bg-surface-muted)] ring-1 ring-[var(--border-color)] overflow-hidden shrink-0 flex items-center justify-center font-bold text-xs text-[var(--text-ink)]">
-                <template x-if="editor.profilePic">
-                  <img :src="editor.profilePic" :alt="editor.name" class="w-full h-full object-cover">
-                </template>
-                <template x-if="!editor.profilePic">
-                  <span x-text="(editor.name || 'E').slice(0, 2).toUpperCase()"></span>
-                </template>
-              </div>
-
-              <!-- Name & Details -->
-              <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <a :href="'/writers/' + editor._id" class="font-bold text-sm text-[var(--text-ink)] hover:text-[var(--accent)] transition-colors truncate" x-text="editor.name"></a>
-                  <template x-if="editor.trophy">
-                    <span class="text-sm select-none" x-text="editor.trophy"></span>
-                  </template>
+      <!-- Direct Server-Rendered List of ALL Editors -->
+      <div class="divide-y divide-[var(--border-color)]" id="leaderboard-list">
+        <% if (leaderboard && leaderboard.length > 0) { %>
+          <% leaderboard.forEach((editor) => { %>
+            <div 
+              class="leaderboard-row p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+              x-show="isEditorVisible('<%= (editor.name || '').toLowerCase() %>', '<%= (editor.bio || '').toLowerCase() %>', <%= editor.rank %>, <%= editor.completedCount %>)"
+            >
+              <!-- Left: Rank, Avatar & Details -->
+              <div class="flex items-center gap-3 min-w-0 flex-1">
+                
+                <!-- Rank & Trophy -->
+                <div class="w-10 flex-shrink-0 text-center">
+                  <% if (editor.rank === 1) { %>
+                    <span class="text-lg select-none" title="Rank 1">🥇</span>
+                  <% } else if (editor.rank === 2) { %>
+                    <span class="text-lg select-none" title="Rank 2">🥈</span>
+                  <% } else if (editor.rank === 3) { %>
+                    <span class="text-lg select-none" title="Rank 3">🥉</span>
+                  <% } else { %>
+                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-[var(--bg-surface-muted)] text-[11px] font-mono font-bold text-[var(--text-muted)]">
+                      #<%= editor.rank %>
+                    </span>
+                  <% } %>
                 </div>
-                <p class="text-xs text-[var(--text-muted)] truncate max-w-md" x-text="editor.bio || 'Freelance Editor'"></p>
-              </div>
 
-            </div>
+                <!-- Avatar -->
+                <div class="w-9 h-9 rounded-full bg-[var(--bg-surface-muted)] ring-1 ring-[var(--border-color)] overflow-hidden shrink-0 flex items-center justify-center font-bold text-xs text-[var(--text-ink)]">
+                  <% if (editor.profilePic) { %>
+                    <img src="<%= editor.profilePic %>" alt="<%= editor.name %>" class="w-full h-full object-cover">
+                  <% } else { %>
+                    <span><%= (editor.name || 'E').slice(0, 2).toUpperCase() %></span>
+                  <% } %>
+                </div>
 
-            <!-- Middle / Right Side: Completed Works, Ratings & Action -->
-            <div class="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[var(--border-color)]">
-              
-              <!-- Completed Count Badge -->
-              <div class="text-left sm:text-right min-w-[120px]">
-                <template x-if="editor.completedCount > 0">
-                  <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-300/30 text-xs font-semibold">
-                    <span>🔥</span>
-                    <span class="font-mono tabular-nums" x-text="editor.completedCount"></span>
-                    <span>completed</span>
+                <!-- Name & Bio -->
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <a href="/writers/<%= editor._id %>" class="font-bold text-xs sm:text-sm text-[var(--text-ink)] hover:text-[var(--accent)] transition-colors truncate">
+                      <%= editor.name %>
+                    </a>
+                    <% if (editor.trophy) { %>
+                      <span class="text-xs select-none"><%= editor.trophy %></span>
+                    <% } %>
                   </div>
-                </template>
-                <template x-if="editor.completedCount === 0">
-                  <div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[var(--bg-surface-muted)] text-[var(--text-muted)] border border-[var(--border-color)] text-[11px] font-medium">
-                    <span>🌱</span>
-                    <span>New Contender · 0</span>
+                  <p class="text-[11px] text-[var(--text-muted)] truncate max-w-sm sm:max-w-md">
+                    <%= editor.bio || 'Freelance Editor' %>
+                  </p>
+                </div>
+              </div>
+
+              <!-- Right: Completed Count, Rate & Action -->
+              <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-[var(--border-color)]">
+                
+                <!-- Completed Count Badge -->
+                <div class="text-left sm:text-right min-w-[110px]">
+                  <% if (editor.completedCount > 0) { %>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-300/30 text-[11px] font-semibold">
+                      <span>🔥</span>
+                      <span class="font-mono tabular-nums"><%= editor.completedCount %></span>
+                      <span>completed</span>
+                    </span>
+                  <% } else { %>
+                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[var(--bg-surface-muted)] text-[var(--text-muted)] border border-[var(--border-color)] text-[10px] font-medium">
+                      <span>🌱</span>
+                      <span>New Contender · 0</span>
+                    </span>
+                  <% } %>
+                </div>
+
+                <!-- Rate Per Page -->
+                <div class="text-right min-w-[70px]">
+                  <div class="text-xs font-semibold text-[var(--text-ink)] tabular-nums">
+                    <%= editor.pricePerPage > 0 ? ('₹' + editor.pricePerPage) : 'Flexible' %>
                   </div>
-                </template>
-              </div>
+                  <div class="text-[10px] text-[var(--text-muted)]">per page</div>
+                </div>
 
-              <!-- Price Per Page -->
-              <div class="text-right min-w-[80px]">
-                <div class="text-xs font-semibold text-[var(--text-ink)] tabular-nums" x-text="editor.pricePerPage > 0 ? '₹' + editor.pricePerPage : 'Flexible'"></div>
-                <div class="text-[10px] text-[var(--text-muted)]">per page</div>
-              </div>
+                <!-- Action CTA Buttons -->
+                <div class="flex items-center gap-1.5">
+                  <a href="/writers/<%= editor._id %>" class="btn btn-secondary btn-sm text-[11px] py-1 px-2.5" title="View editor profile">Profile</a>
+                  <a href="/deal?writerId=<%= editor._id %>" class="btn btn-primary btn-sm text-[11px] py-1 px-2.5" title="Hire editor for a deal">Hire</a>
+                </div>
 
-              <!-- Action CTA Buttons -->
-              <div class="flex items-center gap-2">
-                <a :href="'/writers/' + editor._id" class="btn btn-secondary btn-sm text-xs py-1 px-2.5" title="View editor profile">Profile</a>
-                <a :href="'/deal?writerId=' + editor._id" class="btn btn-primary btn-sm text-xs py-1 px-2.5" title="Hire editor for a deal">Hire</a>
               </div>
-
             </div>
-
+          <% }) %>
+        <% } else { %>
+          <div class="p-8 text-center text-xs text-[var(--text-muted)]">
+            No editor records found at this time.
           </div>
-        </template>
+        <% } %>
       </div>
 
     </div>
 
   </div>
 </main>
+
+<script nonce="<%= locals.cspNonce || '' %>">
+  function leaderboardApp() {
+    return {
+      searchQuery: '',
+      activeFilter: 'all',
+      lastSync: 'Just now',
+      isRefreshing: false,
+      isEditorVisible(name, bio, rank, completedCount) {
+        if (this.activeFilter === 'podium' && rank > 3) return false;
+        if (this.activeFilter === 'active' && completedCount === 0) return false;
+        if (this.activeFilter === 'new' && completedCount > 0) return false;
+        
+        if (this.searchQuery && this.searchQuery.trim()) {
+          const q = this.searchQuery.trim().toLowerCase();
+          return name.includes(q) || bio.includes(q);
+        }
+        return true;
+      },
+      async fetchLiveLeaderboard() {
+        this.isRefreshing = true;
+        try {
+          const res = await fetch('/api/leaderboard');
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.success) {
+              const now = new Date();
+              this.lastSync = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            }
+          }
+        } catch (e) {
+          console.warn('Leaderboard sync error:', e);
+        } finally {
+          this.isRefreshing = false;
+        }
+      }
+    };
+  }
+</script>
 
 <%- include('partials/footer') %>
