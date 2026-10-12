@@ -123,60 +123,64 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Real Column -->
+        <!-- Implemented Subsystems Column -->
         <div class="card card-ticket p-6 bg-[var(--bg-surface)] space-y-4">
           <div class="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
             <div class="flex items-center gap-2">
               <div class="w-2 h-2 rounded-full bg-[var(--accent)]"></div>
               <h3 class="type-h3 text-base">Implemented Subsystems</h3>
             </div>
-            <span class="badge badge-accent text-[10px]">Live Engine</span>
+            <span class="badge badge-accent text-[10px]">Production Engine</span>
           </div>
           <ul class="space-y-3 text-xs sm:text-sm text-[var(--text-muted)]">
             <li class="flex items-start gap-2.5">
               <span class="text-[var(--accent)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
-              <span><strong>Accounts &amp; Sign-in:</strong> Session-based authentication, Google OAuth, and GitHub OAuth with persistent sessions.</span>
+              <span><strong>Accounts &amp; Multi-Strategy OAuth:</strong> Local bcrypt security, Google OAuth 2.0, and GitHub OAuth with persistent MongoDB sessions.</span>
             </li>
             <li class="flex items-start gap-2.5">
               <span class="text-[var(--accent)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
-              <span><strong>Editor Profiles &amp; Rates:</strong> Upfront per-page pricing, bios, and completed deal counts.</span>
+              <span><strong>Razorpay Gateway &amp; Escrow:</strong> Real order generation, checkout modal, cryptographic HMAC-SHA256 signature verification, and protected funds escrow.</span>
             </li>
             <li class="flex items-start gap-2.5">
               <span class="text-[var(--accent)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
-              <span><strong>Private Storage:</strong> Draft attachments and deliverable drafts uploaded directly to private AWS S3 buckets.</span>
+              <span><strong>Dual-Role Email Receipts:</strong> Automated Nodemailer delivery dispatching branded payment receipts to clients and escrow alerts to editors.</span>
             </li>
             <li class="flex items-start gap-2.5">
               <span class="text-[var(--accent)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
-              <span><strong>Time-Limited Links:</strong> Authenticated, short-lived presigned S3 URLs preventing link leakage.</span>
+              <span><strong>5-Star Ratings &amp; Reviews:</strong> Real client review submissions on completed deals, updating live average editor ratings and public testimonials.</span>
             </li>
             <li class="flex items-start gap-2.5">
               <span class="text-[var(--accent)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
-              <span><strong>Deal Lifecycle:</strong> Deterministic 4-stage state machine (pending, accepted, delivered, completed).</span>
+              <span><strong>Private AWS S3 Storage:</strong> Direct cloud uploads with time-limited pre-signed URLs preventing document leakage.</span>
+            </li>
+            <li class="flex items-start gap-2.5">
+              <span class="text-[var(--accent)] mt-0.5 shrink-0"><%- icon('check', { class: 'w-4 h-4' }) %></span>
+              <span><strong>Deal Lifecycle:</strong> Deterministic state machine (pending, accepted, funded, submitted, completed) with in-app notification alerts.</span>
             </li>
           </ul>
         </div>
 
-        <!-- Simulated Column -->
+        <!-- Demonstration Sandbox Boundaries Column -->
         <div class="card card-ticket p-6 bg-[var(--bg-surface-muted)] space-y-4">
           <div class="flex items-center justify-between border-b border-[var(--border-color)] pb-3">
             <div class="flex items-center gap-2">
               <div class="w-2 h-2 rounded-full bg-[var(--text-muted)]"></div>
-              <h3 class="type-h3 text-base">Prototype Boundaries</h3>
+              <h3 class="type-h3 text-base">Demonstration Sandbox</h3>
             </div>
-            <span class="badge badge-neutral text-[10px]">Demo Prototype</span>
+            <span class="badge badge-neutral text-[10px]">Test Environment</span>
           </div>
           <ul class="space-y-3 text-xs sm:text-sm text-[var(--text-muted)]">
             <li class="flex items-start gap-2.5">
               <span class="text-[var(--text-muted)] mt-0.5 shrink-0"><%- icon('info', { class: 'w-4 h-4' }) %></span>
-              <span><strong>No Real Payments:</strong> No real payments are processed in this demo. Price tallies demonstrate unit multiplication.</span>
+              <span><strong>Razorpay Test Mode:</strong> Live payment flow operates using Razorpay's Test Mode API keys (simulating card/UPI transactions without real bank debits).</span>
             </li>
             <li class="flex items-start gap-2.5">
               <span class="text-[var(--text-muted)] mt-0.5 shrink-0"><%- icon('info', { class: 'w-4 h-4' }) %></span>
-              <span><strong>Ratings &amp; Reviews:</strong> Star ratings and review counters on mock profiles are illustrative display structures.</span>
+              <span><strong>Authentic Reviews:</strong> Reviews can only be submitted by clients who have actually funded and completed a deal with that specific editor.</span>
             </li>
             <li class="flex items-start gap-2.5">
               <span class="text-[var(--text-muted)] mt-0.5 shrink-0"><%- icon('info', { class: 'w-4 h-4' }) %></span>
-              <span><strong>Editor Verification:</strong> Editor credential reviews and verification checks are modeled conceptually.</span>
+              <span><strong>Scope Guardrails:</strong> Strictly enforces editorial review and document annotation; scratch paper writing from zero is blocked by policy.</span>
             </li>
           </ul>
         </div>
