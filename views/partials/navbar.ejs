@@ -19,269 +19,262 @@
   }
 %>
 
-<header 
-  x-data="{ 
-    mobileMenuOpen: false,
-    userDropdownOpen: false,
-    notifDropdownOpen: false,
-    notifications: [],
-    unreadNotifCount: 0,
-    isDark: document.documentElement.classList.contains('dark'),
-    async fetchNotifications() {
-      <% if (currentUser) { %>
-      try {
-        const res = await fetch('/api/notifications');
-        if (res.ok) {
-          const data = await res.json();
-          this.notifications = data.notifications || [];
-          this.unreadNotifCount = data.unreadCount || 0;
-        }
-      } catch (e) {}
-      <% } %>
-    },
-    async markAllRead() {
-      try {
-        await fetch('/api/notifications/read-all', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-        this.unreadNotifCount = 0;
-        this.notifications.forEach(n => { n.read = true; });
-      } catch (e) {}
-    },
-    init() {
-      <% if (currentUser) { %>
-      this.fetchNotifications();
-      <% } %>
-      window.__toggleTheme = (event) => this.toggleTheme(event);
-    },
-    isTogglingTheme: false,
-    toggleTheme(event) {
-      if (this.isTogglingTheme) return;
-      this.isTogglingTheme = true;
-
-      const nextDark = !this.isDark;
-
-      // 1. Calculate transition center coordinates safely from button center
-      let x = window.innerWidth - 48;
-      let y = 32;
-      try {
-        if (event) {
-          const rawTarget = event.currentTarget || event.target;
-          const btn = (rawTarget && typeof rawTarget.closest === 'function')
-            ? (rawTarget.closest('button') || rawTarget)
-            : rawTarget;
-          if (btn && typeof btn.getBoundingClientRect === 'function') {
-            const rect = btn.getBoundingClientRect();
-            x = Math.round(rect.left + rect.width / 2);
-            y = Math.round(rect.top + rect.height / 2);
-          } else if (event.clientX && event.clientY) {
-            x = Math.round(event.clientX);
-            y = Math.round(event.clientY);
-          }
-        }
-      } catch (_) {}
-
-      const endRadius = Math.ceil(Math.hypot(
-        Math.max(x, window.innerWidth - x),
-        Math.max(y, window.innerHeight - y)
-      ));
-
-      // 2. State applicator
-      const applyTheme = () => {
-        this.isDark = nextDark;
-        if (nextDark) {
-          document.documentElement.classList.add('dark');
-          try { localStorage.setItem('theme', 'dark'); } catch (_) {}
-        } else {
-          document.documentElement.classList.remove('dark');
-          try { localStorage.setItem('theme', 'light'); } catch (_) {}
-        }
-      };
-
-      try { this.playSwitchSound(); } catch (_) {}
-
-      // If user prefers reduced motion, toggle immediately without transition
-      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        applyTheme();
-        this.isTogglingTheme = false;
-        return;
-      }
-
-      // 3. Native View Transition API (Chromium 111+, Safari 18+)
-      // Hardware-accelerated circular reveal radiating outwards from the button
-      if (typeof document.startViewTransition === 'function') {
+<script nonce="<%= locals.cspNonce || '' %>">
+  function navbarComponent() {
+    return {
+      mobileMenuOpen: false,
+      userDropdownOpen: false,
+      notifDropdownOpen: false,
+      notifications: [],
+      unreadNotifCount: 0,
+      isDark: document.documentElement.classList.contains('dark'),
+      audioCtx: null,
+      lastHoverTarget: null,
+      lastHoverTime: 0,
+      async fetchNotifications() {
+        <% if (currentUser) { %>
         try {
-          document.documentElement.style.setProperty('--vt-x', `${x}px`);
-          document.documentElement.style.setProperty('--vt-y', `${y}px`);
-          document.documentElement.style.setProperty('--vt-r', `${endRadius}px`);
+          const res = await fetch('/api/notifications');
+          if (res.ok) {
+            const data = await res.json();
+            this.notifications = data.notifications || [];
+            this.unreadNotifCount = data.unreadCount || 0;
+          }
+        } catch (e) {}
+        <% } %>
+      },
+      async markAllRead() {
+        try {
+          await fetch('/api/notifications/read-all', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+          this.unreadNotifCount = 0;
+          this.notifications.forEach(n => { n.read = true; });
+        } catch (e) {}
+      },
+      init() {
+        <% if (currentUser) { %>
+        this.fetchNotifications();
+        <% } %>
+        window.__toggleTheme = (event) => this.toggleTheme(event);
+      },
+      isTogglingTheme: false,
+      toggleTheme(event) {
+        if (this.isTogglingTheme) return;
+        this.isTogglingTheme = true;
 
-          const transition = document.startViewTransition(() => {
-            applyTheme();
+        const nextDark = !this.isDark;
+
+        let x = window.innerWidth - 48;
+        let y = 32;
+        try {
+          if (event) {
+            const rawTarget = event.currentTarget || event.target;
+            const btn = (rawTarget && typeof rawTarget.closest === 'function')
+              ? (rawTarget.closest('button') || rawTarget)
+              : rawTarget;
+            if (btn && typeof btn.getBoundingClientRect === 'function') {
+              const rect = btn.getBoundingClientRect();
+              x = Math.round(rect.left + rect.width / 2);
+              y = Math.round(rect.top + rect.height / 2);
+            } else if (event.clientX && event.clientY) {
+              x = Math.round(event.clientX);
+              y = Math.round(event.clientY);
+            }
+          }
+        } catch (_) {}
+
+        const endRadius = Math.ceil(Math.hypot(
+          Math.max(x, window.innerWidth - x),
+          Math.max(y, window.innerHeight - y)
+        ));
+
+        const applyTheme = () => {
+          this.isDark = nextDark;
+          if (nextDark) {
+            document.documentElement.classList.add('dark');
+            try { localStorage.setItem('theme', 'dark'); } catch (_) {}
+          } else {
+            document.documentElement.classList.remove('dark');
+            try { localStorage.setItem('theme', 'light'); } catch (_) {}
+          }
+        };
+
+        try { this.playSwitchSound(); } catch (_) {}
+
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          applyTheme();
+          this.isTogglingTheme = false;
+          return;
+        }
+
+        if (typeof document.startViewTransition === 'function') {
+          try {
+            document.documentElement.style.setProperty('--vt-x', `${x}px`);
+            document.documentElement.style.setProperty('--vt-y', `${y}px`);
+            document.documentElement.style.setProperty('--vt-r', `${endRadius}px`);
+
+            const transition = document.startViewTransition(() => {
+              applyTheme();
+            });
+
+            if (transition && transition.ready) {
+              transition.ready.then(() => {
+                try {
+                  document.documentElement.animate(
+                    {
+                      clipPath: [
+                        `circle(0px at ${x}px ${y}px)`,
+                        `circle(${endRadius}px at ${x}px ${y}px)`
+                      ]
+                    },
+                    {
+                      duration: 480,
+                      easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+                      pseudoElement: '::view-transition-new(root)'
+                    }
+                  );
+                } catch (_) {}
+              }).catch(() => {});
+            }
+
+            if (transition && transition.finished) {
+              transition.finished.finally(() => {
+                this.isTogglingTheme = false;
+              });
+            } else {
+              setTimeout(() => { this.isTogglingTheme = false; }, 500);
+            }
+            return;
+          } catch (e) {}
+        }
+
+        try {
+          const circle = document.createElement('div');
+          circle.style.position = 'fixed';
+          circle.style.top = `${y}px`;
+          circle.style.left = `${x}px`;
+          circle.style.width = '4px';
+          circle.style.height = '4px';
+          circle.style.borderRadius = '50%';
+          circle.style.backgroundColor = nextDark ? '#0b0f17' : '#ffffff';
+          circle.style.transform = 'translate(-50%, -50%) scale(0)';
+          circle.style.pointerEvents = 'none';
+          circle.style.zIndex = '999999';
+          circle.style.transition = 'transform 440ms cubic-bezier(0.22, 1, 0.36, 1)';
+          document.body.appendChild(circle);
+
+          requestAnimationFrame(() => {
+            circle.style.transform = `translate(-50%, -50%) scale(${(endRadius * 2) / 4})`;
           });
 
-          if (transition && transition.ready) {
-            transition.ready.then(() => {
-              try {
-                document.documentElement.animate(
-                  {
-                    clipPath: [
-                      `circle(0px at ${x}px ${y}px)`,
-                      `circle(${endRadius}px at ${x}px ${y}px)`
-                    ]
-                  },
-                  {
-                    duration: 480,
-                    easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-                    pseudoElement: '::view-transition-new(root)'
-                  }
-                );
-              } catch (_) {}
-            }).catch(() => {});
-          }
-
-          if (transition && transition.finished) {
-            transition.finished.finally(() => {
-              this.isTogglingTheme = false;
-            });
-          } else {
-            setTimeout(() => { this.isTogglingTheme = false; }, 500);
-          }
-          return;
-        } catch (e) {
-          // Fall through to fallback if View Transitions throws
-        }
-      }
-
-      // 4. Smooth expanding circle fallback for browsers without View Transitions
-      try {
-        const circle = document.createElement('div');
-        circle.style.position = 'fixed';
-        circle.style.top = `${y}px`;
-        circle.style.left = `${x}px`;
-        circle.style.width = '4px';
-        circle.style.height = '4px';
-        circle.style.borderRadius = '50%';
-        circle.style.backgroundColor = nextDark ? '#0b0f17' : '#ffffff';
-        circle.style.transform = 'translate(-50%, -50%) scale(0)';
-        circle.style.pointerEvents = 'none';
-        circle.style.zIndex = '999999';
-        circle.style.transition = 'transform 440ms cubic-bezier(0.22, 1, 0.36, 1)';
-        document.body.appendChild(circle);
-
-        requestAnimationFrame(() => {
-          circle.style.transform = `translate(-50%, -50%) scale(${(endRadius * 2) / 4})`;
-        });
-
-        setTimeout(() => {
-          applyTheme();
-          circle.style.opacity = '0';
-          circle.style.transition = 'opacity 180ms ease-out';
           setTimeout(() => {
-            circle.remove();
-            this.isTogglingTheme = false;
-          }, 200);
-        }, 380);
-        return;
-      } catch (_) {
-        applyTheme();
-        this.isTogglingTheme = false;
-      }
-    },
-    lastHoverTarget: null,
-    lastHoverTime: 0,
-    handleNavHover(e) {
-      const target = e.target.closest('a, button, [role="button"]');
-      if (!target || target === this.lastHoverTarget) return;
-      const now = Date.now();
-      if (now - this.lastHoverTime < 50) return; // 50ms throttle
-      this.lastHoverTarget = target;
-      this.lastHoverTime = now;
-      this.playHoverSound();
-    },
-    playHoverSound() {
-      try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
-        if (!this.audioCtx) this.audioCtx = new AudioCtx();
-        if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
-        const ctx = this.audioCtx;
-        const now = ctx.currentTime;
-
-        // Subtle, tactile wooden/glass micro-tick (12ms)
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const filter = ctx.createBiquadFilter();
-
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(1750, now);
-        osc.frequency.exponentialRampToValueAtTime(850, now + 0.012);
-
-        filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(1400, now);
-        filter.Q.value = 2.0;
-
-        // Whisper-quiet volume (0.035) so it feels tactile and never intrusive
-        gain.gain.setValueAtTime(0.035, now);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.012);
-
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start(now);
-        osc.stop(now + 0.014);
-      } catch (e) {}
-    },
-    playSwitchSound() {
-      try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
-        if (!this.audioCtx) this.audioCtx = new AudioCtx();
-        if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
-        const ctx = this.audioCtx;
-        const now = ctx.currentTime;
-
-        // 1. Tactile mechanical snick transient (crisp physical switch click, ~16ms)
-        const clickOsc = ctx.createOscillator();
-        const clickGain = ctx.createGain();
-        const clickFilter = ctx.createBiquadFilter();
-        clickOsc.type = 'triangle';
-        clickOsc.frequency.setValueAtTime(850, now);
-        clickOsc.frequency.exponentialRampToValueAtTime(1450, now + 0.014);
-        clickFilter.type = 'highpass';
-        clickFilter.frequency.setValueAtTime(550, now);
-        clickGain.gain.setValueAtTime(0.09, now);
-        clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.016);
-        clickOsc.connect(clickFilter);
-        clickFilter.connect(clickGain);
-        clickGain.connect(ctx.destination);
-        clickOsc.start(now);
-        clickOsc.stop(now + 0.018);
-
-        // 2. Warm settling resonance (Dark mode = deep cozy tone; Light mode = clean bright chime)
-        const toneOsc = ctx.createOscillator();
-        const toneGain = ctx.createGain();
-        toneOsc.type = 'sine';
-        if (this.isDark) {
-          // Dark mode: soothing deep warm drop (340Hz -> 220Hz)
-          toneOsc.frequency.setValueAtTime(340, now + 0.01);
-          toneOsc.frequency.exponentialRampToValueAtTime(220, now + 0.09);
-          toneGain.gain.setValueAtTime(0.0001, now);
-          toneGain.gain.linearRampToValueAtTime(0.08, now + 0.02);
-          toneGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
-        } else {
-          // Light mode: bright sunlit ascending chime (540Hz -> 760Hz)
-          toneOsc.frequency.setValueAtTime(540, now + 0.01);
-          toneOsc.frequency.exponentialRampToValueAtTime(760, now + 0.09);
-          toneGain.gain.setValueAtTime(0.0001, now);
-          toneGain.gain.linearRampToValueAtTime(0.07, now + 0.02);
-          toneGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+            applyTheme();
+            circle.style.opacity = '0';
+            circle.style.transition = 'opacity 180ms ease-out';
+            setTimeout(() => {
+              circle.remove();
+              this.isTogglingTheme = false;
+            }, 200);
+          }, 380);
+          return;
+        } catch (_) {
+          applyTheme();
+          this.isTogglingTheme = false;
         }
-        toneOsc.connect(toneGain);
-        toneGain.connect(ctx.destination);
-        toneOsc.start(now + 0.01);
-        toneOsc.stop(now + 0.13);
-      } catch (e) {}
-    }
-  }"
+      },
+      handleNavHover(e) {
+        const target = e.target.closest('a, button, [role="button"]');
+        if (!target || target === this.lastHoverTarget) return;
+        const now = Date.now();
+        if (now - this.lastHoverTime < 50) return;
+        this.lastHoverTarget = target;
+        this.lastHoverTime = now;
+        this.playHoverSound();
+      },
+      playHoverSound() {
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          if (!this.audioCtx) this.audioCtx = new AudioCtx();
+          if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+          const ctx = this.audioCtx;
+          const now = ctx.currentTime;
+
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const filter = ctx.createBiquadFilter();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(1750, now);
+          osc.frequency.exponentialRampToValueAtTime(850, now + 0.012);
+
+          filter.type = 'bandpass';
+          filter.frequency.setValueAtTime(1400, now);
+          filter.Q.value = 2.0;
+
+          gain.gain.setValueAtTime(0.035, now);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.012);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.014);
+        } catch (e) {}
+      },
+      playSwitchSound() {
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          if (!this.audioCtx) this.audioCtx = new AudioCtx();
+          if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+          const ctx = this.audioCtx;
+          const now = ctx.currentTime;
+
+          const clickOsc = ctx.createOscillator();
+          const clickGain = ctx.createGain();
+          const clickFilter = ctx.createBiquadFilter();
+          clickOsc.type = 'triangle';
+          clickOsc.frequency.setValueAtTime(850, now);
+          clickOsc.frequency.exponentialRampToValueAtTime(1450, now + 0.014);
+          clickFilter.type = 'highpass';
+          clickFilter.frequency.setValueAtTime(550, now);
+          clickGain.gain.setValueAtTime(0.09, now);
+          clickGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.016);
+          clickOsc.connect(clickFilter);
+          clickFilter.connect(clickGain);
+          clickGain.connect(ctx.destination);
+          clickOsc.start(now);
+          clickOsc.stop(now + 0.018);
+
+          const toneOsc = ctx.createOscillator();
+          const toneGain = ctx.createGain();
+          toneOsc.type = 'sine';
+          if (this.isDark) {
+            toneOsc.frequency.setValueAtTime(340, now + 0.01);
+            toneOsc.frequency.exponentialRampToValueAtTime(220, now + 0.09);
+            toneGain.gain.setValueAtTime(0.0001, now);
+            toneGain.gain.linearRampToValueAtTime(0.08, now + 0.02);
+            toneGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+          } else {
+            toneOsc.frequency.setValueAtTime(540, now + 0.01);
+            toneOsc.frequency.exponentialRampToValueAtTime(760, now + 0.09);
+            toneGain.gain.setValueAtTime(0.0001, now);
+            toneGain.gain.linearRampToValueAtTime(0.07, now + 0.02);
+            toneGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+          }
+          toneOsc.connect(toneGain);
+          toneGain.connect(ctx.destination);
+          toneOsc.start(now + 0.01);
+          toneOsc.stop(now + 0.13);
+        } catch (e) {}
+      }
+    };
+  }
+</script>
+
+<header 
+  x-data="navbarComponent()"
   @mouseover="handleNavHover($event)"
   @mouseleave="lastHoverTarget = null"
   class="navbar-shell sticky top-0 z-40 w-full h-14 sm:h-16"

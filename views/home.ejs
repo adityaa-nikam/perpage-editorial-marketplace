@@ -901,26 +901,32 @@
   <!-- =========================================================================
        2. HOW IT WORKS SECTION (Scroll-driven 2-column sticky layout with fallbacks)
        ========================================================================= -->
+  <script nonce="<%= locals.cspNonce || '' %>">
+    function howItWorksComponent() {
+      return {
+        activeStep: 1,
+        timer: null,
+        init() {
+          this.startAutoSwitch();
+        },
+        startAutoSwitch() {
+          if (this.timer) clearInterval(this.timer);
+          this.timer = setInterval(() => {
+            this.activeStep = this.activeStep === 3 ? 1 : (this.activeStep + 1);
+          }, 1500);
+        },
+        setStep(s) {
+          this.activeStep = s;
+          this.startAutoSwitch();
+        }
+      };
+    }
+  </script>
+
   <section 
     id="how-it-works" 
     class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll"
-    x-data="{
-      activeStep: 1,
-      timer: null,
-      init() {
-        this.startAutoSwitch();
-      },
-      startAutoSwitch() {
-        if (this.timer) clearInterval(this.timer);
-        this.timer = setInterval(() => {
-          this.activeStep = this.activeStep >= 3 ? 1 : this.activeStep + 1;
-        }, 1500);
-      },
-      setStep(s) {
-        this.activeStep = s;
-        this.startAutoSwitch();
-      }
-    }"
+    x-data="howItWorksComponent()"
   >
     <div class="section-header-rule">
       <div class="section-eyebrow">
