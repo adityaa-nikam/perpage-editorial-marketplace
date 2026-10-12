@@ -1522,9 +1522,23 @@ html:not(.dark) .theme-icon-dark {
 }
 
 .stepper-step.is-complete .stepper-indicator {
-  background-color: var(--card);
-  color: var(--foreground);
-  border-color: var(--primary);
+  background-color: #059669;
+  color: #ffffff !important;
+  border-color: #059669;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.dark .stepper-step.is-complete .stepper-indicator,
+[data-theme="dark"] .stepper-step.is-complete .stepper-indicator {
+  background-color: #10b981;
+  color: #ffffff !important;
+  border-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
+.stepper-step.is-complete .stepper-indicator svg {
+  stroke: #ffffff !important;
+  stroke-width: 2.5;
 }
 
 .stepper-label {
@@ -1559,7 +1573,12 @@ html:not(.dark) .theme-icon-dark {
 }
 
 .stepper-step.is-complete .stepper-line {
-  background-color: var(--border-strong);
+  background-color: #059669;
+}
+
+.dark .stepper-step.is-complete .stepper-line,
+[data-theme="dark"] .stepper-step.is-complete .stepper-line {
+  background-color: #10b981;
 }
 
 /* Editor Engagement Protocol Vertical Stepper */

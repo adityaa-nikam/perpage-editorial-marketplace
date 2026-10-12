@@ -246,9 +246,9 @@
       </div>
     </div>
 
-    <!-- Deals Listing (2-Column Grid on md+, Stacked on mobile) -->
+    <!-- Deals Listing (Minimal Tile-Wise List Stack) -->
     <% if (safeDeals.length > 0) { %>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
+      <div class="flex flex-col gap-4">
         <% safeDeals.forEach((deal, index) => { %>
           <% 
             const isIncoming = safeView === 'incoming';
@@ -265,7 +265,7 @@
             const ratePerPage = (deal.pages && deal.totalPrice) ? Math.round(deal.totalPrice / deal.pages) : null;
           %>
 
-          <article class="card card-ticket p-4 sm:p-5 flex flex-col justify-between h-full space-y-4" x-data="{ expanded: false }">
+          <article class="card card-ticket p-4 sm:p-6 flex flex-col justify-between space-y-4" x-data="{ expanded: false }">
             
             <!-- Top Content Container -->
             <div class="space-y-4">
@@ -366,10 +366,10 @@
                         type="button" 
                         @click="openReceiptModal('<%= deal._id %>')" 
                         class="btn btn-secondary btn-sm text-[10px] py-0.5 px-2.5 rounded-full inline-flex items-center gap-1 hover:border-[#0284c7] transition-all cursor-pointer font-mono"
-                        title="Cross-check official Razorpay payment receipt"
+                        title="View official Razorpay payment receipt"
                       >
                         <%- icon('receipt', { class: 'w-2.5 h-2.5 text-[#0284c7]' }) %>
-                        <span><%= isIncoming ? 'Cross-Check Receipt' : 'View Receipt' %></span>
+                        <span>View Receipt</span>
                       </button>
                       <% if (deal.razorpayPaymentId) { %>
                         <span class="text-[10px] font-mono text-[var(--text-muted)] truncate max-w-[110px]" title="<%= deal.razorpayPaymentId %>">
@@ -399,16 +399,6 @@
                       <%- icon('clock', { class: 'w-3 h-3 text-amber-500 shrink-0' }) %>
                       <span>Payment unlocks upon acceptance</span>
                     </span>
-                  <% } else if (isIncoming && deal.paymentStatus === 'paid') { %>
-                    <!-- For editor: direct cross-check receipt button on right -->
-                    <button 
-                      type="button" 
-                      @click="openReceiptModal('<%= deal._id %>')" 
-                      class="btn btn-secondary btn-sm rounded-full text-xs py-1 px-3 inline-flex items-center gap-1.5 cursor-pointer shrink-0 hover:border-[#0284c7]"
-                    >
-                      <%- icon('shield-check', { class: 'w-3.5 h-3.5 text-[#0284c7]' }) %>
-                      <span>Check Receipt</span>
-                    </button>
                   <% } else if (isIncoming && isAccepted && deal.paymentStatus !== 'paid') { %>
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 text-[11px] font-medium border border-blue-200/60 dark:border-blue-800/40">
                       <%- icon('clock', { class: 'w-3 h-3 text-blue-500 shrink-0' }) %>
@@ -438,7 +428,7 @@
                     <!-- Step 1: Request -->
                     <div class="stepper-step <%= isPending ? 'is-current' : 'is-complete' %>" <%= isPending ? 'aria-current="step"' : '' %>>
                       <div class="stepper-indicator">
-                        <% if (isPending) { %>1<% } else { %><%- icon('check', { class: 'w-3 h-3' }) %><% } %>
+                        <% if (isPending) { %>1<% } else { %><%- icon('check', { class: 'w-3 h-3', strokeWidth: 2.5 }) %><% } %>
                       </div>
                       <div class="stepper-label text-[11px] mt-1">Request</div>
                       <div class="stepper-line"></div>
@@ -447,7 +437,7 @@
                     <!-- Step 2: Accepted -->
                     <div class="stepper-step <%= isStep2Done ? 'is-complete' : (isPending ? '' : '') %>">
                       <div class="stepper-indicator">
-                        <% if (isStep2Done) { %><%- icon('check', { class: 'w-3 h-3' }) %><% } else { %>2<% } %>
+                        <% if (isStep2Done) { %><%- icon('check', { class: 'w-3 h-3', strokeWidth: 2.5 }) %><% } else { %>2<% } %>
                       </div>
                       <div class="stepper-label text-[11px] mt-1">Accepted</div>
                       <div class="stepper-line"></div>
@@ -456,7 +446,7 @@
                     <!-- Step 3: Paid -->
                     <div class="stepper-step <%= isStep3Done ? 'is-complete' : (isStep3Active ? 'is-current' : '') %>" <%= isStep3Active ? 'aria-current="step"' : '' %>>
                       <div class="stepper-indicator">
-                        <% if (isStep3Done) { %><%- icon('check', { class: 'w-3 h-3' }) %><% } else { %>3<% } %>
+                        <% if (isStep3Done) { %><%- icon('check', { class: 'w-3 h-3', strokeWidth: 2.5 }) %><% } else { %>3<% } %>
                       </div>
                       <div class="stepper-label text-[11px] mt-1">Paid</div>
                       <div class="stepper-line"></div>
@@ -465,7 +455,7 @@
                     <!-- Step 4: Delivered -->
                     <div class="stepper-step <%= isStep4Done ? 'is-complete' : (isStep4Active ? 'is-current' : '') %>" <%= isStep4Active ? 'aria-current="step"' : '' %>>
                       <div class="stepper-indicator">
-                        <% if (isStep4Done) { %><%- icon('check', { class: 'w-3 h-3' }) %><% } else { %>4<% } %>
+                        <% if (isStep4Done) { %><%- icon('check', { class: 'w-3 h-3', strokeWidth: 2.5 }) %><% } else { %>4<% } %>
                       </div>
                       <div class="stepper-label text-[11px] mt-1">Delivered</div>
                       <div class="stepper-line"></div>
@@ -474,7 +464,7 @@
                     <!-- Step 5: Completed -->
                     <div class="stepper-step <%= isCompleted ? 'is-current is-complete' : '' %>" <%= isCompleted ? 'aria-current="step"' : '' %>>
                       <div class="stepper-indicator">
-                        <% if (isCompleted) { %><%- icon('check', { class: 'w-3 h-3' }) %><% } else { %>5<% } %>
+                        <% if (isCompleted) { %><%- icon('check', { class: 'w-3 h-3', strokeWidth: 2.5 }) %><% } else { %>5<% } %>
                       </div>
                       <div class="stepper-label text-[11px] mt-1">Completed</div>
                     </div>
