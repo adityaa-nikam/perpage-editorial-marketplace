@@ -2915,22 +2915,29 @@ html:not(.dark) .glyph-portal-section {
 
 .gp-front-eyebrow {
   position: absolute;
-  inset: auto 24px calc(100% - var(--gp-word-top, 35%) + 28px);
-  margin: 0;
+  inset: auto 0 calc(100% - var(--gp-word-top, 35%) + 24px);
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  width: 100%;
+  max-width: 44rem;
   text-align: center;
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.05em;
+  font-size: clamp(11px, 2.4vw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
 .gp-front-support {
   position: absolute;
-  inset: calc(var(--gp-word-bottom, 50%) + 24px) 24px auto;
-  margin: 0;
+  inset: calc(var(--gp-word-bottom, 50%) + 22px) 0 auto;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  width: 100%;
+  max-width: 38rem;
   text-align: center;
-  font-size: 15px;
+  font-size: clamp(13px, 2.6vw, 15px);
+  line-height: 1.55;
   font-weight: 400;
   color: var(--text-muted);
 }
@@ -2938,11 +2945,12 @@ html:not(.dark) .glyph-portal-section {
 .dark .gp-front-eyebrow {
   color: var(--muted-foreground);
   letter-spacing: 0.08em;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .dark .gp-front-support {
   color: var(--foreground);
+  opacity: 0.88;
   font-weight: 400;
 }
 
