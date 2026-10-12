@@ -3303,8 +3303,36 @@ html:not(.dark) .glyph-portal-section {
 }
 
 .scroller-mask {
-  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%);
+}
+
+.scroller-blur-edge-left,
+.scroller-blur-edge-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(3rem, 10vw, 7.5rem);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.scroller-blur-edge-left {
+  left: 0;
+  background: linear-gradient(to right, var(--bg-background) 0%, transparent 100%);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  mask-image: linear-gradient(to right, black 20%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 20%, transparent 100%);
+}
+
+.scroller-blur-edge-right {
+  right: 0;
+  background: linear-gradient(to left, var(--bg-background) 0%, transparent 100%);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  mask-image: linear-gradient(to left, black 20%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to left, black 20%, transparent 100%);
 }
 
 .faq-scroller-track:hover .animate-scroll-horizontal,

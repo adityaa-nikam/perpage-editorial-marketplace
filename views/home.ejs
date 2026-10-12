@@ -1431,12 +1431,14 @@
       </p>
     </div>
 
-    <!-- 3 Infinite Horizontal Scrolling Rows -->
+    <!-- 2 Infinite Horizontal Scrolling Rows (Faster & Enhanced Edge Blur) -->
     <div class="flex flex-col gap-6 sm:gap-8 w-full">
 
-      <!-- Row 1: Scrolling Left (Speed: 50s) -->
+      <!-- Row 1: Scrolling Left (Speed: 28s) -->
       <div class="w-full overflow-hidden group relative scroller-mask faq-scroller-track">
-        <div class="flex animate-scroll-horizontal" style="--scroll-duration: 50s;">
+        <div class="scroller-blur-edge-left" aria-hidden="true"></div>
+        <div class="scroller-blur-edge-right" aria-hidden="true"></div>
+        <div class="flex animate-scroll-horizontal" style="--scroll-duration: 28s;">
           <div class="flex items-stretch justify-center shrink-0 gap-6 px-3">
             <div class="faq-scroller-card">
               <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Will an editor write my document?</h3>
@@ -1456,6 +1458,12 @@
                 You can upload document drafts, reports, and editing instructions in PDF format (up to 10MB) directly through the commission deal form.
               </p>
             </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">What authentication methods are available?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                You can register and sign in using a standard email and password (with bcrypt password hashing) or authenticate via Google or GitHub OAuth.
+              </p>
+            </div>
           </div>
           <!-- Duplicate for seamless infinite loop -->
           <div class="flex items-stretch justify-center shrink-0 gap-6 px-3" aria-hidden="true">
@@ -1477,18 +1485,32 @@
                 You can upload document drafts, reports, and editing instructions in PDF format (up to 10MB) directly through the commission deal form.
               </p>
             </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">What authentication methods are available?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                You can register and sign in using a standard email and password (with bcrypt password hashing) or authenticate via Google or GitHub OAuth.
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Row 2: Scrolling Right (Speed: 42s) -->
+      <!-- Row 2: Scrolling Right (Speed: 25s) -->
       <div class="w-full overflow-hidden group relative scroller-mask faq-scroller-track">
-        <div class="flex animate-scroll-horizontal-reverse" style="--scroll-duration: 42s;">
+        <div class="scroller-blur-edge-left" aria-hidden="true"></div>
+        <div class="scroller-blur-edge-right" aria-hidden="true"></div>
+        <div class="flex animate-scroll-horizontal-reverse" style="--scroll-duration: 25s;">
           <div class="flex items-stretch justify-center shrink-0 gap-6 px-3">
             <div class="faq-scroller-card">
               <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Is this allowed by my college?</h3>
               <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
                 You should always check your institution's specific honor code and academic integrity policies regarding external editing and feedback. PerPage is a demonstration software project designed to showcase peer editing workflows.
+              </p>
+            </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Is this a live service?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                No. PerPage is a demonstration project built to showcase a full-stack editing platform. No real payments are processed in this demo. Built for document editing workflow evaluation.
               </p>
             </div>
             <div class="faq-scroller-card">
@@ -1498,9 +1520,9 @@
               </p>
             </div>
             <div class="faq-scroller-card">
-              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">How do I receive and download my edited document?</h3>
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Is my draft private?</h3>
               <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                When the editor finishes, they upload the edited document and feedback through their editor portal. You can download the file from your dashboard via time-limited download links.
+                Yes. Your uploaded drafts and editing submissions are kept private between you and your chosen editor, delivered through private storage with time-limited links.
               </p>
             </div>
           </div>
@@ -1513,62 +1535,21 @@
               </p>
             </div>
             <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Is this a live service?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                No. PerPage is a demonstration project built to showcase a full-stack editing platform. No real payments are processed in this demo. Built for document editing workflow evaluation.
+              </p>
+            </div>
+            <div class="faq-scroller-card">
               <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Can an editor decline an editing request?</h3>
               <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
                 Yes. All requests enter an initial pending review state. Editors review document requirements and deadlines to accept or decline before committing.
               </p>
             </div>
             <div class="faq-scroller-card">
-              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">How do I receive and download my edited document?</h3>
-              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                When the editor finishes, they upload the edited document and feedback through their editor portal. You can download the file from your dashboard via time-limited download links.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Row 3: Scrolling Left (Speed: 55s) -->
-      <div class="w-full overflow-hidden group relative scroller-mask faq-scroller-track">
-        <div class="flex animate-scroll-horizontal" style="--scroll-duration: 55s;">
-          <div class="flex items-stretch justify-center shrink-0 gap-6 px-3">
-            <div class="faq-scroller-card">
-              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Is this a live service?</h3>
-              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                No. PerPage is a demonstration project built to showcase a full-stack editing platform. No real payments are processed in this demo. Built for document editing workflow evaluation.
-              </p>
-            </div>
-            <div class="faq-scroller-card">
               <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Is my draft private?</h3>
               <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
                 Yes. Your uploaded drafts and editing submissions are kept private between you and your chosen editor, delivered through private storage with time-limited links.
-              </p>
-            </div>
-            <div class="faq-scroller-card">
-              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">What authentication methods are available?</h3>
-              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                You can register and sign in using a standard email and password (with bcrypt password hashing) or authenticate via Google or GitHub OAuth.
-              </p>
-            </div>
-          </div>
-          <!-- Duplicate for seamless infinite loop -->
-          <div class="flex items-stretch justify-center shrink-0 gap-6 px-3" aria-hidden="true">
-            <div class="faq-scroller-card">
-              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Is this a live service?</h3>
-              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                No. PerPage is a demonstration project built to showcase a full-stack editing platform. No real payments are processed in this demo. Built for document editing workflow evaluation.
-              </p>
-            </div>
-            <div class="faq-scroller-card">
-              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Is my draft private?</h3>
-              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                Yes. Your uploaded drafts and editing submissions are kept private between you and your chosen editor, delivered through private storage with time-limited links.
-              </p>
-            </div>
-            <div class="faq-scroller-card">
-              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">What authentication methods are available?</h3>
-              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
-                You can register and sign in using a standard email and password (with bcrypt password hashing) or authenticate via Google or GitHub OAuth.
               </p>
             </div>
           </div>
