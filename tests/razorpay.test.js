@@ -89,19 +89,34 @@ describe('Razorpay Demo Payment Integration Tests', () => {
       const res = await fetch(`${baseUrl}/payment/create-order`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dealId: '64f1a2b3c4d5e6f7a8b9d001' })
+        body: JSON.stringify({ dealId: '64f1a2b3c4d5e6f7a8b9d006' })
       });
       assert.equal(res.status, 401);
     });
 
-    it('7. POST /payment/create-order succeeds with authenticated mock user', async () => {
+    it('7. POST /payment/create-order rejects payment when deal is pending editor acceptance', async () => {
       const res = await fetch(`${baseUrl}/payment/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-mock-user': '64f1a2b3c4d5e6f7a8b9c0d9'
         },
-        body: JSON.stringify({ dealId: '64f1a2b3c4d5e6f7a8b9d001' })
+        body: JSON.stringify({ dealId: '64f1a2b3c4d5e6f7a8b9d001' }) // pending deal
+      });
+
+      assert.equal(res.status, 400);
+      const data = await res.json();
+      assert.equal(data.error, 'not_accepted');
+    });
+
+    it('8. POST /payment/create-order succeeds for accepted deal with authenticated mock user', async () => {
+      const res = await fetch(`${baseUrl}/payment/create-order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-mock-user': '64f1a2b3c4d5e6f7a8b9c0d9'
+        },
+        body: JSON.stringify({ dealId: '64f1a2b3c4d5e6f7a8b9d006' }) // accepted deal
       });
 
       assert.equal(res.status, 200);
@@ -111,7 +126,7 @@ describe('Razorpay Demo Payment Integration Tests', () => {
       assert.equal(data.keyId, RAZORPAY_KEY_ID);
     });
 
-    it('8. POST /payment/verify successfully verifies signature', async () => {
+    it('9. POST /payment/verify successfully verifies signature and activates deal', async () => {
       const orderId = 'order_test_verify_999';
       const paymentId = 'pay_test_verify_888';
       const signature = crypto
@@ -126,7 +141,7 @@ describe('Razorpay Demo Payment Integration Tests', () => {
           'x-mock-user': '64f1a2b3c4d5e6f7a8b9c0d9'
         },
         body: JSON.stringify({
-          dealId: '64f1a2b3c4d5e6f7a8b9d001',
+          dealId: '64f1a2b3c4d5e6f7a8b9d006',
           razorpay_order_id: orderId,
           razorpay_payment_id: paymentId,
           razorpay_signature: signature

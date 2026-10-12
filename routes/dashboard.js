@@ -30,6 +30,8 @@ export const NOTICE_MAP = {
   completed: { type: 'success', text: 'Deal marked as completed. You have confirmed receipt of the edited document.' },
   unauthorized: { type: 'error', text: 'You are not authorized to complete this deal.' },
   not_delivered: { type: 'error', text: 'This deal cannot be completed until an edited file has been delivered.' },
+  unpaid_deliverable: { type: 'error', text: 'Work cannot be delivered until the client completes payment for this accepted order.' },
+  not_accepted: { type: 'error', text: 'Payment can only be processed after the editor accepts your order request.' },
   invalid_deal: { type: 'error', text: 'Invalid deal identifier provided.' }
 };
 

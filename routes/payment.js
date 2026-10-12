@@ -70,6 +70,28 @@ router.post('/create-order', checkAuthenticated, async (req, res) => {
       return res.status(400).json({ error: 'already_paid', message: 'This deal is already marked as paid.' });
     }
 
+    // Workflow Guard: Editor must accept the order before client can pay
+    if (deal.status === 'pending') {
+      return res.status(400).json({ 
+        error: 'not_accepted', 
+        message: 'This order request has not been accepted by the editor yet. Payment is only unlocked once the editor accepts your request.' 
+      });
+    }
+
+    if (deal.status === 'rejected') {
+      return res.status(400).json({ 
+        error: 'declined', 
+        message: 'This order request was declined and cannot be paid for.' 
+      });
+    }
+
+    if (deal.status !== 'accepted' && deal.status !== 'in-progress') {
+      return res.status(400).json({ 
+        error: 'invalid_status', 
+        message: 'Payment cannot be processed for orders in this state.' 
+      });
+    }
+
     // Create Razorpay Order
     const order = await createRazorpayOrder({
       amount: deal.totalPrice,
@@ -132,6 +154,9 @@ router.post('/verify', checkAuthenticated, async (req, res) => {
       deal = await Deal.findById(dealId).populate('userId', 'name email').populate('writerId', 'name email');
       if (deal) {
         deal.paymentStatus = 'paid';
+        if (deal.status === 'accepted') {
+          deal.status = 'in-progress';
+        }
         deal.razorpayPaymentId = razorpay_payment_id;
         deal.razorpayOrderId = razorpay_order_id || deal.razorpayOrderId;
         deal.razorpaySignature = razorpay_signature || '';
@@ -142,6 +167,9 @@ router.post('/verify', checkAuthenticated, async (req, res) => {
       deal = MOCK_DEALS.find(d => d._id.toString() === dealId.toString());
       if (deal) {
         deal.paymentStatus = 'paid';
+        if (deal.status === 'accepted') {
+          deal.status = 'in-progress';
+        }
         deal.razorpayPaymentId = razorpay_payment_id;
         deal.paidAt = new Date();
       }

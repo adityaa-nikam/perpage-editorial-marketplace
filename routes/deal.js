@@ -45,12 +45,30 @@ export const MOCK_DEALS = [
     userNotes: 'Systematic literature review synthesizing attention mechanisms in large language model architectures. Include formal mathematical notation and citations.',
     writerNotes: '',
     status: 'accepted',
-    paymentStatus: 'unpaid',
+    paymentStatus: 'paid',
+    razorpayPaymentId: 'pay_demo_10002_seed',
+    paidAt: new Date(Date.now() - 3600000 * 18),
     fileLinks: ['uploads/e2a1b3c4-0002-4000-8000-000000000002_transformer_architectures_spec.pdf'],
     submissionFiles: [],
     finalFileLink: null,
     createdAt: new Date(Date.now() - 3600000 * 24),
     acceptedAt: new Date(Date.now() - 3600000 * 20)
+  },
+  {
+    _id: new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9d006'),
+    userId: new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9c0d9'),
+    writerId: new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9c0d1'),
+    pages: 6,
+    totalPrice: 900,
+    userNotes: 'Systematic literature review synthesizing attention mechanisms in large language model architectures.',
+    writerNotes: '',
+    status: 'accepted',
+    paymentStatus: 'unpaid',
+    fileLinks: ['uploads/e2a1b3c4-0006-4000-8000-000000000006_attention_mechanisms.pdf'],
+    submissionFiles: [],
+    finalFileLink: null,
+    createdAt: new Date(Date.now() - 3600000 * 12),
+    acceptedAt: new Date(Date.now() - 3600000 * 8)
   },
   {
     _id: new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9d003'),
@@ -371,6 +389,11 @@ router.post('/upload-final', checkAuthenticated, dealActionLimiter, finalMulterM
     // Status must be 'accepted' or 'in-progress'
     if (deal.status !== 'accepted' && deal.status !== 'in-progress') {
       return res.redirect('/dashboard?error=invalid_state');
+    }
+
+    // Payment Guard: Client must complete payment before editor can deliver final document!
+    if (deal.paymentStatus !== 'paid') {
+      return res.redirect('/dashboard?error=unpaid_deliverable');
     }
 
     const file = req.file;
@@ -821,6 +844,23 @@ router.post('/accept/:id', checkAuthenticated, async (req, res) => {
       await deal.save();
     }
 
+    // Notify client that editor has accepted the order and payment is now ready
+    if (deal.userId) {
+      try {
+        await createNotification({
+          recipient: deal.userId,
+          sender: currentUserId,
+          dealId: deal._id,
+          type: 'order_accepted',
+          title: 'Order Request Accepted!',
+          message: `${req.user?.name || 'Your editor'} accepted your editing request. Please complete payment so they can begin working on your manuscript.`,
+          link: '/dashboard?view=orders&status=active'
+        });
+      } catch (notifErr) {
+        console.error('Accept notification error:', notifErr.message);
+      }
+    }
+
     res.redirect('/dashboard?accepted=1');
   } catch (err) {
     console.error('Deal accept error:', err.message);
@@ -863,6 +903,23 @@ router.post('/reject/:id', checkAuthenticated, async (req, res) => {
     deal.status = 'rejected';
     if (isDbConnected) {
       await deal.save();
+    }
+
+    // Notify client that editor declined the request
+    if (deal.userId) {
+      try {
+        await createNotification({
+          recipient: deal.userId,
+          sender: currentUserId,
+          dealId: deal._id,
+          type: 'order_declined',
+          title: 'Order Request Declined',
+          message: `${req.user?.name || 'The editor'} was unable to accept your request at this time. No payment was charged.`,
+          link: '/dashboard?view=orders&status=declined'
+        });
+      } catch (notifErr) {
+        console.error('Decline notification error:', notifErr.message);
+      }
     }
 
     res.redirect('/dashboard?rejected=1');

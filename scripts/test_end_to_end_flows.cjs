@@ -198,6 +198,37 @@ async function runEndToEndTests() {
   assert.ok(acceptRes.headers.get('location').includes('accepted=1'), 'Redirects with accepted=1');
   console.log('  ✔ Editor accepted deal -> status moved to Accepted');
 
+  // 3g-2. Client pays for the accepted order via Razorpay
+  const crypto = require('crypto');
+  const secret = process.env.RAZORPAY_KEY_SECRET || '';
+  const payOrderRes = await clientUser.fetch(`${BASE_URL}/payment/create-order`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ dealId: createdDealId })
+  });
+  assert.equal(payOrderRes.status, 200, 'Client create-order returns 200 for accepted deal');
+  const payOrderData = await payOrderRes.json();
+  assert.equal(payOrderData.success, true);
+
+  const mockPayId = 'pay_e2e_test_' + Date.now();
+  const mockSig = crypto
+    .createHmac('sha256', secret)
+    .update(`${payOrderData.order.id}|${mockPayId}`)
+    .digest('hex');
+
+  const verifyPayRes = await clientUser.fetch(`${BASE_URL}/payment/verify`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      dealId: createdDealId,
+      razorpay_order_id: payOrderData.order.id,
+      razorpay_payment_id: mockPayId,
+      razorpay_signature: mockSig
+    })
+  });
+  assert.equal(verifyPayRes.status, 200, 'Payment verify returns 200');
+  console.log('  ✔ Client completed payment -> deal moved to Paid & In Progress');
+
   // 3h. Editor uploads final deliverable document
   const finalBoundary = '----WebKitFormBoundaryFinalTest';
   const finalBody = `--${finalBoundary}\r\nContent-Disposition: form-data; name="dealId"\r\n\r\n${createdDealId}\r\n--${finalBoundary}\r\nContent-Disposition: form-data; name="finalPdf"; filename="edited_draft.pdf"\r\nContent-Type: application/pdf\r\n\r\n${VALID_PDF.toString('binary')}\r\n--${finalBoundary}--\r\n`;
