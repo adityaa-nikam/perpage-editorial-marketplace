@@ -779,7 +779,7 @@
           if (!this.isPaused && this.isVisible) {
             this.activeStep = this.activeStep >= 3 ? 1 : this.activeStep + 1;
           }
-        }, 1800);
+        }, 1500);
       },
       setStep(s) {
         this.activeStep = s;
@@ -1417,259 +1417,161 @@
 
 
   <!-- =========================================================================
-       6. FAQ SECTION (ACCESSIBLE ALPINE ACCORDION)
+       6. FAQ SECTION (HORIZONTAL INFINITE MARQUEE SCROLLER)
        ========================================================================= -->
-  <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
-    <div class="section-header text-center max-w-xl mx-auto mb-10">
-      <div class="section-eyebrow mb-2">
+  <section class="w-full py-12 sm:py-16 overflow-hidden reveal-on-scroll" aria-label="Frequently Asked Questions">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-3 mb-10 sm:mb-12">
+      <div class="section-eyebrow justify-center mb-1">
         <span class="eyebrow-caret">^</span>
         <span class="eyebrow-label">Common Questions</span>
       </div>
-      <h2 class="type-h2">Frequently Asked Questions</h2>
-      <p class="type-body text-[var(--text-muted)]">
-        Clear answers on pricing, file formats, and platform mechanics.
+      <h2 class="type-h1 text-3xl sm:text-4xl text-[var(--text-ink)]">Frequently Asked Questions</h2>
+      <p class="type-body text-sm sm:text-base text-[var(--text-muted)] max-w-xl mx-auto">
+        Have questions? We've got answers. Explore how document editing, upfront pricing, and draft delivery work on PerPage.
       </p>
     </div>
 
-    <div x-data="{ active: null }" class="accordion">
-      
-      <!-- FAQ 1 -->
-      <div class="accordion-item">
-        <button 
-          type="button"
-          @click="active = (active === 1 ? null : 1)"
-          :aria-expanded="(active === 1).toString()"
-          aria-controls="faq-ans-1"
-          id="faq-btn-1"
-          class="accordion-trigger"
-        >
-          <span>How is pricing calculated for editing?</span>
-          <span :class="active === 1 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
-            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
-          </span>
-        </button>
-        <div 
-          x-show="active === 1" 
-          x-transition:enter="transition ease-out duration-150"
-          x-transition:enter-start="opacity-0 -translate-y-1"
-          x-transition:enter-end="opacity-100 translate-y-0"
-          id="faq-ans-1"
-          role="region"
-          aria-labelledby="faq-btn-1"
-          class="accordion-content"
-          style="display: none;"
-        >
-          Pricing is calculated upfront based on the assigned editor's agreed per-page rate multiplied by the total page count you request (Pages × Rate per Page). You review the exact total before confirming the deal.
+    <!-- 3 Infinite Horizontal Scrolling Rows -->
+    <div class="flex flex-col gap-6 sm:gap-8 w-full">
+
+      <!-- Row 1: Scrolling Left (Speed: 50s) -->
+      <div class="w-full overflow-hidden group relative scroller-mask faq-scroller-track">
+        <div class="flex animate-scroll-horizontal" style="--scroll-duration: 50s;">
+          <div class="flex items-stretch justify-center shrink-0 gap-6 px-3">
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Will an editor write my document?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                No. Editors work on text you wrote. They provide proofreading, copy editing, and constructive feedback on your own draft—they do not write documents from scratch.
+              </p>
+            </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">How is pricing calculated for editing?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                Pricing is calculated upfront based on your chosen editor's agreed per-page rate multiplied by page count (Pages × Rate per Page). You review the exact total before confirming.
+              </p>
+            </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">What file formats can I upload with my draft?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                You can upload document drafts, reports, and editing instructions in PDF format (up to 10MB) directly through the commission deal form.
+              </p>
+            </div>
+          </div>
+          <!-- Duplicate for seamless infinite loop -->
+          <div class="flex items-stretch justify-center shrink-0 gap-6 px-3" aria-hidden="true">
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Will an editor write my document?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                No. Editors work on text you wrote. They provide proofreading, copy editing, and constructive feedback on your own draft—they do not write documents from scratch.
+              </p>
+            </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">How is pricing calculated for editing?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                Pricing is calculated upfront based on your chosen editor's agreed per-page rate multiplied by page count (Pages × Rate per Page). You review the exact total before confirming.
+              </p>
+            </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">What file formats can I upload with my draft?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                You can upload document drafts, reports, and editing instructions in PDF format (up to 10MB) directly through the commission deal form.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- FAQ 2 -->
-      <div class="accordion-item">
-        <button 
-          type="button"
-          @click="active = (active === 2 ? null : 2)"
-          :aria-expanded="(active === 2).toString()"
-          aria-controls="faq-ans-2"
-          id="faq-btn-2"
-          class="accordion-trigger"
-        >
-          <span>What file types can I upload with my draft?</span>
-          <span :class="active === 2 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
-            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
-          </span>
-        </button>
-        <div 
-          x-show="active === 2" 
-          x-transition:enter="transition ease-out duration-150"
-          x-transition:enter-start="opacity-0 -translate-y-1"
-          x-transition:enter-end="opacity-100 translate-y-0"
-          id="faq-ans-2"
-          role="region"
-          aria-labelledby="faq-btn-2"
-          class="accordion-content"
-          style="display: none;"
-        >
-          You can upload document drafts, reports, and editing instructions in PDF format (up to 10MB) directly through the commission form.
+      <!-- Row 2: Scrolling Right (Speed: 42s) -->
+      <div class="w-full overflow-hidden group relative scroller-mask faq-scroller-track">
+        <div class="flex animate-scroll-horizontal-reverse" style="--scroll-duration: 42s;">
+          <div class="flex items-stretch justify-center shrink-0 gap-6 px-3">
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Is this allowed by my college?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                You should always check your institution's specific honor code and academic integrity policies regarding external editing and feedback. PerPage is a demonstration software project designed to showcase peer editing workflows.
+              </p>
+            </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Can an editor decline an editing request?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                Yes. All requests enter an initial pending review state. Editors review document requirements and deadlines to accept or decline before committing.
+              </p>
+            </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">How do I receive and download my edited document?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                When the editor finishes, they upload the edited document and feedback through their editor portal. You can download the file from your dashboard via time-limited download links.
+              </p>
+            </div>
+          </div>
+          <!-- Duplicate for seamless infinite loop -->
+          <div class="flex items-stretch justify-center shrink-0 gap-6 px-3" aria-hidden="true">
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Is this allowed by my college?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                You should always check your institution's specific honor code and academic integrity policies regarding external editing and feedback. PerPage is a demonstration software project designed to showcase peer editing workflows.
+              </p>
+            </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Can an editor decline an editing request?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                Yes. All requests enter an initial pending review state. Editors review document requirements and deadlines to accept or decline before committing.
+              </p>
+            </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">How do I receive and download my edited document?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                When the editor finishes, they upload the edited document and feedback through their editor portal. You can download the file from your dashboard via time-limited download links.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- FAQ 3 -->
-      <div class="accordion-item">
-        <button 
-          type="button"
-          @click="active = (active === 3 ? null : 3)"
-          :aria-expanded="(active === 3).toString()"
-          aria-controls="faq-ans-3"
-          id="faq-btn-3"
-          class="accordion-trigger"
-        >
-          <span>Can an editor decline an editing request?</span>
-          <span :class="active === 3 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
-            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
-          </span>
-        </button>
-        <div 
-          x-show="active === 3" 
-          x-transition:enter="transition ease-out duration-150"
-          x-transition:enter-start="opacity-0 -translate-y-1"
-          x-transition:enter-end="opacity-100 translate-y-0"
-          id="faq-ans-3"
-          role="region"
-          aria-labelledby="faq-btn-3"
-          class="accordion-content"
-          style="display: none;"
-        >
-          Yes. All requests initially enter a pending review state. Editors review the document requirements and timeline to accept or decline before committing to the work.
-        </div>
-      </div>
-
-      <!-- FAQ 4 -->
-      <div class="accordion-item">
-        <button 
-          type="button"
-          @click="active = (active === 4 ? null : 4)"
-          :aria-expanded="(active === 4).toString()"
-          aria-controls="faq-ans-4"
-          id="faq-btn-4"
-          class="accordion-trigger"
-        >
-          <span>How do I receive and download my edited document?</span>
-          <span :class="active === 4 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
-            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
-          </span>
-        </button>
-        <div 
-          x-show="active === 4" 
-          x-transition:enter="transition ease-out duration-150"
-          x-transition:enter-start="opacity-0 -translate-y-1"
-          x-transition:enter-end="opacity-100 translate-y-0"
-          id="faq-ans-4"
-          role="region"
-          aria-labelledby="faq-btn-4"
-          class="accordion-content"
-          style="display: none;"
-        >
-          When the editor finishes, they upload the edited document and feedback through their editor portal. You can download the file from your dashboard via time-limited download links.
-        </div>
-      </div>
-
-      <!-- FAQ 5: Required Guardrail FAQ - Will an editor write my document? -->
-      <div class="accordion-item">
-        <button 
-          type="button"
-          @click="active = (active === 5 ? null : 5)"
-          :aria-expanded="(active === 5).toString()"
-          aria-controls="faq-ans-5"
-          id="faq-btn-5"
-          class="accordion-trigger"
-        >
-          <span>Will an editor write my document?</span>
-          <span :class="active === 5 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
-            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
-          </span>
-        </button>
-        <div 
-          x-show="active === 5" 
-          x-transition:enter="transition ease-out duration-150"
-          x-transition:enter-start="opacity-0 -translate-y-1"
-          x-transition:enter-end="opacity-100 translate-y-0"
-          id="faq-ans-5"
-          role="region"
-          aria-labelledby="faq-btn-5"
-          class="accordion-content"
-          style="display: none;"
-        >
-          No. Editors work on text you wrote. They provide proofreading, copy editing, and constructive feedback on your own draft—they do not write documents from scratch.
-        </div>
-      </div>
-
-      <!-- FAQ 6: Required Guardrail FAQ - Is this allowed by my college? -->
-      <div class="accordion-item">
-        <button 
-          type="button"
-          @click="active = (active === 6 ? null : 6)"
-          :aria-expanded="(active === 6).toString()"
-          aria-controls="faq-ans-6"
-          id="faq-btn-6"
-          class="accordion-trigger"
-        >
-          <span>Is this allowed by my college?</span>
-          <span :class="active === 6 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
-            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
-          </span>
-        </button>
-        <div 
-          x-show="active === 6" 
-          x-transition:enter="transition ease-out duration-150"
-          x-transition:enter-start="opacity-0 -translate-y-1"
-          x-transition:enter-end="opacity-100 translate-y-0"
-          id="faq-ans-6"
-          role="region"
-          aria-labelledby="faq-btn-6"
-          class="accordion-content"
-          style="display: none;"
-        >
-          You should always check your institution's specific honor code and academic integrity policies regarding external editing and feedback. PerPage is a demonstration software project designed to showcase peer editing workflows.
-        </div>
-      </div>
-
-      <!-- FAQ 7: Required FAQ - Demonstration Disclaimer -->
-      <div class="accordion-item">
-        <button 
-          type="button"
-          @click="active = (active === 7 ? null : 7)"
-          :aria-expanded="(active === 7).toString()"
-          aria-controls="faq-ans-7"
-          id="faq-btn-7"
-          class="accordion-trigger"
-        >
-          <span>Is this a live service?</span>
-          <span :class="active === 7 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
-            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
-          </span>
-        </button>
-        <div 
-          x-show="active === 7" 
-          x-transition:enter="transition ease-out duration-150"
-          x-transition:enter-start="opacity-0 -translate-y-1"
-          x-transition:enter-end="opacity-100 translate-y-0"
-          id="faq-ans-7"
-          role="region"
-          aria-labelledby="faq-btn-7"
-          class="accordion-content"
-          style="display: none;"
-        >
-          No. PerPage is a demonstration project built to showcase a full-stack editing platform. No real payments are processed in this demo.
-        </div>
-      </div>
-
-      <!-- FAQ 8: Auth Methods -->
-      <div class="accordion-item">
-        <button 
-          type="button"
-          @click="active = (active === 8 ? null : 8)"
-          :aria-expanded="(active === 8).toString()"
-          aria-controls="faq-ans-8"
-          id="faq-btn-8"
-          class="accordion-trigger"
-        >
-          <span>What authentication methods are available?</span>
-          <span :class="active === 8 ? 'rotate-180' : ''" class="transition-transform duration-200 text-[var(--text-muted)] shrink-0 ml-4">
-            <%- icon('chevron-down', { class: 'w-4 h-4' }) %>
-          </span>
-        </button>
-        <div 
-          x-show="active === 8" 
-          x-transition:enter="transition ease-out duration-150"
-          x-transition:enter-start="opacity-0 -translate-y-1"
-          x-transition:enter-end="opacity-100 translate-y-0"
-          id="faq-ans-8"
-          role="region"
-          aria-labelledby="faq-btn-8"
-          class="accordion-content"
-          style="display: none;"
-        >
-          You can register and sign in using a standard email address and password (with bcrypt password hashing) or authenticate via Google or GitHub OAuth.
+      <!-- Row 3: Scrolling Left (Speed: 55s) -->
+      <div class="w-full overflow-hidden group relative scroller-mask faq-scroller-track">
+        <div class="flex animate-scroll-horizontal" style="--scroll-duration: 55s;">
+          <div class="flex items-stretch justify-center shrink-0 gap-6 px-3">
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Is this a live service?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                No. PerPage is a demonstration project built to showcase a full-stack editing platform. No real payments are processed in this demo. Built for document editing workflow evaluation.
+              </p>
+            </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Is my draft private?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                Yes. Your uploaded drafts and editing submissions are kept private between you and your chosen editor, delivered through private storage with time-limited links.
+              </p>
+            </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">What authentication methods are available?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                You can register and sign in using a standard email and password (with bcrypt password hashing) or authenticate via Google or GitHub OAuth.
+              </p>
+            </div>
+          </div>
+          <!-- Duplicate for seamless infinite loop -->
+          <div class="flex items-stretch justify-center shrink-0 gap-6 px-3" aria-hidden="true">
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Is this a live service?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                No. PerPage is a demonstration project built to showcase a full-stack editing platform. No real payments are processed in this demo. Built for document editing workflow evaluation.
+              </p>
+            </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">Is my draft private?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                Yes. Your uploaded drafts and editing submissions are kept private between you and your chosen editor, delivered through private storage with time-limited links.
+              </p>
+            </div>
+            <div class="faq-scroller-card">
+              <h3 class="text-base font-bold text-[var(--text-ink)] leading-snug">What authentication methods are available?</h3>
+              <p class="text-xs sm:text-sm text-[var(--text-muted)] leading-relaxed">
+                You can register and sign in using a standard email and password (with bcrypt password hashing) or authenticate via Google or GitHub OAuth.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
