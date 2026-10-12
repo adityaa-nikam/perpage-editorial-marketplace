@@ -17,6 +17,8 @@ const UserSchema = new mongoose.Schema({
   githubId:{type : String},
   profilePic: { type: String, default: '' }, // new
   pricePerPage: { type: Number, default: 0 },
+  averageRating: { type: Number, default: 0 },
+  reviewCount: { type: Number, default: 0 },
   createdAt: {
     type: Date,
     default: Date.now

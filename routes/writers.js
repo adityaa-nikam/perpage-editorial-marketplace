@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { User } from '../models/User.js';
 import Deal from '../models/deal.js';
+import Review from '../models/Review.js';
 
 const router = express.Router();
 
@@ -339,6 +340,23 @@ router.get('/:id', async (req, res) => {
       });
     }
 
+    let reviews = [];
+    let averageRating = writer.averageRating || 0;
+    let reviewCount = writer.reviewCount || 0;
+
+    if (isDbConnected) {
+      reviews = await Review.find({ writerId: writer._id })
+        .populate('userId', 'name profilePic')
+        .sort({ createdAt: -1 })
+        .lean();
+
+      if (reviews.length > 0) {
+        reviewCount = reviews.length;
+        const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
+        averageRating = Math.round((sum / reviews.length) * 10) / 10;
+      }
+    }
+
     // SEO canonical URL (clean)
     const canonical = `https://perpage.onrender.com/writers/${writer._id}`;
 
@@ -349,6 +367,9 @@ router.get('/:id', async (req, res) => {
     res.render('writerProfile', {
       writer,
       completedCount,
+      reviews,
+      averageRating,
+      reviewCount,
       user: viewerUser,
       canonical,
       pageTitle: `${writer.name} — Freelance Editor | PerPage`,

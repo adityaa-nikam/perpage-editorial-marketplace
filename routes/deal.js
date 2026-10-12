@@ -8,6 +8,7 @@ import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from "@aws-sd
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import Deal from '../models/deal.js';
 import { User } from '../models/User.js';
+import Review from '../models/Review.js';
 import { dealActionLimiter } from '../config/limits.js';
 import { createNotification } from '../utils/notifications.js';
 
@@ -919,6 +920,91 @@ router.post('/:id/complete', checkAuthenticated, async (req, res) => {
     return res.redirect('/dashboard?completed=1');
   } catch (err) {
     console.error('Deal complete error:', err.message);
+    return res.redirect('/dashboard?error=server');
+  }
+});
+
+// ⭐ Submit Review & Rating for an Editor (After Deal Completion)
+router.post('/:id/review', checkAuthenticated, dealActionLimiter, async (req, res) => {
+  try {
+    const dealId = req.params.id;
+    if (!dealId || typeof dealId !== 'string' || !mongoose.Types.ObjectId.isValid(dealId)) {
+      return res.redirect('/dashboard?error=not_found');
+    }
+
+    const currentUserId = req.user._id || req.user.id;
+    const rawRating = parseInt(req.body.rating, 10);
+    const rating = Math.max(1, Math.min(5, isNaN(rawRating) ? 5 : rawRating));
+    const comment = typeof req.body.comment === 'string' ? req.body.comment.trim().slice(0, 1000) : '';
+
+    const isDbConnected = mongoose.connection.readyState === 1;
+    if (!isDbConnected) {
+      return res.redirect('/dashboard?reviewSubmitted=1');
+    }
+
+    const deal = await Deal.findById(dealId);
+    if (!deal) {
+      return res.redirect('/dashboard?error=not_found');
+    }
+
+    // Guard: Only the client can review
+    if (!deal.userId || deal.userId.toString() !== currentUserId.toString()) {
+      return res.redirect('/dashboard?error=unauthorized');
+    }
+
+    // Guard: Deal must be completed
+    if (deal.status !== 'completed') {
+      return res.redirect('/dashboard?error=invalid_state');
+    }
+
+    // Check if review already exists for this deal
+    let review = await Review.findOne({ dealId: deal._id });
+    if (review) {
+      review.rating = rating;
+      review.comment = comment;
+      await review.save();
+    } else {
+      review = new Review({
+        writerId: deal.writerId,
+        userId: currentUserId,
+        dealId: deal._id,
+        rating,
+        comment
+      });
+      await review.save();
+      deal.reviewId = review._id;
+      await deal.save();
+    }
+
+    // Recalculate editor's averageRating and reviewCount
+    const allReviews = await Review.find({ writerId: deal.writerId });
+    if (allReviews.length > 0) {
+      const sum = allReviews.reduce((acc, r) => acc + r.rating, 0);
+      const avg = Math.round((sum / allReviews.length) * 10) / 10;
+      await User.findByIdAndUpdate(deal.writerId, {
+        averageRating: avg,
+        reviewCount: allReviews.length
+      });
+    }
+
+    // Create notification for editor
+    try {
+      await createNotification({
+        recipient: deal.writerId,
+        sender: currentUserId,
+        dealId: deal._id,
+        type: 'deal_completed',
+        title: 'New Review & Rating Received',
+        message: `A client left you a ${rating}★ review: "${comment ? comment.slice(0, 60) + '...' : 'Great editing!'}"`,
+        link: `/writers/${deal.writerId}`
+      });
+    } catch (notifErr) {
+      console.warn('Could not dispatch review notification:', notifErr.message);
+    }
+
+    return res.redirect('/dashboard?reviewed=1');
+  } catch (err) {
+    console.error('Review submission error:', err.message);
     return res.redirect('/dashboard?error=server');
   }
 });

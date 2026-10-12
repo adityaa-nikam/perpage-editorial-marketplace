@@ -539,7 +539,7 @@
                   <!-- CLIENT VIEW ACTIONS -->
                   <% if (!isIncoming) { %>
                     <% if (isCompleted) { %>
-                      <div class="flex items-center gap-2">
+                      <div class="flex items-center gap-2 flex-wrap">
                         <% if (deal.freshFinalLink) { %>
                           <a href="<%= deal.freshFinalLink %>" target="_blank" download class="btn btn-secondary btn-sm text-xs py-1.5 px-3">
                             <%- icon('download', { class: 'w-3.5 h-3.5 mr-1' }) %>
@@ -550,6 +550,16 @@
                           <%- icon('shield-check', { class: 'w-3.5 h-3.5' }) %>
                           Completed
                         </span>
+                        <!-- Review Button -->
+                        <button 
+                          type="button" 
+                          @click="openReviewModal('<%= deal._id %>', '<%= deal.writerName || 'Editor' %>', '<%= deal.writerId?._id || deal.writerId %>')" 
+                          class="btn btn-secondary btn-sm text-xs py-1.5 px-3 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40"
+                          id="review-btn-<%= deal._id %>"
+                        >
+                          <svg class="w-3.5 h-3.5 fill-current mr-1 inline" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                          Rate & Review
+                        </button>
                       </div>
                     <% } else if (hasFinal && deal.freshFinalLink) { %>
                       <div class="flex items-center gap-2 flex-wrap">
@@ -1076,7 +1086,83 @@
           </button>
         </div>
 
+  <!-- Review & Rating Modal -->
+  <div 
+    x-show="reviewModalOpen" 
+    x-cloak 
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    @keydown.escape.window="closeReviewModal()"
+  >
+    <div 
+      class="card p-6 max-w-md w-full space-y-4 shadow-xl border border-[var(--border-color)] bg-[var(--bg-surface)] text-[var(--text-ink)]"
+      @click.away="closeReviewModal()"
+    >
+      <div class="flex items-start justify-between">
+        <div>
+          <h3 class="type-h3 text-lg">Rate & Review Editor</h3>
+          <p class="text-xs text-[var(--text-muted)] mt-0.5">
+            Share feedback on your editorial review with <span class="font-medium text-[var(--text-ink)]" x-text="activeReviewEditorName"></span>.
+          </p>
+        </div>
+        <button type="button" @click="closeReviewModal()" class="text-[var(--text-muted)] hover:text-[var(--text-ink)]">
+          <%- icon('x', { class: 'w-4 h-4' }) %>
+        </button>
       </div>
+
+      <form :action="'/deal/' + activeReviewDealId + '/review'" method="POST" class="space-y-4">
+        <!-- Star Rating Picker -->
+        <div class="space-y-1.5">
+          <label class="block text-xs font-medium text-[var(--text-ink)]">Rating (1 to 5 Stars)</label>
+          <div class="flex items-center gap-2">
+            <template x-for="star in [1, 2, 3, 4, 5]" :key="star">
+              <button 
+                type="button" 
+                @click="selectedRating = star"
+                class="p-1 focus:outline-none transition-transform hover:scale-110"
+              >
+                <svg 
+                  class="w-7 h-7 cursor-pointer" 
+                  :class="star <= selectedRating ? 'text-amber-500 fill-current' : 'text-slate-300 dark:text-slate-700'"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+              </button>
+            </template>
+            <span class="text-sm font-bold text-[var(--text-ink)] ml-2" x-text="selectedRating + ' / 5 Stars'"></span>
+          </div>
+          <input type="hidden" name="rating" :value="selectedRating">
+        </div>
+
+        <!-- Written Feedback -->
+        <div class="space-y-1.5">
+          <label for="review-comment" class="block text-xs font-medium text-[var(--text-ink)]">Feedback & Comments (Optional)</label>
+          <textarea 
+            id="review-comment" 
+            name="comment" 
+            rows="3" 
+            placeholder="e.g. Thorough feedback on academic tone and clear structural annotations..."
+            class="form-input text-xs w-full resize-none"
+            maxlength="1000"
+          ></textarea>
+          <p class="text-[11px] text-[var(--text-muted)]">Your review will be displayed publicly on the editor's public profile.</p>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-[var(--border-color)]">
+          <button type="button" @click="closeReviewModal()" class="btn btn-secondary btn-sm text-xs">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary btn-sm text-xs">
+            Submit Review
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -1105,6 +1191,10 @@
       receiptData: null,
       isLoadingReceipt: false,
       receiptCopied: false,
+      reviewModalOpen: false,
+      activeReviewDealId: '',
+      activeReviewEditorName: '',
+      selectedRating: 5,
 
       init() {
         if (isNoticeSuccess) {
@@ -1170,6 +1260,19 @@
 
       printReceipt() {
         window.print();
+      },
+
+      openReviewModal(dealId, editorName) {
+        this.activeReviewDealId = dealId;
+        this.activeReviewEditorName = editorName || 'Editor';
+        this.selectedRating = 5;
+        this.reviewModalOpen = true;
+      },
+
+      closeReviewModal() {
+        this.reviewModalOpen = false;
+        this.activeReviewDealId = '';
+        this.activeReviewEditorName = '';
       },
 
       openDeclineModal(dealId) {
