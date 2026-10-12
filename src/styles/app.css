@@ -1377,6 +1377,39 @@ html.js .reveal-on-scroll.is-revealed {
   transform: scale(0.95);
 }
 
+/* ==========================================================================
+   VIEW TRANSITION CIRCULAR THEME REVEAL
+   ========================================================================== */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
+.dark::view-transition-old(root) {
+  z-index: 1;
+}
+
+.dark::view-transition-new(root) {
+  z-index: 9999;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
+  }
+}
+
 /* Dropdown */
 .dropdown-menu {
   position: absolute;
