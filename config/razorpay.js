@@ -69,10 +69,61 @@ export function verifyRazorpaySignature({ orderId, paymentId, signature }) {
   return paymentId.startsWith('pay_');
 }
 
+/**
+ * Creates an official Razorpay Hosted Payment Link (rzp.io).
+ */
+export async function createRazorpayPaymentLink({
+  amount,
+  currency = 'INR',
+  description,
+  dealId,
+  customer = {},
+  callbackUrl,
+  notes = {}
+}) {
+  const amountInPaise = Math.round(Number(amount) * 100);
+
+  if (instance) {
+    return await instance.paymentLink.create({
+      amount: amountInPaise,
+      currency,
+      accept_partial: false,
+      reference_id: `deal_${dealId}_${Date.now()}`.slice(0, 40),
+      description: description || `Academic Editorial Review - Deal #${dealId}`,
+      customer: {
+        name: customer.name || 'Client',
+        email: customer.email || 'client@example.com',
+        contact: customer.contact || undefined
+      },
+      notify: {
+        sms: false,
+        email: false
+      },
+      reminder_enable: false,
+      notes: {
+        dealId: String(dealId),
+        ...notes
+      },
+      callback_url: callbackUrl,
+      callback_method: 'get'
+    });
+  }
+
+  // Fallback simulation for test mode
+  const dummyLinkId = `plink_test_${Date.now()}`;
+  return {
+    id: dummyLinkId,
+    short_url: `${callbackUrl}&razorpay_payment_id=pay_test_${Date.now()}&razorpay_payment_link_id=${dummyLinkId}&razorpay_payment_link_status=paid`,
+    status: 'created',
+    amount: amountInPaise
+  };
+}
+
 export default {
   RAZORPAY_KEY_ID,
   RAZORPAY_KEY_SECRET,
   getRazorpay,
   createRazorpayOrder,
+  createRazorpayPaymentLink,
   verifyRazorpaySignature
 };

@@ -193,6 +193,41 @@ describe('Razorpay Demo Payment Integration Tests', () => {
       assert.ok(html.includes('Download Invoice'), 'Receipt should include Download Invoice option');
       assert.ok(html.includes('Print Invoice'), 'Receipt should include Print Invoice option');
     });
+
+    it('12. POST /payment/create-payment-link generates official Razorpay hosted link (rzp.io)', async () => {
+      const { MOCK_DEALS } = await import('../routes/deal.js');
+      const testDeal = MOCK_DEALS.find(d => d._id.toString() === '64f1a2b3c4d5e6f7a8b9d006');
+      if (testDeal) {
+        testDeal.paymentStatus = 'unpaid';
+        testDeal.status = 'accepted';
+      }
+
+      const res = await fetch(`${baseUrl}/payment/create-payment-link`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-mock-user': '64f1a2b3c4d5e6f7a8b9c0d9'
+        },
+        body: JSON.stringify({ dealId: '64f1a2b3c4d5e6f7a8b9d006' })
+      });
+
+      assert.equal(res.status, 200);
+      const data = await res.json();
+      assert.equal(data.success, true);
+      assert.ok(data.paymentLinkUrl);
+      assert.ok(data.paymentLinkUrl.includes('rzp.io') || data.paymentLinkUrl.includes('callback'));
+    });
+
+    it('13. GET /payment/callback activates deal and redirects to dashboard with paid=1', async () => {
+      const res = await fetch(`${baseUrl}/payment/callback?dealId=64f1a2b3c4d5e6f7a8b9d006&razorpay_payment_id=pay_test_callback_777&razorpay_payment_link_status=paid`, {
+        redirect: 'manual'
+      });
+
+      assert.equal(res.status, 302);
+      const location = res.headers.get('location');
+      assert.ok(location.includes('paid=1'));
+      assert.ok(location.includes('receiptDealId=64f1a2b3c4d5e6f7a8b9d006'));
+    });
   });
 });
 

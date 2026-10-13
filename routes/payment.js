@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { User } from '../models/User.js';
 import Deal from '../models/deal.js';
 import { MOCK_DEALS } from './deal.js';
-import { RAZORPAY_KEY_ID, getRazorpay, createRazorpayOrder, verifyRazorpaySignature } from '../config/razorpay.js';
+import { RAZORPAY_KEY_ID, getRazorpay, createRazorpayOrder, createRazorpayPaymentLink, verifyRazorpaySignature } from '../config/razorpay.js';
 import { createNotification, MOCK_NOTIFICATIONS } from '../utils/notifications.js';
 import Notification from '../models/Notification.js';
 import { sendRazorpayReceiptEmail } from '../utils/receiptMailer.js';
@@ -125,6 +125,227 @@ router.post('/create-order', checkAuthenticated, async (req, res) => {
   } catch (err) {
     console.error('Error creating Razorpay order:', err.message);
     return res.status(500).json({ error: 'order_creation_failed', message: 'Unable to initiate payment with Razorpay.' });
+  }
+});
+
+// POST /payment/create-payment-link (Choice B: Razorpay Hosted Page rzp.io)
+router.post('/create-payment-link', checkAuthenticated, async (req, res) => {
+  try {
+    const { dealId } = req.body;
+    if (!dealId) {
+      return res.status(400).json({ error: 'bad_request', message: 'Deal ID is required.' });
+    }
+
+    let deal = null;
+    const isDbConnected = mongoose.connection.readyState === 1;
+
+    if (isDbConnected && mongoose.Types.ObjectId.isValid(dealId)) {
+      deal = await Deal.findById(dealId).populate('userId', 'name email phone').populate('writerId', 'name email');
+    } else if (process.env.NODE_ENV !== 'production' && Array.isArray(MOCK_DEALS)) {
+      deal = MOCK_DEALS.find(d => d._id.toString() === dealId.toString());
+    }
+
+    if (!deal) {
+      return res.status(404).json({ error: 'not_found', message: 'Deal not found.' });
+    }
+
+    const currentUserId = req.user && (req.user._id || req.user.id);
+    if (currentUserId && deal.userId && deal.userId._id && deal.userId._id.toString() !== currentUserId.toString()) {
+      return res.status(403).json({ error: 'forbidden', message: 'You are not authorized to pay for this deal.' });
+    }
+
+    if (deal.paymentStatus === 'paid') {
+      return res.status(400).json({ error: 'already_paid', message: 'This deal is already marked as paid.' });
+    }
+
+    if (deal.status === 'pending') {
+      return res.status(400).json({ 
+        error: 'not_accepted', 
+        message: 'This order request has not been accepted by the editor yet. Payment is only unlocked once the editor accepts your request.' 
+      });
+    }
+
+    if (deal.status === 'rejected') {
+      return res.status(400).json({ 
+        error: 'declined', 
+        message: 'This order request was declined and cannot be paid for.' 
+      });
+    }
+
+    const siteUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '');
+    const dealShortId = deal._id ? deal._id.toString().slice(-6).toUpperCase() : '000000';
+    const clientName = deal.userId?.name || req.user?.name || 'Client';
+    const clientEmail = deal.userId?.email || req.user?.email || 'client@example.com';
+    const clientPhone = deal.userId?.phone || undefined;
+
+    // Create official Razorpay Hosted Payment Link (rzp.io)
+    const paymentLink = await createRazorpayPaymentLink({
+      amount: deal.totalPrice,
+      currency: 'INR',
+      description: `PerPage Review Deal #${dealShortId} (${deal.pages || 1} pages)`,
+      dealId: deal._id,
+      customer: {
+        name: clientName,
+        email: clientEmail,
+        contact: clientPhone
+      },
+      callbackUrl: `${siteUrl}/payment/callback?dealId=${deal._id}`,
+      notes: {
+        dealId: deal._id.toString(),
+        userId: currentUserId ? currentUserId.toString() : 'guest'
+      }
+    });
+
+    if (isDbConnected && typeof deal.save === 'function') {
+      deal.razorpayPaymentLinkId = paymentLink.id;
+      deal.razorpayInvoiceUrl = paymentLink.short_url;
+      await deal.save();
+    } else if (deal) {
+      deal.razorpayPaymentLinkId = paymentLink.id;
+      deal.razorpayInvoiceUrl = paymentLink.short_url;
+    }
+
+    return res.json({
+      success: true,
+      paymentLinkUrl: paymentLink.short_url,
+      paymentLinkId: paymentLink.id,
+      amount: deal.totalPrice
+    });
+  } catch (err) {
+    console.error('Error creating Razorpay payment link:', err.message);
+    return res.status(500).json({ error: 'link_creation_failed', message: 'Unable to generate Razorpay hosted payment link.' });
+  }
+});
+
+// GET /payment/callback (Razorpay Hosted Page rzp.io Callback Handler)
+router.get('/callback', async (req, res) => {
+  try {
+    const { 
+      dealId, 
+      razorpay_payment_id, 
+      razorpay_payment_link_id, 
+      razorpay_payment_link_status,
+      razorpay_signature 
+    } = req.query;
+
+    if (!dealId && !razorpay_payment_link_id) {
+      return res.redirect('/dashboard?view=orders&error=missing_payment_ref');
+    }
+
+    const isDbConnected = mongoose.connection.readyState === 1;
+    let deal = null;
+
+    if (isDbConnected) {
+      if (dealId && mongoose.Types.ObjectId.isValid(dealId)) {
+        deal = await Deal.findById(dealId).populate('userId', 'name email').populate('writerId', 'name email');
+      }
+      if (!deal && razorpay_payment_link_id) {
+        deal = await Deal.findOne({ razorpayPaymentLinkId: razorpay_payment_link_id }).populate('userId', 'name email').populate('writerId', 'name email');
+      }
+    } else if (Array.isArray(MOCK_DEALS)) {
+      deal = MOCK_DEALS.find(d => 
+        (dealId && d._id.toString() === dealId.toString()) || 
+        (razorpay_payment_link_id && d.razorpayPaymentLinkId === razorpay_payment_link_id)
+      );
+    }
+
+    if (!deal) {
+      return res.redirect('/dashboard?view=orders&error=deal_not_found');
+    }
+
+    // Check payment status or payment ID
+    const isPaid = razorpay_payment_link_status === 'paid' || Boolean(razorpay_payment_id);
+
+    if (isPaid) {
+      deal.paymentStatus = 'paid';
+      if (deal.status === 'accepted') {
+        deal.status = 'in-progress';
+      }
+      if (razorpay_payment_id) {
+        deal.razorpayPaymentId = razorpay_payment_id;
+      }
+      if (razorpay_payment_link_id) {
+        deal.razorpayPaymentLinkId = razorpay_payment_link_id;
+      }
+      if (razorpay_signature) {
+        deal.razorpaySignature = razorpay_signature;
+      }
+      deal.paidAt = new Date();
+
+      const dealShortId = deal._id ? deal._id.toString().slice(-6).toUpperCase() : '000000';
+      deal.razorpayInvoiceId = deal.razorpayInvoiceId || (deal.razorpayPaymentId ? `RCPT-${dealShortId}-${Date.now().toString().slice(-4)}` : `RCPT-${dealShortId}`);
+      deal.razorpayInvoiceUrl = `/payment/receipt/${deal._id}`;
+
+      if (isDbConnected && typeof deal.save === 'function') {
+        await deal.save();
+      }
+
+      // Auto-resolve pending payment notifications
+      try {
+        if (isDbConnected) {
+          await Notification.updateMany(
+            { dealId: deal._id, type: { $in: ['order_accepted', 'payment_pending'] } },
+            { $set: { read: true } }
+          );
+        } else if (Array.isArray(MOCK_NOTIFICATIONS)) {
+          MOCK_NOTIFICATIONS.forEach(n => {
+            if (n.dealId === deal._id.toString() && ['order_accepted', 'payment_pending'].includes(n.type)) {
+              n.read = true;
+            }
+          });
+        }
+      } catch (_) {}
+
+      // Dispatch dual emails
+      const clientEmail = deal.userId?.email || '';
+      const clientName = deal.userId?.name || 'Client';
+      const editorEmail = deal.writerId?.email || '';
+      const editorName = deal.writerId?.name || 'Editor';
+
+      sendRazorpayReceiptEmail({
+        client: { name: clientName, email: clientEmail },
+        editor: { name: editorName, email: editorEmail },
+        deal,
+        paymentId: deal.razorpayPaymentId || 'pay_verified',
+        orderId: deal.razorpayOrderId || deal.razorpayPaymentLinkId || 'rzp_hosted',
+        invoiceUrl: `/payment/receipt/${deal._id}`,
+        invoiceId: deal.razorpayInvoiceId,
+        paymentMethod: 'Razorpay Hosted (rzp.io)',
+        paidAt: deal.paidAt
+      }).catch(() => {});
+
+      // Notify editor
+      if (deal.writerId) {
+        createNotification({
+          recipient: deal.writerId._id || deal.writerId,
+          dealId: deal._id,
+          type: 'payment_received',
+          title: 'Payment Received (rzp.io)',
+          message: `Client completed payment of ₹${deal.totalPrice || 0} via Razorpay Hosted Page. You can begin editing!`,
+          link: `/dashboard?view=incoming&receiptDealId=${deal._id}`
+        }).catch(() => {});
+      }
+
+      // Notify client
+      if (deal.userId) {
+        createNotification({
+          recipient: deal.userId._id || deal.userId,
+          dealId: deal._id,
+          type: 'payment_received',
+          title: 'Payment Successful',
+          message: `Your payment of ₹${deal.totalPrice || 0} via Razorpay was confirmed.`,
+          link: `/dashboard?view=orders&receiptDealId=${deal._id}`
+        }).catch(() => {});
+      }
+
+      // Redirect client to dashboard with success banner & highlight
+      return res.redirect(`/dashboard?view=orders&paid=1&receiptDealId=${deal._id}`);
+    }
+
+    return res.redirect(`/dashboard?view=orders&payment_status=${razorpay_payment_link_status || 'unpaid'}`);
+  } catch (err) {
+    console.error('Error in Razorpay callback:', err.message);
+    return res.redirect('/dashboard?view=orders&error=callback_error');
   }
 });
 

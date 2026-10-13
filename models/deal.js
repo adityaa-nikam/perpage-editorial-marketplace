@@ -54,6 +54,7 @@ const dealSchema = new mongoose.Schema({
   },
   razorpayOrderId: String,
   razorpayPaymentId: String,
+  razorpayPaymentLinkId: String,
   razorpaySignature: String,
   razorpayInvoiceId: String,
   razorpayInvoiceUrl: String,

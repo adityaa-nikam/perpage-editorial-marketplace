@@ -1568,8 +1568,18 @@
       },
 
       async initiatePayment(dealId, amount, editorName) {
+        const btn = document.getElementById('pay-btn-' + dealId);
+        const originalBtnHtml = btn ? btn.innerHTML : '';
         try {
-          const res = await fetch('/payment/create-order', {
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `
+              <svg class="w-3.5 h-3.5 animate-spin shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+              <span>Opening Razorpay...</span>
+            `;
+          }
+
+          const res = await fetch('/payment/create-payment-link', {
             method: 'POST',
             headers: { 
               'Content-Type': 'application/json',
@@ -1579,111 +1589,29 @@
           });
 
           const data = await res.json();
-          if (!res.ok || !data.success) {
+          if (!res.ok || !data.success || !data.paymentLinkUrl) {
             if (data.error === 'already_paid') {
               this.markDealAsPaidInUI(dealId);
               window.location.href = '/dashboard?paid=1&receiptDealId=' + dealId;
               return;
             }
-            alert(data.message || 'Unable to start payment. Please check your connection.');
+            alert(data.message || 'Unable to open Razorpay payment page. Please check your connection.');
+            if (btn) {
+              btn.disabled = false;
+              btn.innerHTML = originalBtnHtml;
+            }
             return;
           }
 
-          if (typeof window.Razorpay === 'undefined') {
-            alert('Razorpay Checkout SDK is still loading. Please check your internet connection.');
-            return;
-          }
-
-          let pollInterval = null;
-          const stopPolling = () => {
-            if (pollInterval) {
-              clearInterval(pollInterval);
-              pollInterval = null;
-            }
-          };
-
-          // Poll check-status every 2.5 seconds while payment modal is open
-          pollInterval = setInterval(async () => {
-            try {
-              const chk = await fetch('/payment/check-status/' + dealId);
-              if (chk.ok) {
-                const cData = await chk.json();
-                if (cData.isPaid) {
-                  stopPolling();
-                  this.markDealAsPaidInUI(dealId);
-                  window.location.href = '/dashboard?paid=1&receiptDealId=' + dealId;
-                }
-              }
-            } catch (e) {}
-          }, 2500);
-
-          const options = {
-            key: data.keyId,
-            amount: data.order.amount,
-            currency: data.order.currency || 'INR',
-            name: 'PerPage',
-            description: 'Editorial Review with ' + (editorName || 'Editor'),
-            order_id: data.order.id && !data.order.id.startsWith('order_test_') ? data.order.id : undefined,
-            prefill: {
-              name: userName,
-              email: userEmail,
-              contact: userPhone
-            },
-            notes: {
-              dealId: dealId,
-              platform: 'PerPage',
-              receipt: 'deal_' + dealId
-            },
-            theme: {
-              color: '#0c2340'
-            },
-            handler: async (response) => {
-              stopPolling();
-              // 1. Immediately update UI so user instantly sees "Paid" without reload lag
-              this.markDealAsPaidInUI(dealId);
-
-              try {
-                const verifyRes = await fetch('/payment/verify', {
-                  method: 'POST',
-                  headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                  },
-                  body: JSON.stringify({
-                    dealId: dealId,
-                    razorpay_order_id: response.razorpay_order_id || data.order.id,
-                    razorpay_payment_id: response.razorpay_payment_id,
-                    razorpay_signature: response.razorpay_signature || 'demo_signature'
-                  })
-                });
-                const verifyData = await verifyRes.json();
-                window.location.href = '/payment/receipt/' + dealId;
-              } catch (e) {
-                window.location.href = '/payment/receipt/' + dealId;
-              }
-            },
-            modal: {
-              ondismiss: async () => {
-                stopPolling();
-                try {
-                  const chk = await fetch('/payment/check-status/' + dealId);
-                  if (chk.ok) {
-                    const cData = await chk.json();
-                    if (cData.isPaid) {
-                      this.markDealAsPaidInUI(dealId);
-                      window.location.href = '/payment/receipt/' + dealId;
-                    }
-                  }
-                } catch (e) {}
-              }
-            }
-          };
-
-          const rzp = new window.Razorpay(options);
-          rzp.open();
+          // Choice B: Redirect user directly to Razorpay's official hosted page (rzp.io)
+          window.location.href = data.paymentLinkUrl;
         } catch (err) {
-          console.error('Payment initiation error:', err);
-          alert('Could not open payment window. Please try again.');
+          console.error('Payment redirection error:', err);
+          alert('Could not connect to Razorpay. Please try again.');
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalBtnHtml;
+          }
         }
       },
 
