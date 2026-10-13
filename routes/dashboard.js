@@ -173,6 +173,7 @@ router.get('/', checkAuthenticated, async (req, res) => {
         { finalFileLink: { $exists: false } }
       ];
     } else if (statusParam === 'delivered') {
+      query.status = { $nin: ['completed', 'rejected'] };
       query.$or = [
         { status: 'submitted' },
         { finalFileLink: { $exists: true, $nin: [null, ''] } }
@@ -218,12 +219,18 @@ router.get('/', checkAuthenticated, async (req, res) => {
               $sum: {
                 $cond: [
                   {
-                    $or: [
-                      { $eq: ['$status', 'submitted'] },
+                    $and: [
+                      { $ne: ['$status', 'completed'] },
+                      { $ne: ['$status', 'rejected'] },
                       {
-                        $and: [
-                          { $ne: ['$finalFileLink', null] },
-                          { $ne: ['$finalFileLink', ''] }
+                        $or: [
+                          { $eq: ['$status', 'submitted'] },
+                          {
+                            $and: [
+                              { $ne: ['$finalFileLink', null] },
+                              { $ne: ['$finalFileLink', ''] }
+                            ]
+                          }
                         ]
                       }
                     ]
@@ -258,7 +265,7 @@ router.get('/', checkAuthenticated, async (req, res) => {
       counts.all = viewDeals.length;
       counts.pending = viewDeals.filter(d => d.status === 'pending').length;
       counts.active = viewDeals.filter(d => ['accepted', 'in-progress'].includes(d.status) && !d.finalFileLink).length;
-      counts.delivered = viewDeals.filter(d => d.status === 'submitted' || !!d.finalFileLink).length;
+      counts.delivered = viewDeals.filter(d => (d.status === 'submitted' || !!d.finalFileLink) && d.status !== 'completed' && d.status !== 'rejected').length;
       counts.completed = viewDeals.filter(d => d.status === 'completed').length;
       counts.declined = viewDeals.filter(d => d.status === 'rejected').length;
     }
@@ -285,7 +292,7 @@ router.get('/', checkAuthenticated, async (req, res) => {
 
         if (statusParam === 'pending') return d.status === 'pending';
         if (statusParam === 'active') return ['accepted', 'in-progress'].includes(d.status) && !d.finalFileLink;
-        if (statusParam === 'delivered') return d.status === 'submitted' || !!d.finalFileLink;
+        if (statusParam === 'delivered') return (d.status === 'submitted' || !!d.finalFileLink) && d.status !== 'completed' && d.status !== 'rejected';
         if (statusParam === 'completed') return d.status === 'completed';
         if (statusParam === 'declined') return d.status === 'rejected';
         return true;

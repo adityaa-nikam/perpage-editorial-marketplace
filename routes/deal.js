@@ -446,6 +446,7 @@ router.post('/upload-final', checkAuthenticated, dealActionLimiter, finalMulterM
 
     // Update Deal second (store clean S3 key: finals/<uuid>_<name>.pdf)
     deal.finalFileLink = finalFileKey;
+    deal.status = 'submitted';
     if (isDbConnected) {
       await deal.save();
     }
@@ -1033,9 +1034,9 @@ router.post('/:id/complete', checkAuthenticated, async (req, res) => {
       return res.redirect('/dashboard?completed=1');
     }
 
-    // Guard: Must have a delivered final file and be in accepted or submitted status
+    // Guard: Must have a delivered final file and be in submitted, in-progress, or accepted status
     const hasFinal = Boolean(deal.finalFileLink);
-    if (!hasFinal || (deal.status !== 'accepted' && deal.status !== 'submitted')) {
+    if (!hasFinal || !['submitted', 'in-progress', 'accepted'].includes(deal.status)) {
       return res.redirect('/dashboard?error=not_delivered');
     }
 
@@ -1044,6 +1045,22 @@ router.post('/:id/complete', checkAuthenticated, async (req, res) => {
 
     if (isDbConnected) {
       await deal.save();
+    }
+
+    // Notify editor that client confirmed receipt and completed order
+    try {
+      const dealShortId = deal._id.toString().slice(-6).toUpperCase();
+      await createNotification({
+        recipient: deal.writerId,
+        sender: currentUserId,
+        dealId: deal._id,
+        type: 'deal_completed',
+        title: 'Order Completed & Confirmed',
+        message: `Client confirmed receipt and marked Order #${dealShortId} as completed.`,
+        link: '/dashboard?status=completed'
+      });
+    } catch (notifErr) {
+      console.warn('Could not dispatch deal complete notification:', notifErr.message);
     }
 
     return res.redirect('/dashboard?completed=1');
