@@ -1156,8 +1156,8 @@
               <span class="font-medium text-[var(--text-ink)] truncate block" x-text="receiptData?.paymentMethod || 'Razorpay Gateway'"></span>
             </div>
             <div>
-              <span class="text-[10px] text-[var(--text-muted)] block">Razorpay Invoice</span>
-              <span class="font-mono text-[11px] text-[var(--text-ink)] truncate block" x-text="receiptData?.razorpayInvoiceId || 'Generated on rzp.io'"></span>
+              <span class="text-[10px] text-[var(--text-muted)] block">Invoice Reference</span>
+              <span class="font-mono text-[11px] text-[var(--text-ink)] truncate block" x-text="receiptData?.razorpayInvoiceId || receiptData?.receiptNumber || 'RCPT-CONFIRMED'"></span>
             </div>
 
             <div class="col-span-2 pt-1.5 border-t border-[var(--border-color)]">
@@ -1202,7 +1202,7 @@
         <div class="space-y-2 p-3 rounded-xl bg-[var(--bg-surface-muted)] text-[11px] text-[var(--text-muted)] leading-relaxed border border-[var(--border-color)]">
           <p class="flex items-start gap-2">
             <%- icon('mail', { class: 'w-3.5 h-3.5 text-[#0284c7] shrink-0 mt-0.5' }) %>
-            <span><strong>Customer Email:</strong> An automated confirmation receipt was sent by Razorpay to <strong class="text-[var(--text-ink)]" x-text="receiptData?.client?.email || 'the customer'"></strong>.</span>
+            <span><strong>Customer Email:</strong> An official payment confirmation receipt was sent to <strong class="text-[var(--text-ink)]" x-text="receiptData?.client?.email || 'the customer'"></strong>.</span>
           </p>
           <p class="flex items-start gap-2">
             <%- icon('shield-check', { class: 'w-3.5 h-3.5 text-[#0284c7] shrink-0 mt-0.5' }) %>
@@ -1637,7 +1637,6 @@
             theme: {
               color: '#0c2340'
             },
-            send_sms_hash: true,
             handler: async (response) => {
               stopPolling();
               // 1. Immediately update UI so user instantly sees "Paid" without reload lag
@@ -1658,9 +1657,9 @@
                   })
                 });
                 const verifyData = await verifyRes.json();
-                window.location.href = '/dashboard?paid=1&receiptDealId=' + dealId;
+                window.location.href = '/payment/receipt/' + dealId;
               } catch (e) {
-                window.location.href = '/dashboard?paid=1&receiptDealId=' + dealId;
+                window.location.href = '/payment/receipt/' + dealId;
               }
             },
             modal: {
@@ -1672,7 +1671,7 @@
                     const cData = await chk.json();
                     if (cData.isPaid) {
                       this.markDealAsPaidInUI(dealId);
-                      window.location.href = '/dashboard?paid=1&receiptDealId=' + dealId;
+                      window.location.href = '/payment/receipt/' + dealId;
                     }
                   }
                 } catch (e) {}

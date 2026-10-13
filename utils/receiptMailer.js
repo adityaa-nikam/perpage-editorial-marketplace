@@ -121,10 +121,14 @@ function generateClientReceiptHtml({ receiptData, client, editor, deal }) {
         </tr>
         ${invoiceId ? `
         <tr style="border-bottom: 1px solid #f1f5f9;">
-          <td style="padding: 10px 0; color: #64748b; font-size: 13px;">Razorpay Invoice</td>
+          <td style="padding: 10px 0; color: #64748b; font-size: 13px;">Receipt Reference</td>
           <td style="padding: 10px 0; color: #0f172a; font-weight: 600; font-size: 13px; text-align: right; font-family: monospace;">${invoiceId}</td>
         </tr>
         ` : ''}
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+          <td style="padding: 10px 0; color: #16a34a; font-size: 13px; font-weight: 600;">Balance Due</td>
+          <td style="padding: 10px 0; color: #16a34a; font-weight: 700; font-size: 13px; text-align: right; font-family: monospace;">₹0.00 (Fully Settled)</td>
+        </tr>
         <tr style="border-bottom: 1px solid #f1f5f9;">
           <td style="padding: 10px 0; color: #64748b; font-size: 13px;">Assigned Editor</td>
           <td style="padding: 10px 0; color: #0f172a; font-weight: 600; font-size: 13px; text-align: right;">${editor?.name || 'Freelance Editor'}</td>
