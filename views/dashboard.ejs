@@ -325,7 +325,7 @@
                 </div>
 
                 <!-- Status Badge -->
-                <div class="shrink-0">
+                <div class="shrink-0" id="status-badge-<%= deal._id %>">
                   <% if (isDeclined) { %>
                     <span class="badge badge-danger">
                       <%- icon('x', { class: 'w-3 h-3' }) %>
@@ -377,7 +377,7 @@
 
                 <!-- Razorpay Payment Status & Action Strip -->
                 <div class="col-span-3 flex flex-wrap items-center justify-between gap-2.5 pt-2.5 mt-0.5 border-t border-[var(--border-color)]">
-                  <div class="flex items-center gap-2 flex-wrap">
+                  <div class="flex items-center gap-2 flex-wrap" id="payment-badge-<%= deal._id %>">
                     <span class="text-[var(--text-muted)] text-[11px] font-medium flex items-center gap-1">
                       <%- icon('credit-card', { class: 'w-3 h-3 text-[var(--text-muted)]' }) %>
                       Payment:
@@ -407,6 +407,7 @@
                     <% } %>
                   </div>
 
+                  <div id="pay-action-top-<%= deal._id %>" class="shrink-0">
                   <% if (!isIncoming && isAccepted && deal.paymentStatus !== 'paid' && !isDeclined) { %>
                     <button 
                       type="button" 
@@ -430,6 +431,7 @@
                       <span>Awaiting Client Payment</span>
                     </span>
                   <% } %>
+                  </div>
                 </div>
               </div>
 
@@ -469,7 +471,7 @@
                     </div>
 
                     <!-- Step 3: Paid -->
-                    <div class="stepper-step <%= isStep3Done ? 'is-complete' : (isStep3Active ? 'is-current' : '') %>" <%= isStep3Active ? 'aria-current="step"' : '' %>>
+                    <div class="stepper-step <%= isStep3Done ? 'is-complete' : (isStep3Active ? 'is-current' : '') %>" id="stepper-step3-<%= deal._id %>" <%= isStep3Active ? 'aria-current="step"' : '' %>>
                       <div class="stepper-indicator">
                         <% if (isStep3Done) { %><%- icon('check', { class: 'w-3 h-3', strokeWidth: 2.5 }) %><% } else { %>3<% } %>
                       </div>
@@ -633,6 +635,7 @@
                           </button>
                         </form>
                       </div>
+                    <div id="deal-actions-bottom-<%= deal._id %>" class="w-full">
                     <% } else if (isAccepted && deal.paymentStatus !== 'paid') { %>
                       <div class="flex items-center justify-between gap-3 w-full flex-wrap">
                         <div class="space-y-0.5">
@@ -656,6 +659,7 @@
                         <%- icon('loader', { class: 'w-3.5 h-3.5 animate-spin text-[var(--accent)]' }) %>
                         Payment confirmed. Editor is reviewing and editing your draft.
                       </span>
+                    </div>
                     <% } else if (isDeclined) { %>
                       <div class="flex items-center gap-3">
                         <span class="text-xs text-[var(--semantic-danger-text)] italic">
@@ -1318,6 +1322,8 @@
             window.history.replaceState({}, document.title, url.pathname + (url.search ? url.search : ''));
           } catch (e) {}
         }
+
+        window.__openReceiptModal = (id) => this.openReceiptModal(id);
       },
 
       async openReceiptModal(dealId) {
@@ -1428,6 +1434,72 @@
         }
       },
 
+      markDealAsPaidInUI(dealId) {
+        if (!dealId) return;
+
+        // 1. Status badge (top right of card)
+        const statusBadgeEl = document.getElementById('status-badge-' + dealId);
+        if (statusBadgeEl) {
+          statusBadgeEl.innerHTML = `<span class="badge badge-accent inline-flex items-center gap-1"><svg class="w-3 h-3 animate-spin text-[var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> In Progress</span>`;
+        }
+
+        // 2. Payment badge in info strip
+        const paymentBadgeEl = document.getElementById('payment-badge-' + dealId);
+        if (paymentBadgeEl) {
+          paymentBadgeEl.innerHTML = `
+            <span class="text-[var(--text-muted)] text-[11px] font-medium flex items-center gap-1">
+              <svg class="w-3 h-3 text-[var(--text-muted)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+              Payment:
+            </span>
+            <span class="badge badge-success text-[10px] inline-flex items-center gap-1 font-medium">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              Paid via Razorpay
+            </span>
+            <button 
+              type="button" 
+              onclick="window.__openReceiptModal && window.__openReceiptModal('${dealId}')" 
+              class="btn btn-secondary btn-sm text-[10px] py-0.5 px-2.5 rounded-full inline-flex items-center gap-1 hover:border-[#0284c7] transition-all cursor-pointer font-mono"
+            >
+              <svg class="w-2.5 h-2.5 text-[#0284c7]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"></path><line x1="16" y1="8" x2="8" y2="8"></line><line x1="16" y1="12" x2="8" y2="12"></line><line x1="16" y1="16" x2="8" y2="16"></line></svg>
+              <span>View Receipt</span>
+            </button>
+          `;
+        }
+
+        // 3. Remove top pay button
+        const topPayEl = document.getElementById('pay-action-top-' + dealId);
+        if (topPayEl) topPayEl.innerHTML = '';
+
+        // 4. Update stepper step 3 to completed
+        const step3El = document.getElementById('stepper-step3-' + dealId);
+        if (step3El) {
+          step3El.className = 'stepper-step is-complete';
+          step3El.removeAttribute('aria-current');
+          const indicator = step3El.querySelector('.stepper-indicator');
+          if (indicator) {
+            indicator.innerHTML = `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+          }
+        }
+
+        // 5. Update bottom actions container to "Payment confirmed"
+        const bottomActionsEl = document.getElementById('deal-actions-bottom-' + dealId);
+        if (bottomActionsEl) {
+          bottomActionsEl.innerHTML = `
+            <span class="text-xs text-[var(--text-muted)] italic flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5 animate-spin text-[var(--accent)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+              Payment confirmed. Editor is reviewing and editing your draft.
+            </span>
+          `;
+        }
+
+        // 6. Dismiss any in-app notification banner for this deal
+        document.querySelectorAll('[id^="notif-alert-"]').forEach(el => {
+          if (el.innerHTML.includes(dealId) || el.innerHTML.includes(dealId.slice(-6).toUpperCase())) {
+            el.remove();
+          }
+        });
+      },
+
       async initiatePayment(dealId, amount, editorName) {
         try {
           const res = await fetch('/payment/create-order', {
@@ -1441,6 +1513,11 @@
 
           const data = await res.json();
           if (!res.ok || !data.success) {
+            if (data.error === 'already_paid') {
+              this.markDealAsPaidInUI(dealId);
+              window.location.href = '/dashboard?paid=1&receiptDealId=' + dealId;
+              return;
+            }
             alert(data.message || 'Unable to start payment. Please check your connection.');
             return;
           }
@@ -1449,6 +1526,29 @@
             alert('Razorpay Checkout SDK is still loading. Please check your internet connection.');
             return;
           }
+
+          let pollInterval = null;
+          const stopPolling = () => {
+            if (pollInterval) {
+              clearInterval(pollInterval);
+              pollInterval = null;
+            }
+          };
+
+          // Poll check-status every 2.5 seconds while payment modal is open
+          pollInterval = setInterval(async () => {
+            try {
+              const chk = await fetch('/payment/check-status/' + dealId);
+              if (chk.ok) {
+                const cData = await chk.json();
+                if (cData.isPaid) {
+                  stopPolling();
+                  this.markDealAsPaidInUI(dealId);
+                  window.location.href = '/dashboard?paid=1&receiptDealId=' + dealId;
+                }
+              }
+            } catch (e) {}
+          }, 2500);
 
           const options = {
             key: data.keyId,
@@ -1472,6 +1572,10 @@
             },
             send_sms_hash: true,
             handler: async (response) => {
+              stopPolling();
+              // 1. Immediately update UI so user instantly sees "Paid" without reload lag
+              this.markDealAsPaidInUI(dealId);
+
               try {
                 const verifyRes = await fetch('/payment/verify', {
                   method: 'POST',
@@ -1487,19 +1591,24 @@
                   })
                 });
                 const verifyData = await verifyRes.json();
-                if (verifyData.success) {
-                  // Direct to dashboard with receipt trigger
-                  window.location.href = '/dashboard?paid=1&receiptDealId=' + dealId;
-                } else {
-                  alert(verifyData.message || 'Payment verification failed.');
-                }
+                window.location.href = '/dashboard?paid=1&receiptDealId=' + dealId;
               } catch (e) {
-                alert('Verification request failed. Please refresh your dashboard.');
+                window.location.href = '/dashboard?paid=1&receiptDealId=' + dealId;
               }
             },
             modal: {
-              ondismiss: () => {
-                console.log('Razorpay payment modal closed by user');
+              ondismiss: async () => {
+                stopPolling();
+                try {
+                  const chk = await fetch('/payment/check-status/' + dealId);
+                  if (chk.ok) {
+                    const cData = await chk.json();
+                    if (cData.isPaid) {
+                      this.markDealAsPaidInUI(dealId);
+                      window.location.href = '/dashboard?paid=1&receiptDealId=' + dealId;
+                    }
+                  }
+                } catch (e) {}
               }
             }
           };

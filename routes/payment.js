@@ -181,19 +181,17 @@ router.post('/verify', checkAuthenticated, async (req, res) => {
       const editorObj = deal.writerId || { name: 'Freelance Editor', email: '' };
       const dealShortId = deal._id ? deal._id.toString().slice(-6).toUpperCase() : '000000';
 
-      // 1. Dispatch official Razorpay payment receipt email to client and editor
-      try {
-        await sendRazorpayReceiptEmail({
-          client: clientObj,
-          editor: editorObj,
-          deal,
-          paymentId: razorpay_payment_id,
-          orderId: razorpay_order_id,
-          paidAt: deal.paidAt || new Date()
-        });
-      } catch (mailErr) {
+      // 1. Dispatch official Razorpay payment receipt email asynchronously (non-blocking)
+      sendRazorpayReceiptEmail({
+        client: clientObj,
+        editor: editorObj,
+        deal,
+        paymentId: razorpay_payment_id,
+        orderId: razorpay_order_id,
+        paidAt: deal.paidAt || new Date()
+      }).catch(mailErr => {
         console.error('Receipt email dispatch error:', mailErr.message);
-      }
+      });
 
       // Auto-resolve pending payment notification for this deal
       try {
@@ -258,6 +256,35 @@ router.post('/verify', checkAuthenticated, async (req, res) => {
   } catch (err) {
     console.error('Error verifying Razorpay payment:', err.message);
     return res.status(500).json({ error: 'verification_error', message: 'Error processing payment verification.' });
+  }
+});
+
+// GET /payment/check-status/:dealId — Check if a deal has been paid
+router.get('/check-status/:dealId', checkAuthenticated, async (req, res) => {
+  try {
+    const { dealId } = req.params;
+    if (!dealId || typeof dealId !== 'string') {
+      return res.status(400).json({ error: 'invalid_id', isPaid: false });
+    }
+
+    let deal = null;
+    const isDbConnected = mongoose.connection.readyState === 1;
+
+    if (isDbConnected && mongoose.Types.ObjectId.isValid(dealId)) {
+      deal = await Deal.findById(dealId).select('paymentStatus status').lean();
+    } else if (Array.isArray(MOCK_DEALS)) {
+      deal = MOCK_DEALS.find(d => d._id.toString() === dealId.toString());
+    }
+
+    const isPaid = deal && (deal.paymentStatus === 'paid' || deal.status === 'in-progress');
+    return res.json({ 
+      success: true, 
+      isPaid: Boolean(isPaid), 
+      paymentStatus: deal?.paymentStatus || 'unpaid', 
+      status: deal?.status || 'pending' 
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'error', isPaid: false });
   }
 });
 
