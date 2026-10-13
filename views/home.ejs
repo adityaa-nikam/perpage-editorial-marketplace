@@ -589,168 +589,7 @@
         return clamp(-section.getBoundingClientRect().top / travel);
       }
 
-      let audioCtx = null;
-      let cachedNoiseBuffer = null;
-      let soundTriggered = false;
-      let lastSoundTime = 0;
 
-      function getAudioContext() {
-        if (!audioCtx) {
-          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-          if (AudioContextClass) {
-            audioCtx = new AudioContextClass();
-          }
-        }
-        return audioCtx;
-      }
-
-      function ensureAudioReady() {
-        const ctx = getAudioContext();
-        if (ctx) {
-          if (ctx.state === 'suspended') {
-            ctx.resume().catch(() => {});
-          }
-          if (!cachedNoiseBuffer) {
-            try {
-              const bufferSize = Math.floor(ctx.sampleRate * 2.5);
-              cachedNoiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-              const output = cachedNoiseBuffer.getChannelData(0);
-              // Gardner 6-pole natural pink noise for velvety, silky air swoosh
-              let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
-              for (let i = 0; i < bufferSize; i++) {
-                const white = Math.random() * 2 - 1;
-                b0 = 0.99886 * b0 + white * 0.0555179;
-                b1 = 0.99332 * b1 + white * 0.0750759;
-                b2 = 0.96900 * b2 + white * 0.1538520;
-                b3 = 0.86650 * b3 + white * 0.3104856;
-                b4 = 0.55000 * b4 + white * 0.5329522;
-                b5 = -0.7616 * b5 - white * 0.0168980;
-                const pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
-                b6 = white * 0.115926;
-                output[i] = pink * 0.06;
-              }
-            } catch (e) {}
-          }
-        }
-      }
-
-      // Pre-warm audio immediately on first user gesture so playback has 0ms latency
-      ['pointerdown', 'touchstart', 'scroll', 'keydown', 'wheel'].forEach(evt => {
-        window.addEventListener(evt, ensureAudioReady, { once: true, passive: true });
-      });
-
-      function playZoomOutSound() {
-        if (motion.matches) return;
-        const now = Date.now();
-        if (now - lastSoundTime < 1800) return; // 1.8s cooldown
-        lastSoundTime = now;
-
-        ensureAudioReady();
-        const ctx = getAudioContext();
-        if (!ctx) return;
-
-        try {
-          const t0 = ctx.currentTime;
-          const duration = 2.0; // 2.0s sleek, cinematic zoom-out sound effect
-
-          // Master bus with fast attack (< 35ms) and smooth cinematic release
-          const masterGain = ctx.createGain();
-          masterGain.gain.setValueAtTime(0.0001, t0);
-          masterGain.gain.exponentialRampToValueAtTime(0.28, t0 + 0.035);
-          masterGain.gain.exponentialRampToValueAtTime(0.22, t0 + 0.5);
-          masterGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
-          masterGain.connect(ctx.destination);
-
-          // 1. Optical Lens Servo Glide (Descending dual-harmonic tone: 560Hz -> 160Hz, 840Hz -> 240Hz)
-          const toneOsc1 = ctx.createOscillator();
-          toneOsc1.type = 'sine';
-          toneOsc1.frequency.setValueAtTime(560, t0);
-          toneOsc1.frequency.exponentialRampToValueAtTime(160, t0 + duration * 0.85);
-
-          const toneOsc2 = ctx.createOscillator();
-          toneOsc2.type = 'sine';
-          toneOsc2.frequency.setValueAtTime(840, t0);
-          toneOsc2.frequency.exponentialRampToValueAtTime(240, t0 + duration * 0.85);
-
-          const toneGain = ctx.createGain();
-          toneGain.gain.setValueAtTime(0.0001, t0);
-          toneGain.gain.exponentialRampToValueAtTime(0.16, t0 + 0.04);
-          toneGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration * 0.88);
-
-          toneOsc1.connect(toneGain);
-          toneOsc2.connect(toneGain);
-          toneGain.connect(masterGain);
-
-          toneOsc1.start(t0);
-          toneOsc1.stop(t0 + duration);
-          toneOsc2.start(t0);
-          toneOsc2.stop(t0 + duration);
-
-          // 2. Velvet Aerodynamic Air Swoosh (Descending resonant lowpass filter: 2800Hz -> 260Hz)
-          if (cachedNoiseBuffer) {
-            const noiseSource = ctx.createBufferSource();
-            noiseSource.buffer = cachedNoiseBuffer;
-
-            const noiseFilter = ctx.createBiquadFilter();
-            noiseFilter.type = 'lowpass';
-            noiseFilter.Q.value = 2.0; // Warm acoustic resonance
-            noiseFilter.frequency.setValueAtTime(2800, t0);
-            noiseFilter.frequency.exponentialRampToValueAtTime(260, t0 + duration * 0.85);
-
-            const noiseGain = ctx.createGain();
-            noiseGain.gain.setValueAtTime(0.0001, t0);
-            noiseGain.gain.exponentialRampToValueAtTime(0.38, t0 + 0.035);
-            noiseGain.gain.exponentialRampToValueAtTime(0.28, t0 + 0.45);
-            noiseGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
-
-            noiseSource.connect(noiseFilter);
-            noiseFilter.connect(noiseGain);
-            noiseGain.connect(masterGain);
-
-            noiseSource.start(t0);
-            noiseSource.stop(t0 + duration);
-          }
-
-          // 3. Warm Cinematic Body Bed (Subtle low-end depth: 120Hz -> 48Hz)
-          const subOsc = ctx.createOscillator();
-          subOsc.type = 'triangle';
-          subOsc.frequency.setValueAtTime(120, t0);
-          subOsc.frequency.exponentialRampToValueAtTime(48, t0 + duration * 0.7);
-
-          const subGain = ctx.createGain();
-          subGain.gain.setValueAtTime(0.0001, t0);
-          subGain.gain.exponentialRampToValueAtTime(0.24, t0 + 0.045);
-          subGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration * 0.75);
-
-          subOsc.connect(subGain);
-          subGain.connect(masterGain);
-
-          subOsc.start(t0);
-          subOsc.stop(t0 + duration);
-
-          // 4. Ethereal Glass Chime Tail (Settling sparkle: 1046Hz -> 784Hz)
-          const chimeOsc = ctx.createOscillator();
-          chimeOsc.type = 'sine';
-          chimeOsc.frequency.setValueAtTime(1046, t0 + 0.12);
-          chimeOsc.frequency.exponentialRampToValueAtTime(784, t0 + duration * 0.8);
-
-          const chimeGain = ctx.createGain();
-          chimeGain.gain.setValueAtTime(0.0001, t0);
-          chimeGain.gain.setValueAtTime(0.0001, t0 + 0.12);
-          chimeGain.linearRampToValueAtTime(0.035, t0 + 0.22);
-          chimeGain.exponentialRampToValueAtTime(0.0001, t0 + duration * 0.95);
-
-          chimeOsc.connect(chimeGain);
-          chimeGain.connect(masterGain);
-
-          chimeOsc.start(t0 + 0.12);
-          chimeOsc.stop(t0 + duration);
-
-        } catch (err) {}
-      }
-
-      // Backward-compatible alias
-      const playPremiumZoomSound = playZoomOutSound;
 
       function paint(progress) {
         const isStatic = motion.matches || !browserFrameSeen || stalled || !target;
@@ -783,14 +622,6 @@
         section.style.setProperty("--gp-field-scale", String(1 + 0.16 * smooth(0, 0.82, p)));
         section.style.setProperty("--gp-caption-hit", p < 0.08 ? "auto" : "none");
         section.dataset.gpEntered = String(p >= 0.9);
-
-        // Play premium zoom-out sound effect instantly as the camera begins expanding through the letter
-        if (!soundTriggered && p > 0.015 && p < 0.75) {
-          soundTriggered = true;
-          playZoomOutSound();
-        } else if (p < 0.005 || p > 0.92) {
-          soundTriggered = false;
-        }
 
         // Real-time scroll-driven drawing of the red proofreader underline
         const heroWavyPath = section.querySelector('.proof-wavy-hero path');
@@ -862,7 +693,6 @@
         const button = event.target.closest("[data-gp-letter]");
         const next = candidates.find(c => c.index === Number(button?.dataset.gpLetter));
         if (!next || next === target) return;
-        playZoomOutSound();
         select(next); paint(position());
       }
 
@@ -870,17 +700,11 @@
         choices.addEventListener("pointerover", choose);
         choices.addEventListener("click", choose);
       }
-      const enterLink = section.querySelector("[data-gp-enter]");
-      if (enterLink) {
-        enterLink.addEventListener("click", () => {
-          playZoomOutSound();
-        });
-      }
       if (picker) {
         picker.addEventListener("change", () => {
           if (!choosing || position() >= 0.04) return;
           const next = candidates.find(c => c.index === Number(picker.value));
-          if (next) { playZoomOutSound(); select(next); paint(position()); }
+          if (next) { select(next); paint(position()); }
         });
       }
 
