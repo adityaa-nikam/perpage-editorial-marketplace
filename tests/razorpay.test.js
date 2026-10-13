@@ -69,6 +69,8 @@ describe('Razorpay Demo Payment Integration Tests', () => {
       const paymentRouter = (await import('../routes/payment.js')).default;
 
       const app = express();
+      app.set('view engine', 'ejs');
+      app.set('views', (await import('path')).default.join(process.cwd(), 'views'));
       app.use(express.json());
       app.use('/payment', paymentRouter);
 
@@ -174,6 +176,22 @@ describe('Razorpay Demo Payment Integration Tests', () => {
       assert.equal(data.receipt.gateway, 'Razorpay');
       assert.ok(data.receipt.client);
       assert.ok(data.receipt.editor);
+    });
+
+    it('11. GET /payment/receipt/:dealId renders official HTML receipt with PAID stamp and without Proceed to Pay button', async () => {
+      const res = await fetch(`${baseUrl}/payment/receipt/64f1a2b3c4d5e6f7a8b9d001`, {
+        headers: {
+          'x-mock-user': '64f1a2b3c4d5e6f7a8b9c0d9',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+        }
+      });
+      assert.equal(res.status, 200);
+      const html = await res.text();
+      assert.ok(html.includes('PAID'), 'Receipt HTML should contain prominent PAID stamp');
+      assert.ok(html.includes('₹ 0.00') || html.includes('₹0.00'), 'Amount Due should be 0.00');
+      assert.ok(!html.includes('Proceed to Pay'), 'Receipt must NOT contain Proceed to Pay button');
+      assert.ok(html.includes('Download Invoice'), 'Receipt should include Download Invoice option');
+      assert.ok(html.includes('Print Invoice'), 'Receipt should include Print Invoice option');
     });
   });
 });

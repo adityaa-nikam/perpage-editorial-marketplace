@@ -225,53 +225,9 @@ router.post('/verify', checkAuthenticated, async (req, res) => {
         }
       }
 
-      // Generate authentic hosted Razorpay invoice (rzp.io/rzp/...)
-      if (rzp && !deal.razorpayInvoiceUrl) {
-        try {
-          const clientEmailVal = clientObj.email || rzpPayment?.email || req.user?.email || 'customer@perpage.in';
-          const clientNameVal = clientObj.name || req.user?.name || 'Customer';
-          const invoice = await rzp.invoices.create({
-            type: 'invoice',
-            description: `PerPage Editorial Review - Deal #${dealShortId}`,
-            customer: {
-              name: clientNameVal,
-              email: clientEmailVal,
-              contact: rzpPayment?.contact || undefined
-            },
-            line_items: [
-              {
-                name: `Academic Editorial Review (${deal.pages || 1} pages)`,
-                description: `Editorial review by ${editorObj.name || 'Freelance Editor'} on PerPage`,
-                amount: Math.round(Number(deal.totalPrice || 0) * 100),
-                currency: 'INR',
-                quantity: 1
-              }
-            ],
-            currency: 'INR',
-            receipt: `deal_${dealShortId}_${Date.now().toString().slice(-4)}`,
-            notes: {
-              dealId: deal._id.toString(),
-              paymentId: razorpay_payment_id,
-              orderId: razorpay_order_id || '',
-              editor: editorObj.name || 'Editor'
-            }
-          });
-
-          if (invoice) {
-            deal.razorpayInvoiceId = invoice.id;
-            deal.razorpayInvoiceUrl = invoice.short_url;
-
-            // Trigger Razorpay's native email notification directly from Razorpay's servers
-            try {
-              await rzp.invoices.notifyBy(invoice.id, 'email');
-            } catch (notifyErr) {
-              console.warn('Razorpay native invoice email notification:', notifyErr.message);
-            }
-          }
-        } catch (invErr) {
-          console.warn('Could not generate Razorpay invoice in verify:', invErr.message);
-        }
-      }
+      // Official payment receipt reference & dedicated receipt view
+      deal.razorpayInvoiceId = deal.razorpayInvoiceId || (deal.razorpayPaymentId ? `RCPT-${dealShortId}-${Date.now().toString().slice(-4)}` : `RCPT-${dealShortId}`);
+      deal.razorpayInvoiceUrl = `/payment/receipt/${deal._id}`;
 
       if (isDbConnected && typeof deal.save === 'function') {
         await deal.save();
@@ -440,48 +396,11 @@ router.get('/receipt/:dealId', checkAuthenticated, async (req, res) => {
       }
     }
 
-    // Ensure authentic Razorpay hosted invoice exists (rzp.io/rzp/...)
-    if (rzp && !deal.razorpayInvoiceUrl && deal.paymentStatus === 'paid') {
-      try {
-        const clientEmailVal = clientObj.email || rzpPayment?.email || req.user?.email || 'customer@perpage.in';
-        const clientNameVal = clientObj.name || req.user?.name || 'Customer';
-        const invoice = await rzp.invoices.create({
-          type: 'invoice',
-          description: `PerPage Editorial Review - Deal #${dealShortId}`,
-          customer: {
-            name: clientNameVal,
-            email: clientEmailVal,
-            contact: rzpPayment?.contact || undefined
-          },
-          line_items: [
-            {
-              name: `Academic Editorial Review (${deal.pages || 1} pages)`,
-              description: `Editorial review by ${editorObj.name || 'Freelance Editor'} on PerPage`,
-              amount: Math.round(Number(deal.totalPrice || 0) * 100),
-              currency: 'INR',
-              quantity: 1
-            }
-          ],
-          currency: 'INR',
-          receipt: `deal_${dealShortId}_${Date.now().toString().slice(-4)}`,
-          notes: {
-            dealId: deal._id.toString(),
-            paymentId: deal.razorpayPaymentId || '',
-            orderId: deal.razorpayOrderId || '',
-            editor: editorObj.name || 'Editor'
-          }
-        });
-
-        if (invoice) {
-          deal.razorpayInvoiceId = invoice.id;
-          deal.razorpayInvoiceUrl = invoice.short_url;
-          if (isDbConnected && typeof deal.save === 'function') {
-            await deal.save();
-          }
-        }
-      } catch (invErr) {
-        console.warn('Could not auto-generate Razorpay hosted invoice:', invErr.message);
-      }
+    // Ensure official receipt reference & link point to our authentic receipt view
+    deal.razorpayInvoiceId = deal.razorpayInvoiceId || (deal.razorpayPaymentId ? `RCPT-${dealShortId}-${Date.now().toString().slice(-4)}` : `RCPT-${dealShortId}`);
+    deal.razorpayInvoiceUrl = `/payment/receipt/${deal._id}`;
+    if (isDbConnected && typeof deal.save === 'function') {
+      try { await deal.save(); } catch (e) {}
     }
 
     // Format human-friendly payment method
@@ -503,6 +422,27 @@ router.get('/receipt/:dealId', checkAuthenticated, async (req, res) => {
       methodLabel = 'Razorpay Gateway (Demo Mode)';
     }
 
+    // If accessed directly from browser / email link, render the authentic receipt page
+    const acceptHeader = req.headers.accept || '';
+    const isHtmlRequested = (req.query.format === 'html' || (acceptHeader.includes('text/html') && acceptHeader !== '*/*')) && !req.xhr;
+    if (isHtmlRequested) {
+      const unitPrice = deal.pages && Number(deal.pages) > 0 ? (deal.totalPrice / deal.pages) : deal.totalPrice;
+      return res.render('receipt', {
+        pageTitle: `Payment Receipt #${dealShortId} — PerPage`,
+        deal,
+        dealShortId,
+        dateFormatted,
+        dateSuffix: Date.now().toString().slice(-4),
+        paymentId: deal.razorpayPaymentId || 'pay_demo_verified',
+        orderId: deal.razorpayOrderId || 'order_demo',
+        paymentMethod: methodLabel,
+        editorName: editorObj.name || 'Freelance Editor',
+        clientName: clientObj.name || 'Client',
+        unitPriceFormatted: Number(unitPrice || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }),
+        totalFormatted: Number(deal.totalPrice || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })
+      });
+    }
+
     return res.json({
       success: true,
       receipt: {
@@ -514,8 +454,8 @@ router.get('/receipt/:dealId', checkAuthenticated, async (req, res) => {
         paymentStatus: deal.paymentStatus,
         paymentId: deal.razorpayPaymentId || 'pay_demo_verified',
         orderId: deal.razorpayOrderId || 'order_demo',
-        razorpayInvoiceId: deal.razorpayInvoiceId || '',
-        razorpayInvoiceUrl: deal.razorpayInvoiceUrl || (deal.razorpayPaymentId ? `https://rzp.io/rzp/${deal.razorpayPaymentId}` : ''),
+        razorpayInvoiceId: deal.razorpayInvoiceId || `RCPT-${dealShortId}`,
+        razorpayInvoiceUrl: `/payment/receipt/${deal._id}`,
         paymentMethod: methodLabel,
         gatewayFee: rzpPayment?.fee ? (rzpPayment.fee / 100).toFixed(2) : null,
         gatewayTax: rzpPayment?.tax ? (rzpPayment.tax / 100).toFixed(2) : null,

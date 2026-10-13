@@ -137,11 +137,11 @@ function generateClientReceiptHtml({ receiptData, client, editor, deal }) {
     </div>
 
     ${invoiceUrl ? `
-    <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 14px 16px; margin: 15px 24px; text-align: center;">
-      <div style="font-size: 11px; text-transform: uppercase; color: #0284c7; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px;">Official Razorpay Hosted Receipt</div>
-      <p style="margin: 0 0 10px; font-size: 13px; color: #0369a1;">View the authentic live receipt and download the official PDF directly from Razorpay:</p>
-      <a href="${invoiceUrl}" target="_blank" style="display: inline-block; background: #0284c7; color: #ffffff !important; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; font-size: 13px;">
-        Open Official Razorpay Receipt (rzp.io) &rarr;
+    <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px 16px; margin: 15px 24px; text-align: center;">
+      <div style="font-size: 11px; text-transform: uppercase; color: #16a34a; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px;">Official Payment Receipt (Paid)</div>
+      <p style="margin: 0 0 10px; font-size: 13px; color: #15803d;">Your payment has cleared. View the official transaction receipt with PAID stamp and download PDF:</p>
+      <a href="${invoiceUrl.startsWith('http') ? invoiceUrl : (siteUrl + (invoiceUrl.startsWith('/') ? '' : '/') + invoiceUrl)}" target="_blank" style="display: inline-block; background: #16a34a; color: #ffffff !important; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; font-size: 13px;">
+        Open Official Payment Receipt &rarr;
       </a>
     </div>
     ` : ''}
@@ -290,7 +290,7 @@ export async function sendRazorpayReceiptEmail({
     currency: 'INR',
     paymentId: paymentId || deal.razorpayPaymentId || 'pay_demo',
     orderId: orderId || deal.razorpayOrderId || 'order_demo',
-    invoiceUrl: invoiceUrl || deal.razorpayInvoiceUrl || '',
+    invoiceUrl: invoiceUrl || (deal._id ? `/payment/receipt/${deal._id}` : (deal.razorpayInvoiceUrl || '')),
     invoiceId: invoiceId || deal.razorpayInvoiceId || '',
     paymentMethod: paymentMethod || deal.razorpayPaymentMethod || 'Razorpay Gateway',
     paidAt: dateFormatted,
