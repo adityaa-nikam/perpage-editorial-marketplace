@@ -1509,9 +1509,16 @@ html:not(.dark) .theme-icon-dark {
   font-weight: 600;
   background-color: var(--bg-surface-muted);
   color: var(--text-muted);
-  border: 1px solid var(--border-color);
+  border: 1.5px solid var(--border-color);
   z-index: 1;
-  transition: all 150ms ease-out;
+  transition: all 200ms ease-out;
+}
+
+.dark .stepper-indicator,
+[data-theme="dark"] .stepper-indicator {
+  background-color: #121820;
+  color: #8b949e;
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
 .stepper-step.is-current .stepper-indicator {
@@ -1521,24 +1528,34 @@ html:not(.dark) .theme-icon-dark {
   box-shadow: 0 0 0 3px var(--muted);
 }
 
+.dark .stepper-step.is-current .stepper-indicator,
+[data-theme="dark"] .stepper-step.is-current .stepper-indicator {
+  background-color: #ffffff;
+  color: #0c2340;
+  border-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25), 0 0 12px rgba(255, 255, 255, 0.45);
+  font-weight: 700;
+}
+
 .stepper-step.is-complete .stepper-indicator {
-  background-color: #059669;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff !important;
   border-color: #059669;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25), 0 2px 4px rgba(16, 185, 129, 0.2);
 }
 
 .dark .stepper-step.is-complete .stepper-indicator,
 [data-theme="dark"] .stepper-step.is-complete .stepper-indicator {
-  background-color: #10b981;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: #ffffff !important;
-  border-color: #10b981;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+  border-color: #34d399;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3), 0 0 10px rgba(16, 185, 129, 0.45);
 }
 
 .stepper-step.is-complete .stepper-indicator svg {
   stroke: #ffffff !important;
   stroke-width: 2.5;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
 }
 
 .stepper-label {
@@ -1563,9 +1580,17 @@ html:not(.dark) .theme-icon-dark {
   top: 0.6875rem;
   left: 50%;
   width: 100%;
-  height: 1px;
+  height: 2.5px;
+  transform: translateY(-50%);
   background-color: var(--border-color);
+  border-radius: 9999px;
   z-index: 0;
+  transition: all 250ms ease-in-out;
+}
+
+.dark .stepper-line,
+[data-theme="dark"] .stepper-line {
+  background-color: rgba(255, 255, 255, 0.12);
 }
 
 .stepper-step:last-child .stepper-line {
@@ -1573,12 +1598,14 @@ html:not(.dark) .theme-icon-dark {
 }
 
 .stepper-step.is-complete .stepper-line {
-  background-color: #059669;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.35);
 }
 
 .dark .stepper-step.is-complete .stepper-line,
 [data-theme="dark"] .stepper-step.is-complete .stepper-line {
-  background-color: #10b981;
+  background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.55), 0 0 2px rgba(52, 211, 153, 0.7);
 }
 
 /* Editor Engagement Protocol Vertical Stepper */
@@ -3554,6 +3581,8 @@ html:not(.dark) .glyph-portal-section {
 
   .stepper-line {
     top: 0.625rem !important;
+    transform: translateY(-50%) !important;
+    height: 2px !important;
   }
 }
 
