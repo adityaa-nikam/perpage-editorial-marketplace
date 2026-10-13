@@ -17,7 +17,7 @@ const notificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['work_allocated', 'work_delivered', 'payment_received', 'general'],
+    default: 'general',
     required: true
   },
   title: {

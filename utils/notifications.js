@@ -5,20 +5,75 @@ import Notification from '../models/Notification.js';
 export const MOCK_NOTIFICATIONS = [];
 
 /**
+ * Automatically ensures an 'order_accepted' notification exists for any accepted, unpaid deal
+ */
+export async function ensurePendingPaymentNotifications(userId) {
+  if (!userId) return;
+  const isDbConnected = mongoose.connection.readyState === 1;
+
+  if (isDbConnected) {
+    try {
+      const Deal = mongoose.models.Deal;
+      if (Deal) {
+        const unpaidDeals = await Deal.find({
+          userId: userId,
+          status: { $in: ['accepted', 'in-progress'] },
+          paymentStatus: { $ne: 'paid' }
+        }).populate('writerId', 'name').lean();
+
+        for (const d of unpaidDeals) {
+          const exists = await Notification.findOne({
+            recipient: userId,
+            dealId: d._id,
+            type: { $in: ['order_accepted', 'payment_pending'] }
+          });
+          if (!exists) {
+            const editorName = d.writerId?.name || 'Your editor';
+            const dealShortId = d._id ? d._id.toString().slice(-6).toUpperCase() : '';
+            const priceFmt = Number(d.totalPrice || 0).toLocaleString('en-IN');
+            await createNotification({
+              recipient: userId,
+              sender: d.writerId?._id || d.writerId || null,
+              dealId: d._id,
+              type: 'order_accepted',
+              title: 'Order Accepted — Payment Due',
+              message: `${editorName} accepted your order #${dealShortId} (${d.pages} pages • ₹${priceFmt}). Please complete payment so they can begin working on your manuscript.`,
+              link: `/dashboard?view=orders&status=active#deal-${d._id}`
+            });
+          }
+        }
+      }
+    } catch (err) {
+      console.error('ensurePendingPaymentNotifications error:', err.message);
+    }
+  }
+}
+
+/**
  * Create a new notification for a recipient
  */
-export async function createNotification({ recipient, sender = null, dealId = null, type, title, message, link = '/dashboard' }) {
+export async function createNotification({ recipient, sender = null, dealId = null, type = 'general', title, message, link = '/dashboard' }) {
   if (!recipient) return null;
   
   const recipientIdStr = recipient.toString();
+  const recipientObj = (recipient && mongoose.Types.ObjectId.isValid(recipient))
+    ? new mongoose.Types.ObjectId(recipient)
+    : recipient;
+  const senderObj = (sender && mongoose.Types.ObjectId.isValid(sender))
+    ? new mongoose.Types.ObjectId(sender)
+    : null;
+  const dealIdObj = (dealId && mongoose.Types.ObjectId.isValid(dealId))
+    ? new mongoose.Types.ObjectId(dealId)
+    : null;
+
   const isDbConnected = mongoose.connection.readyState === 1;
 
   if (isDbConnected) {
     try {
       const notification = new Notification({
-        recipient,
-        sender,
-        dealId,
+        recipient: recipientObj,
+        sender: senderObj,
+        dealId: dealIdObj,
         type,
         title,
         message,
@@ -58,6 +113,8 @@ export async function getUserNotifications(userId, limit = 15) {
   const userIdStr = userId.toString();
   const isDbConnected = mongoose.connection.readyState === 1;
 
+  await ensurePendingPaymentNotifications(userId);
+
   if (isDbConnected) {
     try {
       const docs = await Notification.find({ recipient: userId })
@@ -82,6 +139,8 @@ export async function getUnreadCount(userId) {
   if (!userId) return 0;
   const userIdStr = userId.toString();
   const isDbConnected = mongoose.connection.readyState === 1;
+
+  await ensurePendingPaymentNotifications(userId);
 
   if (isDbConnected) {
     try {

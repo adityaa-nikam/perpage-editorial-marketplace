@@ -4,7 +4,8 @@ import { User } from '../models/User.js';
 import Deal from '../models/deal.js';
 import { MOCK_DEALS } from './deal.js';
 import { RAZORPAY_KEY_ID, createRazorpayOrder, verifyRazorpaySignature } from '../config/razorpay.js';
-import { createNotification } from '../utils/notifications.js';
+import { createNotification, MOCK_NOTIFICATIONS } from '../utils/notifications.js';
+import Notification from '../models/Notification.js';
 import { sendRazorpayReceiptEmail } from '../utils/receiptMailer.js';
 
 const router = express.Router();
@@ -194,6 +195,24 @@ router.post('/verify', checkAuthenticated, async (req, res) => {
         console.error('Receipt email dispatch error:', mailErr.message);
       }
 
+      // Auto-resolve pending payment notification for this deal
+      try {
+        if (isDbConnected) {
+          await Notification.updateMany(
+            { dealId: deal._id, type: { $in: ['order_accepted', 'payment_pending'] } },
+            { $set: { read: true } }
+          );
+        } else if (Array.isArray(MOCK_NOTIFICATIONS)) {
+          MOCK_NOTIFICATIONS.forEach(n => {
+            if (n.dealId === deal._id.toString() && ['order_accepted', 'payment_pending'].includes(n.type)) {
+              n.read = true;
+            }
+          });
+        }
+      } catch (notifResolveErr) {
+        console.warn('Could not auto-resolve pending payment notification:', notifResolveErr.message);
+      }
+
       // 2. Notify Editor: Send payment receipt notification with ID for cross-checking
       if (deal.writerId) {
         try {
@@ -222,7 +241,7 @@ router.post('/verify', checkAuthenticated, async (req, res) => {
             dealId: deal._id,
             type: 'payment_received',
             title: 'Payment Successful',
-            message: `Your payment of ₹${deal.totalPrice || 0} (ID: ${razorpay_payment_id}) was processed securely. An email receipt has been sent to ${clientObj.email || 'your email'}.`,
+            message: `Your payment of ₹${deal.totalPrice || 0} (ID: ${razorpay_payment_id}) was processed successfully. An email receipt has been sent to ${clientObj.email || 'your email'}.`,
             link: `/dashboard?view=orders&receiptDealId=${deal._id}`
           });
         } catch (notifErr) {

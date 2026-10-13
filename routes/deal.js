@@ -11,6 +11,7 @@ import { User } from '../models/User.js';
 import Review from '../models/Review.js';
 import { dealActionLimiter } from '../config/limits.js';
 import { createNotification } from '../utils/notifications.js';
+import { sendOrderAcceptedEmail } from '../utils/receiptMailer.js';
 
 const router = express.Router();
 
@@ -847,15 +848,35 @@ router.post('/accept/:id', checkAuthenticated, async (req, res) => {
     // Notify client that editor has accepted the order and payment is now ready
     if (deal.userId) {
       try {
+        const clientUserId = deal.userId._id || deal.userId;
+        const editorName = req.user?.name || 'Your editor';
+        const dealShortId = deal._id ? deal._id.toString().slice(-6).toUpperCase() : '';
+        const priceFmt = Number(deal.totalPrice || 0).toLocaleString('en-IN');
+
         await createNotification({
-          recipient: deal.userId,
+          recipient: clientUserId,
           sender: currentUserId,
           dealId: deal._id,
           type: 'order_accepted',
-          title: 'Order Request Accepted!',
-          message: `${req.user?.name || 'Your editor'} accepted your editing request. Please complete payment so they can begin working on your manuscript.`,
-          link: '/dashboard?view=orders&status=active'
+          title: 'Order Accepted — Payment Due',
+          message: `${editorName} accepted your order #${dealShortId} (${deal.pages} pages • ₹${priceFmt}). Please complete payment so they can begin working on your manuscript.`,
+          link: `/dashboard?view=orders&status=active#deal-${deal._id}`
         });
+
+        // Also dispatch email notification to client if email is available
+        let clientUser = null;
+        if (isDbConnected) {
+          clientUser = await User.findById(clientUserId).select('name email').lean();
+        } else if (deal.userId && typeof deal.userId === 'object' && deal.userId.email) {
+          clientUser = deal.userId;
+        }
+        if (clientUser && clientUser.email) {
+          try {
+            await sendOrderAcceptedEmail({ client: clientUser, editor: req.user, deal });
+          } catch (mailErr) {
+            console.error('Accept email dispatch error:', mailErr.message);
+          }
+        }
       } catch (notifErr) {
         console.error('Accept notification error:', notifErr.message);
       }

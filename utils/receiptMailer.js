@@ -329,6 +329,85 @@ export async function sendRazorpayReceiptEmail({ client, editor, deal, paymentId
   };
 }
 
+/**
+ * Dispatch official Client "Order Accepted — Payment Due" Notification Email
+ */
+export async function sendOrderAcceptedEmail({ client, editor, deal }) {
+  if (!client || !client.email) return null;
+  const dealShortId = deal?._id ? deal._id.toString().slice(-6).toUpperCase() : '000000';
+  const pages = deal?.pages || '—';
+  const totalPrice = deal?.totalPrice ? `₹${Number(deal.totalPrice).toLocaleString('en-IN')}` : '₹0';
+  const siteUrl = (process.env.SITE_URL || 'https://perpage-app.onrender.com').replace(/\/+$/, '');
+  const editorName = editor?.name || 'Your editor';
+
+  console.log(`\n============================================================`);
+  console.log(`PERPAGE ORDER ACCEPTED — PAYMENT DUE NOTIFICATION`);
+  console.log(`Client:           ${client.name || 'Client'} <${client.email}>`);
+  console.log(`Editor:           ${editorName}`);
+  console.log(`Deal:             #${dealShortId} (${pages} pages • ${totalPrice})`);
+  console.log(`Status:           Accepted — Awaiting Payment`);
+  console.log(`============================================================\n`);
+
+  const mailTransporter = getTransporter();
+  if (mailTransporter) {
+    try {
+      const emailHtml = `<!DOCTYPE html>
+<html>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #0f172a;">
+  <div style="max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="margin-bottom: 24px;">
+      <span style="font-family: Georgia, serif; font-size: 20px; font-weight: bold; color: #0f172a;">perpage<span style="color: #0284c7;">.</span></span>
+    </div>
+    <div style="display: inline-block; padding: 4px 10px; border-radius: 9999px; background: #fef3c7; color: #92400e; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 16px;">
+      Payment Due · Order Accepted
+    </div>
+    <h1 style="font-size: 20px; margin: 0 0 12px; font-weight: 700; color: #0f172a;">
+      Your editor accepted your order #${dealShortId}
+    </h1>
+    <p style="font-size: 14px; line-height: 1.6; color: #475569; margin: 0 0 20px;">
+      <strong>${editorName}</strong> has accepted your manuscript for review. Please complete payment so they can begin working on your document.
+    </p>
+    <div style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; padding: 16px; margin-bottom: 24px;">
+      <table style="width: 100%; font-size: 13px; color: #475569;">
+        <tr>
+          <td style="padding: 4px 0;">Manuscript Pages:</td>
+          <td style="padding: 4px 0; text-align: right; font-weight: 600; color: #0f172a;">${pages} pages</td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 0;">Total Amount:</td>
+          <td style="padding: 4px 0; text-align: right; font-weight: 700; color: #0f172a; font-size: 15px;">${totalPrice}</td>
+        </tr>
+      </table>
+    </div>
+    <div style="text-align: center; margin-bottom: 24px;">
+      <a href="${siteUrl}/dashboard?view=orders&status=active#deal-${deal?._id}" style="display: inline-block; background: #0284c7; color: #ffffff; padding: 12px 28px; border-radius: 9999px; font-weight: 600; font-size: 14px; text-decoration: none;">
+        Complete Payment &rarr;
+      </a>
+    </div>
+    <p style="font-size: 12px; color: #94a3b8; margin: 0; text-align: center;">
+      This is an automated notification from PerPage.
+    </p>
+  </div>
+</body>
+</html>`;
+
+      const info = await mailTransporter.sendMail({
+        from: `"PerPage Editorial" <${process.env.EMAIL_USER || 'no-reply@perpage.edu'}>`,
+        to: client.email,
+        subject: `Order #${dealShortId} Accepted — Payment Due (${totalPrice})`,
+        text: `Your editor ${editorName} accepted your order #${dealShortId} (${pages} pages • ${totalPrice}). Complete payment on PerPage to begin review: ${siteUrl}/dashboard?view=orders&status=active`,
+        html: emailHtml
+      });
+      console.log(`✅ [Nodemailer] Order Accepted email sent to ${client.email} (${info.messageId})`);
+      return info;
+    } catch (err) {
+      console.warn(`⚠️ [Nodemailer] Could not send accepted email to ${client.email}:`, err.message);
+    }
+  }
+  return null;
+}
+
 export default {
-  sendRazorpayReceiptEmail
+  sendRazorpayReceiptEmail,
+  sendOrderAcceptedEmail
 };
