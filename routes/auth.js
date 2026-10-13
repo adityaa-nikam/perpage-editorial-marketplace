@@ -10,7 +10,7 @@ const router = express.Router();
 
 // Register Page
 router.get('/register', (req, res) => {
-  res.render('register');
+  res.render('register', { errorMessage: null, formData: {} });
 });
 
 // Register Logic with Rate Limiting
@@ -25,7 +25,10 @@ router.post('/register',
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(400).send(errors.array().map(err => err.msg).join('<br>'));
+        return res.status(400).render('register', {
+          errorMessage: errors.array().map(err => err.msg).join('. '),
+          formData: req.body
+        });
       }
 
       const { name, email, password } = req.body;
@@ -36,7 +39,10 @@ router.post('/register',
       // Check if user exists
       const exists = await User.findOne({ email });
       if (exists) {
-        return res.status(400).send('User already exists!');
+        return res.status(400).render('register', {
+          errorMessage: 'An account with this email address already exists. Please sign in.',
+          formData: req.body
+        });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -48,21 +54,38 @@ router.post('/register',
       console.error('❌ Registration error:', error.message);
       
       if (error.name === 'MongoNetworkError' || error.name === 'MongooseServerSelectionError') {
-        return res.status(503).send('Database connection error. Please check your internet connection and try again.');
+        return res.status(503).render('register', {
+          errorMessage: 'Database connection error. Please try again.',
+          formData: req.body
+        });
       }
       
       if (error.name === 'ValidationError') {
-        return res.status(400).send('Invalid user data provided.');
+        return res.status(400).render('register', {
+          errorMessage: 'Invalid user data provided.',
+          formData: req.body
+        });
       }
       
-      res.status(500).send('Registration failed. Please try again.');
+      res.status(500).render('register', {
+        errorMessage: 'Registration failed. Please try again.',
+        formData: req.body
+      });
     }
   }
 );
 
 // Login Page
 router.get('/login', (req, res) => {
-  res.render('login');
+  let errorMessage = null;
+  if (req.query.error === 'oauth_failed') {
+    errorMessage = 'Social sign-in failed. Please try again or sign in with your email.';
+  } else if (req.query.error === 'session_failed') {
+    errorMessage = 'Session could not be established. Please try again.';
+  } else if (req.query.error) {
+    errorMessage = req.query.error;
+  }
+  res.render('login', { errorMessage, email: req.query.email || '' });
 });
 
 // Helper for safe post-login redirection based on role:
@@ -94,19 +117,32 @@ router.post('/login', loginLimiter, (req, res, next) => {
     if (err) {
       console.error('❌ Login authentication error:', err.message);
       if (err.name === 'MongoNetworkError' || err.name === 'MongooseServerSelectionError') {
-        return res.status(503).send('Database connection error. Please check your internet connection and try again.');
+        return res.status(503).render('login', {
+          errorMessage: 'Database connection error. Please try again in a moment.',
+          email: req.body.email || ''
+        });
       }
-      return res.status(500).send('Authentication failed. Please try again.');
+      return res.status(500).render('login', {
+        errorMessage: 'Authentication failed. Please try again.',
+        email: req.body.email || ''
+      });
     }
     
     if (!user) {
-      return res.status(401).send(info.message || 'Login failed');
+      const errMsg = info?.message || 'Incorrect password';
+      return res.status(401).render('login', {
+        errorMessage: errMsg,
+        email: req.body.email || ''
+      });
     }
     
     req.logIn(user, (loginErr) => {
       if (loginErr) {
         console.error('❌ Login session error:', loginErr.message);
-        return res.status(500).send('Login session failed. Please try again.');
+        return res.status(500).render('login', {
+          errorMessage: 'Login session failed. Please try again.',
+          email: req.body.email || ''
+        });
       }
       return redirectAfterLogin(req, res);
     });

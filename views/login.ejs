@@ -4,7 +4,7 @@
 }) %>
 <%- include('partials/navbar') %>
 
-<main id="main-content" class="auth-wrapper" x-data="{ showPassword: false, isSubmitting: false }">
+<main id="main-content" class="auth-wrapper" x-data="{ showPassword: false, isSubmitting: false, hasError: <%= Boolean(locals.errorMessage) ? 'true' : 'false' %>, clearError() { this.hasError = false; } }">
   <div class="auth-grid">
 
     <!-- Left Column: Editorial Showcase (Brand consistency with navbar) -->
@@ -153,6 +153,14 @@
 
       <!-- Email & Password Form -->
       <form action="/login" method="POST" class="space-y-2.5" @submit="isSubmitting = true">
+        <!-- Error Alert Banner -->
+        <% if (locals.errorMessage) { %>
+          <div x-show="hasError" class="p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 flex items-center gap-2 text-rose-600 dark:text-rose-400 text-xs font-medium" role="alert">
+            <%- icon('alert-circle', { class: 'w-4 h-4 shrink-0 text-rose-500' }) %>
+            <span><%= errorMessage %></span>
+          </div>
+        <% } %>
+
         <!-- Email Input -->
         <div class="space-y-1">
           <label for="email" class="form-label text-xs">Email address</label>
@@ -166,6 +174,8 @@
               name="email" 
               required 
               autocomplete="email"
+              value="<%= locals.email || '' %>"
+              @input="clearError()"
               placeholder="name@university.edu"
               class="auth-input"
             >
@@ -187,8 +197,10 @@
               name="password" 
               required 
               autocomplete="current-password"
+              @input="clearError()"
               placeholder="••••••••"
-              class="auth-input"
+              class="auth-input <%= locals.errorMessage ? 'border-rose-500 dark:border-rose-500' : '' %>"
+              :class="{ '!border-rose-500 !ring-1 !ring-rose-500/20': hasError }"
             >
             <button 
               type="button" 
@@ -204,6 +216,12 @@
               </span>
             </button>
           </div>
+          <% if (locals.errorMessage) { %>
+            <p x-show="hasError" class="text-xs text-rose-600 dark:text-rose-400 font-medium flex items-center gap-1.5 mt-1" id="login-error-text" role="alert">
+              <%- icon('alert-circle', { class: 'w-3.5 h-3.5 text-rose-500 shrink-0' }) %>
+              <span><%= errorMessage %></span>
+            </p>
+          <% } %>
         </div>
 
         <!-- Submit Button -->

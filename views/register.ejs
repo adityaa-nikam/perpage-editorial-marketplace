@@ -142,6 +142,13 @@
 
       <!-- Registration Form -->
       <form action="/register" method="POST" class="space-y-2.5" @submit="isSubmitting = true">
+        <!-- Error Alert Banner -->
+        <% if (locals.errorMessage) { %>
+          <div class="p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 flex items-center gap-2 text-rose-600 dark:text-rose-400 text-xs font-medium" role="alert">
+            <%- icon('alert-circle', { class: 'w-4 h-4 shrink-0 text-rose-500' }) %>
+            <span><%= errorMessage %></span>
+          </div>
+        <% } %>
         <!-- Interactive Role Selection Cards -->
         <div class="space-y-1">
           <label class="form-label text-xs">Select your role</label>
