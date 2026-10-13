@@ -176,39 +176,45 @@
       </div>
 
       <!-- Right Column: Interactive PerPage Workflow Component (Smooth 2s Auto-Switching) -->
+      <script nonce="<%= locals.cspNonce || '' %>">
+        function heroWorkflowComponent() {
+          return {
+            activeStep: 1,
+            timer: null,
+            isPaused: false,
+            steps: [
+              { id: 1, tag: '01', title: 'Price', desc: 'Upfront rates' },
+              { id: 2, tag: '02', title: 'Pair', desc: 'Editor match' },
+              { id: 3, tag: '03', title: 'Revise', desc: 'Tracked changes' },
+              { id: 4, tag: '04', title: 'Deliver', desc: 'Final draft' }
+            ],
+            init() {
+              this.startAutoSwitch();
+            },
+            startAutoSwitch() {
+              if (this.timer) clearInterval(this.timer);
+              this.timer = setInterval(() => {
+                if (!this.isPaused) {
+                  this.nextStep();
+                }
+              }, 2000);
+            },
+            setStep(step) {
+              this.activeStep = step;
+            },
+            nextStep() {
+              this.activeStep = this.activeStep >= 4 ? 1 : this.activeStep + 1;
+            },
+            prevStep() {
+              this.activeStep = this.activeStep <= 1 ? 4 : this.activeStep - 1;
+            }
+          };
+        }
+      </script>
+
       <div 
         class="lg:col-span-5"
-        x-data="{
-          activeStep: 1,
-          timer: null,
-          isPaused: false,
-          steps: [
-            { id: 1, tag: '01', title: 'Price', desc: 'Upfront rates' },
-            { id: 2, tag: '02', title: 'Pair', desc: 'Editor match' },
-            { id: 3, tag: '03', title: 'Revise', desc: 'Tracked changes' },
-            { id: 4, tag: '04', title: 'Deliver', desc: 'Final draft' }
-          ],
-          init() {
-            this.startAutoSwitch();
-          },
-          startAutoSwitch() {
-            if (this.timer) clearInterval(this.timer);
-            this.timer = setInterval(() => {
-              if (!this.isPaused) {
-                this.nextStep();
-              }
-            }, 2000);
-          },
-          setStep(step) {
-            this.activeStep = step;
-          },
-          nextStep() {
-            this.activeStep = this.activeStep >= 4 ? 1 : this.activeStep + 1;
-          },
-          prevStep() {
-            this.activeStep = this.activeStep <= 1 ? 4 : this.activeStep - 1;
-          }
-        }"
+        x-data="heroWorkflowComponent()"
         @mouseenter="isPaused = true"
         @mouseleave="isPaused = false"
       >
@@ -609,13 +615,19 @@
               const bufferSize = Math.floor(ctx.sampleRate * 2.5);
               cachedNoiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
               const output = cachedNoiseBuffer.getChannelData(0);
-              let b0 = 0, b1 = 0, b2 = 0;
+              // Gardner 6-pole natural pink noise for velvety, silky air swoosh
+              let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
               for (let i = 0; i < bufferSize; i++) {
                 const white = Math.random() * 2 - 1;
-                b0 = 0.997 * b0 + white * 0.05;
-                b1 = 0.985 * b1 + white * 0.11;
-                b2 = 0.950 * b2 + white * 0.25;
-                output[i] = (b0 + b1 + b2) * 0.24;
+                b0 = 0.99886 * b0 + white * 0.0555179;
+                b1 = 0.99332 * b1 + white * 0.0750759;
+                b2 = 0.96900 * b2 + white * 0.1538520;
+                b3 = 0.86650 * b3 + white * 0.3104856;
+                b4 = 0.55000 * b4 + white * 0.5329522;
+                b5 = -0.7616 * b5 - white * 0.0168980;
+                const pink = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                b6 = white * 0.115926;
+                output[i] = pink * 0.06;
               }
             } catch (e) {}
           }
@@ -627,10 +639,10 @@
         window.addEventListener(evt, ensureAudioReady, { once: true, passive: true });
       });
 
-      function playPremiumZoomSound() {
+      function playZoomOutSound() {
         if (motion.matches) return;
         const now = Date.now();
-        if (now - lastSoundTime < 2500) return; // 2.5s cooldown
+        if (now - lastSoundTime < 1800) return; // 1.8s cooldown
         lastSoundTime = now;
 
         ensureAudioReady();
@@ -639,84 +651,106 @@
 
         try {
           const t0 = ctx.currentTime;
-          const duration = 2.4; // 2.4 seconds
+          const duration = 2.0; // 2.0s sleek, cinematic zoom-out sound effect
 
-          // Master Gain - Fast crisp attack (< 50ms) to eliminate audio lag!
+          // Master bus with fast attack (< 35ms) and smooth cinematic release
           const masterGain = ctx.createGain();
           masterGain.gain.setValueAtTime(0.0001, t0);
-          masterGain.gain.exponentialRampToValueAtTime(0.24, t0 + 0.05);
-          masterGain.gain.linearRampToValueAtTime(0.26, t0 + 0.5);
+          masterGain.gain.exponentialRampToValueAtTime(0.28, t0 + 0.035);
+          masterGain.gain.exponentialRampToValueAtTime(0.22, t0 + 0.5);
           masterGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
           masterGain.connect(ctx.destination);
 
-          // 1. Instant Deep Sub-Bass Swell (hits immediately with the visual zoom)
-          const subOsc = ctx.createOscillator();
-          subOsc.type = 'sine';
-          subOsc.frequency.setValueAtTime(45, t0);
-          subOsc.frequency.exponentialRampToValueAtTime(95, t0 + 0.5);
-          subOsc.frequency.linearRampToValueAtTime(50, t0 + duration);
+          // 1. Optical Lens Servo Glide (Descending dual-harmonic tone: 560Hz -> 160Hz, 840Hz -> 240Hz)
+          const toneOsc1 = ctx.createOscillator();
+          toneOsc1.type = 'sine';
+          toneOsc1.frequency.setValueAtTime(560, t0);
+          toneOsc1.frequency.exponentialRampToValueAtTime(160, t0 + duration * 0.85);
 
-          const subGain = ctx.createGain();
-          subGain.gain.setValueAtTime(0.0001, t0);
-          subGain.gain.exponentialRampToValueAtTime(0.7, t0 + 0.06);
-          subGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+          const toneOsc2 = ctx.createOscillator();
+          toneOsc2.type = 'sine';
+          toneOsc2.frequency.setValueAtTime(840, t0);
+          toneOsc2.frequency.exponentialRampToValueAtTime(240, t0 + duration * 0.85);
 
-          subOsc.connect(subGain);
-          subGain.connect(masterGain);
-          subOsc.start(t0);
-          subOsc.stop(t0 + duration);
+          const toneGain = ctx.createGain();
+          toneGain.gain.setValueAtTime(0.0001, t0);
+          toneGain.gain.exponentialRampToValueAtTime(0.16, t0 + 0.04);
+          toneGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration * 0.88);
 
-          // 2. Warm Cinematic Harmonic Body (120Hz -> 180Hz)
-          const midOsc = ctx.createOscillator();
-          midOsc.type = 'triangle';
-          midOsc.frequency.setValueAtTime(120, t0);
-          midOsc.frequency.exponentialRampToValueAtTime(180, t0 + 0.45);
+          toneOsc1.connect(toneGain);
+          toneOsc2.connect(toneGain);
+          toneGain.connect(masterGain);
 
-          const midFilter = ctx.createBiquadFilter();
-          midFilter.type = 'lowpass';
-          midFilter.frequency.setValueAtTime(220, t0);
-          midFilter.frequency.exponentialRampToValueAtTime(750, t0 + 0.4);
-          midFilter.frequency.exponentialRampToValueAtTime(140, t0 + duration);
+          toneOsc1.start(t0);
+          toneOsc1.stop(t0 + duration);
+          toneOsc2.start(t0);
+          toneOsc2.stop(t0 + duration);
 
-          const midGain = ctx.createGain();
-          midGain.gain.setValueAtTime(0.0001, t0);
-          midGain.gain.exponentialRampToValueAtTime(0.35, t0 + 0.06);
-          midGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
-
-          midOsc.connect(midFilter);
-          midFilter.connect(midGain);
-          midGain.connect(masterGain);
-          midOsc.start(t0);
-          midOsc.stop(t0 + duration);
-
-          // 3. Crisp Airy Rush Whoosh (using pre-cached noise buffer - 0ms CPU latency!)
+          // 2. Velvet Aerodynamic Air Swoosh (Descending resonant lowpass filter: 2800Hz -> 260Hz)
           if (cachedNoiseBuffer) {
             const noiseSource = ctx.createBufferSource();
             noiseSource.buffer = cachedNoiseBuffer;
 
             const noiseFilter = ctx.createBiquadFilter();
-            noiseFilter.type = 'bandpass';
-            noiseFilter.Q.value = 1.4;
-            noiseFilter.frequency.setValueAtTime(280, t0);
-            noiseFilter.frequency.exponentialRampToValueAtTime(1350, t0 + 0.45);
-            noiseFilter.frequency.exponentialRampToValueAtTime(260, t0 + duration);
+            noiseFilter.type = 'lowpass';
+            noiseFilter.Q.value = 2.0; // Warm acoustic resonance
+            noiseFilter.frequency.setValueAtTime(2800, t0);
+            noiseFilter.frequency.exponentialRampToValueAtTime(260, t0 + duration * 0.85);
 
             const noiseGain = ctx.createGain();
             noiseGain.gain.setValueAtTime(0.0001, t0);
-            noiseGain.gain.exponentialRampToValueAtTime(0.45, t0 + 0.05);
+            noiseGain.gain.exponentialRampToValueAtTime(0.38, t0 + 0.035);
+            noiseGain.gain.exponentialRampToValueAtTime(0.28, t0 + 0.45);
             noiseGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
 
             noiseSource.connect(noiseFilter);
             noiseFilter.connect(noiseGain);
             noiseGain.connect(masterGain);
+
             noiseSource.start(t0);
             noiseSource.stop(t0 + duration);
           }
 
-        } catch (err) {
-          // Graceful fallback
-        }
+          // 3. Warm Cinematic Body Bed (Subtle low-end depth: 120Hz -> 48Hz)
+          const subOsc = ctx.createOscillator();
+          subOsc.type = 'triangle';
+          subOsc.frequency.setValueAtTime(120, t0);
+          subOsc.frequency.exponentialRampToValueAtTime(48, t0 + duration * 0.7);
+
+          const subGain = ctx.createGain();
+          subGain.gain.setValueAtTime(0.0001, t0);
+          subGain.gain.exponentialRampToValueAtTime(0.24, t0 + 0.045);
+          subGain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration * 0.75);
+
+          subOsc.connect(subGain);
+          subGain.connect(masterGain);
+
+          subOsc.start(t0);
+          subOsc.stop(t0 + duration);
+
+          // 4. Ethereal Glass Chime Tail (Settling sparkle: 1046Hz -> 784Hz)
+          const chimeOsc = ctx.createOscillator();
+          chimeOsc.type = 'sine';
+          chimeOsc.frequency.setValueAtTime(1046, t0 + 0.12);
+          chimeOsc.frequency.exponentialRampToValueAtTime(784, t0 + duration * 0.8);
+
+          const chimeGain = ctx.createGain();
+          chimeGain.gain.setValueAtTime(0.0001, t0);
+          chimeGain.gain.setValueAtTime(0.0001, t0 + 0.12);
+          chimeGain.linearRampToValueAtTime(0.035, t0 + 0.22);
+          chimeGain.exponentialRampToValueAtTime(0.0001, t0 + duration * 0.95);
+
+          chimeOsc.connect(chimeGain);
+          chimeGain.connect(masterGain);
+
+          chimeOsc.start(t0 + 0.12);
+          chimeOsc.stop(t0 + duration);
+
+        } catch (err) {}
       }
+
+      // Backward-compatible alias
+      const playPremiumZoomSound = playZoomOutSound;
 
       function paint(progress) {
         const isStatic = motion.matches || !browserFrameSeen || stalled || !target;
@@ -750,10 +784,10 @@
         section.style.setProperty("--gp-caption-hit", p < 0.08 ? "auto" : "none");
         section.dataset.gpEntered = String(p >= 0.9);
 
-        // Play premium zoom-in sound effect instantly as the camera begins expanding through the letter
+        // Play premium zoom-out sound effect instantly as the camera begins expanding through the letter
         if (!soundTriggered && p > 0.015 && p < 0.75) {
           soundTriggered = true;
-          playPremiumZoomSound();
+          playZoomOutSound();
         } else if (p < 0.005 || p > 0.92) {
           soundTriggered = false;
         }
@@ -828,7 +862,7 @@
         const button = event.target.closest("[data-gp-letter]");
         const next = candidates.find(c => c.index === Number(button?.dataset.gpLetter));
         if (!next || next === target) return;
-        playPremiumZoomSound();
+        playZoomOutSound();
         select(next); paint(position());
       }
 
@@ -839,14 +873,14 @@
       const enterLink = section.querySelector("[data-gp-enter]");
       if (enterLink) {
         enterLink.addEventListener("click", () => {
-          playPremiumZoomSound();
+          playZoomOutSound();
         });
       }
       if (picker) {
         picker.addEventListener("change", () => {
           if (!choosing || position() >= 0.04) return;
           const next = candidates.find(c => c.index === Number(picker.value));
-          if (next) { playPremiumZoomSound(); select(next); paint(position()); }
+          if (next) { playZoomOutSound(); select(next); paint(position()); }
         });
       }
 
