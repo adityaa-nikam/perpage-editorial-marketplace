@@ -2,7 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0f17" media="(prefers-color-scheme: dark)">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
   <title><%= typeof pageTitle !== 'undefined' ? pageTitle : (typeof title !== 'undefined' ? title : 'PerPage — Document Editing & Feedback Marketplace') %></title>
   <meta name="description" content="<%= typeof metaDescription !== 'undefined' ? metaDescription : 'PerPage is a demonstration marketplace for editing and feedback on your own documents, connecting clients with freelance editors with upfront per-page rates.' %>">
   <link rel="canonical" href="<%= typeof canonical !== 'undefined' ? canonical : ('https://perpage.onrender.com' + (locals.currentPath || '/')) %>">

@@ -537,6 +537,22 @@
         </span>
       </button>
 
+      <% if (currentUser) { %>
+        <a 
+          href="/dashboard"
+          class="relative flex items-center justify-center w-8 h-8 rounded-full border border-[var(--border-color)] bg-[var(--bg-surface-muted)] text-[var(--text-ink)] hover:bg-[var(--bg-surface)] transition-all duration-150 shadow-xs"
+          aria-label="Notifications"
+        >
+          <%- icon('bell', { class: 'w-3.5 h-3.5 text-[var(--text-muted)]' }) %>
+          <template x-if="unreadNotifCount > 0">
+            <span 
+              class="absolute -top-1 -right-1 flex items-center justify-center min-w-[15px] h-3.5 px-0.5 rounded-full bg-[var(--primary)] text-[var(--primary-foreground)] text-[9px] font-mono font-bold leading-none shadow-xs"
+              x-text="unreadNotifCount"
+            ></span>
+          </template>
+        </a>
+      <% } %>
+
       <button 
         type="button" 
         @click="mobileMenuOpen = !mobileMenuOpen"
@@ -571,38 +587,41 @@
     <nav class="flex flex-col gap-1" aria-label="Mobile Navigation">
       <a 
         href="/home" 
-        class="px-3.5 py-2 text-sm font-medium rounded-lg <%= isActive('/home') ? 'bg-[var(--bg-surface-muted)] text-[var(--text-ink)] font-semibold' : 'text-[var(--text-muted)] hover:text-[var(--text-ink)] hover:bg-[var(--bg-surface-muted)]' %>"
+        class="px-3.5 py-2.5 text-sm font-medium rounded-lg <%= isActive('/home') ? 'bg-[var(--bg-surface-muted)] text-[var(--text-ink)] font-semibold' : 'text-[var(--text-muted)] hover:text-[var(--text-ink)] hover:bg-[var(--bg-surface-muted)]' %>"
       >
         Home
       </a>
       <a 
         href="/writers" 
-        class="px-3.5 py-2 text-sm font-medium rounded-lg <%= isActive('/writers') ? 'bg-[var(--bg-surface-muted)] text-[var(--text-ink)] font-semibold' : 'text-[var(--text-muted)] hover:text-[var(--text-ink)] hover:bg-[var(--bg-surface-muted)]' %>"
+        class="px-3.5 py-2.5 text-sm font-medium rounded-lg <%= isActive('/writers') ? 'bg-[var(--bg-surface-muted)] text-[var(--text-ink)] font-semibold' : 'text-[var(--text-muted)] hover:text-[var(--text-ink)] hover:bg-[var(--bg-surface-muted)]' %>"
       >
         Editors
       </a>
       <a 
         href="/leaderboard" 
-        class="px-3.5 py-2 text-sm font-medium rounded-lg <%= isActive('/leaderboard') ? 'bg-[var(--bg-surface-muted)] text-[var(--text-ink)] font-semibold' : 'text-[var(--text-muted)] hover:text-[var(--text-ink)] hover:bg-[var(--bg-surface-muted)]' %>"
+        class="px-3.5 py-2.5 text-sm font-medium rounded-lg <%= isActive('/leaderboard') ? 'bg-[var(--bg-surface-muted)] text-[var(--text-ink)] font-semibold' : 'text-[var(--text-muted)] hover:text-[var(--text-ink)] hover:bg-[var(--bg-surface-muted)]' %>"
       >
         Leaderboard
       </a>
       <a 
         href="/about" 
-        class="px-3.5 py-2 text-sm font-medium rounded-lg <%= isActive('/about') ? 'bg-[var(--bg-surface-muted)] text-[var(--text-ink)] font-semibold' : 'text-[var(--text-muted)] hover:text-[var(--text-ink)] hover:bg-[var(--bg-surface-muted)]' %>"
+        class="px-3.5 py-2.5 text-sm font-medium rounded-lg <%= isActive('/about') ? 'bg-[var(--bg-surface-muted)] text-[var(--text-ink)] font-semibold' : 'text-[var(--text-muted)] hover:text-[var(--text-ink)] hover:bg-[var(--bg-surface-muted)]' %>"
       >
         About
       </a>
       <% if (currentUser) { %>
         <a 
           href="/dashboard" 
-          class="px-3.5 py-2 text-sm font-medium rounded-lg <%= isActive('/dashboard') ? 'bg-[var(--bg-surface-muted)] text-[var(--text-ink)] font-semibold' : 'text-[var(--text-muted)] hover:text-[var(--text-ink)] hover:bg-[var(--bg-surface-muted)]' %>"
+          class="px-3.5 py-2.5 text-sm font-medium rounded-lg flex items-center justify-between <%= isActive('/dashboard') ? 'bg-[var(--bg-surface-muted)] text-[var(--text-ink)] font-semibold' : 'text-[var(--text-muted)] hover:text-[var(--text-ink)] hover:bg-[var(--bg-surface-muted)]' %>"
         >
-          Dashboard
+          <span>Dashboard</span>
+          <template x-if="unreadNotifCount > 0">
+            <span class="badge badge-accent text-[10px]" x-text="unreadNotifCount + ' unread'"></span>
+          </template>
         </a>
         <a 
           href="/profile/<%= currentUser._id %>" 
-          class="px-3.5 py-2 text-sm font-medium rounded-lg <%= isActive('/profile') ? 'bg-[var(--bg-surface-muted)] text-[var(--text-ink)] font-semibold' : 'text-[var(--text-muted)] hover:text-[var(--text-ink)] hover:bg-[var(--bg-surface-muted)]' %>"
+          class="px-3.5 py-2.5 text-sm font-medium rounded-lg <%= isActive('/profile') ? 'bg-[var(--bg-surface-muted)] text-[var(--text-ink)] font-semibold' : 'text-[var(--text-muted)] hover:text-[var(--text-ink)] hover:bg-[var(--bg-surface-muted)]' %>"
         >
           Your Profile
         </a>
