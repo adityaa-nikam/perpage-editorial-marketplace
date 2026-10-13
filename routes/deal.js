@@ -11,7 +11,7 @@ import { User } from '../models/User.js';
 import Review from '../models/Review.js';
 import { dealActionLimiter } from '../config/limits.js';
 import { createNotification } from '../utils/notifications.js';
-import { sendOrderAcceptedEmail } from '../utils/receiptMailer.js';
+import { sendOrderAcceptedEmail, sendOrderCompletedEmail } from '../utils/receiptMailer.js';
 
 const router = express.Router();
 
@@ -1061,13 +1061,20 @@ router.post('/:id/complete', checkAuthenticated, async (req, res) => {
       console.warn('Could not dispatch deal complete notification:', notifErr.message);
     }
 
-    // Lookup editor name for smooth direct review modal presentation
+    // Lookup editor name for smooth direct review modal presentation and send completion email
     let editorName = 'Editor';
     try {
       if (isDbConnected && deal.writerId) {
-        const writerUser = await User.findById(deal.writerId).select('name');
+        const writerUser = await User.findById(deal.writerId).select('name email').lean();
         if (writerUser && writerUser.name) {
           editorName = writerUser.name;
+        }
+        if (writerUser && writerUser.email) {
+          sendOrderCompletedEmail({
+            client: { name: req.user?.name || 'Client', email: req.user?.email || '' },
+            editor: { name: writerUser.name || 'Editor', email: writerUser.email },
+            deal
+          }).catch(mailErr => console.warn('Order completed email error:', mailErr.message));
         }
       }
     } catch (_) {}

@@ -181,7 +181,7 @@ function generateEditorEscrowHtml({ receiptData, client, editor, deal }) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payment Secured in Escrow — PerPage</title>
+  <title>Payment Confirmed — PerPage</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f6f8; margin: 0; padding: 20px; -webkit-font-smoothing: antialiased; }
     .card { max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,0.06); border: 1px solid #e2e8f0; }
@@ -201,13 +201,13 @@ function generateEditorEscrowHtml({ receiptData, client, editor, deal }) {
 <body>
   <div class="card">
     <div class="header">
-      <h1>Payment Secured in Escrow</h1>
-      <div class="badge">Deal #${shortId} • Authorized to Begin</div>
+      <h1>Payment Confirmed by Client</h1>
+      <div class="badge">Deal #${shortId} • Authorized to Begin Review</div>
     </div>
     
     <div class="amount-box">
       <div class="amount">₹${Number(amount).toFixed(2)}</div>
-      <div class="status">✓ Milestone Funded by Client</div>
+      <div class="status">✓ Paid by Client via Razorpay</div>
     </div>
 
     <div class="details">
@@ -230,7 +230,7 @@ function generateEditorEscrowHtml({ receiptData, client, editor, deal }) {
         </tr>
         <tr style="border-bottom: 1px solid #f1f5f9;">
           <td style="padding: 10px 0; color: #64748b; font-size: 13px;">Status</td>
-          <td style="padding: 10px 0; color: #047857; font-weight: 700; font-size: 13px; text-align: right;">Held in Platform Escrow</td>
+          <td style="padding: 10px 0; color: #047857; font-weight: 700; font-size: 13px; text-align: right;">Held in Platform Balance</td>
         </tr>
       </table>
     </div>
@@ -344,20 +344,20 @@ export async function sendRazorpayReceiptEmail({
       );
     }
 
-    // 2. Dispatch official Escrow Secured alert to Editor
-    if (editorEmail && editorEmail !== clientEmail) {
+    // 2. Dispatch official payment received alert to Editor
+    if (editorEmail) {
       const editorHtml = generateEditorEscrowHtml({ receiptData, client, editor, deal });
       dispatchJobs.push(
         mailTransporter.sendMail({
-          from: `"PerPage Milestone Escrow" <${process.env.EMAIL_USER || 'no-reply@perpage.edu'}>`,
+          from: `"PerPage Platform" <${process.env.EMAIL_USER || 'no-reply@perpage.edu'}>`,
           to: editorEmail,
-          subject: `Payment Secured in Escrow: ₹${receiptData.amount} for Deal #${receiptData.dealShortId}`,
-          text: `Client ${client?.name || 'Client'} has funded Deal #${receiptData.dealShortId} with ₹${receiptData.amount} (Razorpay ID: ${receiptData.paymentId}). You are authorized to begin review. Open queue: ${process.env.SITE_URL || 'https://perpage-app.onrender.com'}/dashboard?view=incoming`,
+          subject: `Payment Confirmed: ₹${receiptData.amount} Received for Deal #${receiptData.dealShortId}`,
+          text: `Client ${client?.name || 'Client'} has paid ₹${receiptData.amount} for Deal #${receiptData.dealShortId} via Razorpay (ID: ${receiptData.paymentId}). You are authorized to begin review. Open queue: ${process.env.SITE_URL || 'https://perpage-app.onrender.com'}/dashboard?view=incoming`,
           html: editorHtml
         }).then(info => {
-          console.log(`✅ [Nodemailer] Editor Escrow Alert delivered to ${editorEmail} (${info.messageId})`);
+          console.log(`✅ [Nodemailer] Editor Payment Alert delivered to ${editorEmail} (${info.messageId})`);
         }).catch(err => {
-          console.warn(`⚠️ [Nodemailer] Could not send escrow alert to editor ${editorEmail}:`, err.message);
+          console.warn(`⚠️ [Nodemailer] Could not send payment alert to editor ${editorEmail}:`, err.message);
         })
       );
     }
@@ -452,7 +452,74 @@ export async function sendOrderAcceptedEmail({ client, editor, deal }) {
   return null;
 }
 
+/**
+ * Dispatch official Editor "Order Completed & Funds Released" Notification Email
+ */
+export async function sendOrderCompletedEmail({ client, editor, deal }) {
+  if (!editor || !editor.email) return null;
+  const dealShortId = deal?._id ? deal._id.toString().slice(-6).toUpperCase() : '000000';
+  const totalPrice = deal?.totalPrice ? `₹${Number(deal.totalPrice).toLocaleString('en-IN')}` : '₹0';
+  const siteUrl = (process.env.SITE_URL || 'https://perpage-app.onrender.com').replace(/\/+$/, '');
+  const clientName = client?.name || 'The client';
+
+  const mailTransporter = getTransporter();
+  if (mailTransporter) {
+    try {
+      const emailHtml = `<!DOCTYPE html>
+<html>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f8fafc; margin: 0; padding: 24px; color: #0f172a;">
+  <div style="max-width: 560px; margin: 0 auto; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; padding: 32px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+    <div style="margin-bottom: 24px;">
+      <span style="font-family: Georgia, serif; font-size: 20px; font-weight: bold; color: #0f172a;">perpage<span style="color: #0284c7;">.</span></span>
+    </div>
+    <div style="display: inline-block; padding: 4px 10px; border-radius: 9999px; background: #dcfce7; color: #166534; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 16px;">
+      Order Completed · Payout Ready
+    </div>
+    <h1 style="font-size: 20px; margin: 0 0 12px; font-weight: 700; color: #0f172a;">
+      ${clientName} confirmed receipt for Order #${dealShortId}
+    </h1>
+    <p style="font-size: 14px; line-height: 1.6; color: #475569; margin: 0 0 20px;">
+      Great work! The client has accepted your delivered draft and marked the review as completed. Your earnings of <strong>${totalPrice}</strong> are confirmed.
+    </p>
+    <div style="background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; padding: 16px; margin-bottom: 24px;">
+      <table style="width: 100%; font-size: 13px; color: #475569;">
+        <tr>
+          <td style="padding: 4px 0;">Order Reference:</td>
+          <td style="padding: 4px 0; text-align: right; font-weight: 600; color: #0f172a;">DEAL #${dealShortId}</td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 0;">Total Earnings:</td>
+          <td style="padding: 4px 0; text-align: right; font-weight: 700; color: #16a34a; font-size: 15px;">${totalPrice}</td>
+        </tr>
+      </table>
+    </div>
+    <div style="text-align: center; margin-bottom: 24px;">
+      <a href="${siteUrl}/dashboard?status=completed" style="display: inline-block; background: #0284c7; color: #ffffff; padding: 12px 28px; border-radius: 9999px; font-weight: 600; font-size: 14px; text-decoration: none;">
+        View Completed Orders &rarr;
+      </a>
+    </div>
+  </div>
+</body>
+</html>`;
+
+      const info = await mailTransporter.sendMail({
+        from: `"PerPage Platform" <${process.env.EMAIL_USER || 'no-reply@perpage.edu'}>`,
+        to: editor.email,
+        subject: `Order #${dealShortId} Completed — Earnings Confirmed (${totalPrice})`,
+        text: `Client ${clientName} confirmed receipt for Order #${dealShortId}. Earnings of ${totalPrice} are confirmed. View dashboard: ${siteUrl}/dashboard?status=completed`,
+        html: emailHtml
+      });
+      console.log(`✅ [Nodemailer] Order Completed email sent to editor ${editor.email} (${info.messageId})`);
+      return info;
+    } catch (err) {
+      console.warn(`⚠️ [Nodemailer] Could not send completed email to editor ${editor.email}:`, err.message);
+    }
+  }
+  return null;
+}
+
 export default {
   sendRazorpayReceiptEmail,
-  sendOrderAcceptedEmail
+  sendOrderAcceptedEmail,
+  sendOrderCompletedEmail
 };
