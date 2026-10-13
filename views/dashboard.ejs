@@ -415,17 +415,10 @@
 
                   <div id="pay-action-top-<%= deal._id %>" class="shrink-0">
                   <% if (!isIncoming && isAccepted && deal.paymentStatus !== 'paid' && !isDeclined) { %>
-                    <button 
-                      type="button" 
-                      @click="initiatePayment('<%= deal._id %>', <%= deal.totalPrice %>, '<%= counterpartName %>')"
-                      class="btn btn-razorpay btn-sm rounded-full inline-flex items-center gap-2 shadow-sm text-xs py-1.5 px-3.5 cursor-pointer shrink-0"
-                      id="pay-btn-<%= deal._id %>"
-                      aria-label="Pay ₹<%= Number(deal.totalPrice || 0).toLocaleString('en-IN') %> with Razorpay"
-                    >
-                      <%- icon('razorpay', { class: 'w-3.5 h-3.5 fill-current text-sky-200 shrink-0' }) %>
-                      <span class="font-semibold tracking-tight">Pay ₹<%= Number(deal.totalPrice || 0).toLocaleString('en-IN') %></span>
-                      <span class="text-[9px] font-medium uppercase tracking-wider bg-white/20 py-0.5 px-1.5 rounded-full">Razorpay</span>
-                    </button>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 text-[11px] font-medium border border-emerald-200/60 dark:border-emerald-800/40">
+                      <%- icon('clock', { class: 'w-3 h-3 text-emerald-500 shrink-0' }) %>
+                      <span>Payment Due</span>
+                    </span>
                   <% } else if (!isIncoming && isPending) { %>
                     <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 text-[11px] font-medium border border-amber-200/60 dark:border-amber-800/40">
                       <%- icon('clock', { class: 'w-3 h-3 text-amber-500 shrink-0' }) %>
@@ -654,7 +647,8 @@
                         <button 
                           type="button" 
                           @click="initiatePayment('<%= deal._id %>', <%= deal.totalPrice %>, '<%= counterpartName %>')" 
-                          class="btn btn-razorpay btn-sm py-1.5 px-3.5 rounded-full inline-flex items-center gap-1.5 shadow-xs"
+                          class="btn btn-razorpay btn-sm py-1.5 px-3.5 rounded-full inline-flex items-center gap-1.5 shadow-xs cursor-pointer"
+                          id="pay-btn-<%= deal._id %>"
                         >
                           <%- icon('razorpay', { class: 'w-3 h-3 fill-current' }) %>
                           <span>Pay ₹<%= Number(deal.totalPrice || 0).toLocaleString('en-IN') %></span>
