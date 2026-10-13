@@ -290,7 +290,7 @@
             const ratePerPage = (deal.pages && deal.totalPrice) ? Math.round(deal.totalPrice / deal.pages) : null;
           %>
 
-          <article id="deal-<%= deal._id %>" class="card card-ticket p-4 sm:p-5 flex flex-col justify-between h-full space-y-4" x-data="{ expanded: false }">
+          <article id="deal-<%= deal._id %>" class="card card-ticket p-4 sm:p-5 flex flex-col justify-between h-full space-y-4 <%= (isIncoming && isPending) ? 'ring-1 ring-blue-500/40 border-blue-500/30' : '' %>" x-data="{ expanded: false }">
             
             <!-- Top Content Container -->
             <div class="space-y-4">
@@ -325,13 +325,19 @@
                 </div>
 
                 <!-- Status Badge -->
-                <div class="shrink-0" id="status-badge-<%= deal._id %>">
+                <div class="shrink-0 flex items-center gap-1.5" id="status-badge-<%= deal._id %>">
                   <% if (isDeclined) { %>
                     <span class="badge badge-danger">
                       <%- icon('x', { class: 'w-3 h-3' }) %>
                       Declined
                     </span>
                   <% } else if (isPending) { %>
+                    <% if (isIncoming) { %>
+                      <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-600 text-white shadow-xs ring-2 ring-blue-500/20">
+                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                        New
+                      </span>
+                    <% } %>
                     <span class="badge badge-warning">
                       <%- icon('clock', { class: 'w-3 h-3' }) %>
                       Pending
