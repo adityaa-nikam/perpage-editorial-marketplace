@@ -153,8 +153,13 @@
 
       <!-- Email & Password Form -->
       <form action="/login" method="POST" class="space-y-2.5" @submit="isSubmitting = true">
-        <!-- Error Alert Banner -->
-        <% if (locals.errorMessage) { %>
+        <% 
+          const hasErrMsg = Boolean(locals.errorMessage);
+          const isPasswordErr = hasErrMsg && (errorMessage.toLowerCase().includes('password') || errorMessage.toLowerCase().includes('credential'));
+        %>
+
+        <!-- Top Error Alert Banner (Only for general/system errors; suppressed when incorrect password) -->
+        <% if (hasErrMsg && !isPasswordErr) { %>
           <div x-show="hasError" class="p-2.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 flex items-center gap-2 text-rose-600 dark:text-rose-400 text-xs font-medium" role="alert">
             <%- icon('alert-circle', { class: 'w-4 h-4 shrink-0 text-rose-500' }) %>
             <span><%= errorMessage %></span>
@@ -199,8 +204,8 @@
               autocomplete="current-password"
               @input="clearError()"
               placeholder="••••••••"
-              class="auth-input <%= locals.errorMessage ? 'border-rose-500 dark:border-rose-500' : '' %>"
-              :class="{ '!border-rose-500 !ring-1 !ring-rose-500/20': hasError }"
+              class="auth-input <%= isPasswordErr ? 'border-rose-500 dark:border-rose-500' : '' %>"
+              :class="{ '!border-rose-500 !ring-1 !ring-rose-500/20': hasError && <%= isPasswordErr %> }"
             >
             <button 
               type="button" 
@@ -216,7 +221,7 @@
               </span>
             </button>
           </div>
-          <% if (locals.errorMessage) { %>
+          <% if (hasErrMsg && isPasswordErr) { %>
             <p x-show="hasError" class="text-xs text-rose-600 dark:text-rose-400 font-medium flex items-center gap-1.5 mt-1" id="login-error-text" role="alert">
               <%- icon('alert-circle', { class: 'w-3.5 h-3.5 text-rose-500 shrink-0' }) %>
               <span><%= errorMessage %></span>
