@@ -55,6 +55,9 @@ function generateClientReceiptHtml({ receiptData, client, editor, deal }) {
   const amount = receiptData.amount;
   const paymentId = receiptData.paymentId;
   const orderId = receiptData.orderId;
+  const invoiceUrl = receiptData.invoiceUrl;
+  const invoiceId = receiptData.invoiceId;
+  const paymentMethod = receiptData.paymentMethod || 'Razorpay Gateway';
   const paidAt = receiptData.paidAt;
   const pages = deal?.pages || '—';
   const siteUrl = (process.env.SITE_URL || 'https://perpage-app.onrender.com').replace(/\/+$/, '');
@@ -113,6 +116,16 @@ function generateClientReceiptHtml({ receiptData, client, editor, deal }) {
           <td style="padding: 10px 0; color: #0f172a; font-weight: 600; font-size: 13px; text-align: right;">DEAL #${shortId}</td>
         </tr>
         <tr style="border-bottom: 1px solid #f1f5f9;">
+          <td style="padding: 10px 0; color: #64748b; font-size: 13px;">Payment Method</td>
+          <td style="padding: 10px 0; color: #0f172a; font-weight: 600; font-size: 13px; text-align: right;">${paymentMethod}</td>
+        </tr>
+        ${invoiceId ? `
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+          <td style="padding: 10px 0; color: #64748b; font-size: 13px;">Razorpay Invoice</td>
+          <td style="padding: 10px 0; color: #0f172a; font-weight: 600; font-size: 13px; text-align: right; font-family: monospace;">${invoiceId}</td>
+        </tr>
+        ` : ''}
+        <tr style="border-bottom: 1px solid #f1f5f9;">
           <td style="padding: 10px 0; color: #64748b; font-size: 13px;">Assigned Editor</td>
           <td style="padding: 10px 0; color: #0f172a; font-weight: 600; font-size: 13px; text-align: right;">${editor?.name || 'Freelance Editor'}</td>
         </tr>
@@ -123,8 +136,18 @@ function generateClientReceiptHtml({ receiptData, client, editor, deal }) {
       </table>
     </div>
 
+    ${invoiceUrl ? `
+    <div style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 14px 16px; margin: 15px 24px; text-align: center;">
+      <div style="font-size: 11px; text-transform: uppercase; color: #0284c7; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px;">Official Razorpay Hosted Receipt</div>
+      <p style="margin: 0 0 10px; font-size: 13px; color: #0369a1;">View the authentic live receipt and download the official PDF directly from Razorpay:</p>
+      <a href="${invoiceUrl}" target="_blank" style="display: inline-block; background: #0284c7; color: #ffffff !important; text-decoration: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; font-size: 13px;">
+        Open Official Razorpay Receipt (rzp.io) &rarr;
+      </a>
+    </div>
+    ` : ''}
+
     <div class="note-box">
-      <strong>Milestone Escrow Notice:</strong> Your payment of ₹${Number(amount).toFixed(2)} is secured in milestone escrow. Your assigned editor has been notified to begin work on your manuscript.
+      <strong>Order Balance Notice:</strong> Your payment of ₹${Number(amount).toFixed(2)} is confirmed on platform balance. Your assigned editor has been notified to begin work on your manuscript.
     </div>
 
     <div class="cta">
@@ -241,7 +264,17 @@ function generateEditorEscrowHtml({ receiptData, client, editor, deal }) {
  * 1. Payer Receipt to Client
  * 2. Escrow Funding Alert to Editor
  */
-export async function sendRazorpayReceiptEmail({ client, editor, deal, paymentId, orderId, paidAt = new Date() }) {
+export async function sendRazorpayReceiptEmail({
+  client,
+  editor,
+  deal,
+  paymentId,
+  orderId,
+  invoiceUrl,
+  invoiceId,
+  paymentMethod,
+  paidAt = new Date()
+}) {
   const receiptNumber = `RCPT-${deal._id ? deal._id.toString().slice(-6).toUpperCase() : '000000'}-${Date.now().toString().slice(-4)}`;
   const dateFormatted = new Intl.DateTimeFormat('en-IN', {
     timeZone: 'Asia/Kolkata',
@@ -257,6 +290,9 @@ export async function sendRazorpayReceiptEmail({ client, editor, deal, paymentId
     currency: 'INR',
     paymentId: paymentId || deal.razorpayPaymentId || 'pay_demo',
     orderId: orderId || deal.razorpayOrderId || 'order_demo',
+    invoiceUrl: invoiceUrl || deal.razorpayInvoiceUrl || '',
+    invoiceId: invoiceId || deal.razorpayInvoiceId || '',
+    paymentMethod: paymentMethod || deal.razorpayPaymentMethod || 'Razorpay Gateway',
     paidAt: dateFormatted,
     client: {
       name: client?.name || 'Client',
@@ -278,9 +314,9 @@ export async function sendRazorpayReceiptEmail({ client, editor, deal, paymentId
   console.log(`Amount:           ₹${receiptData.amount} (INR)`);
   console.log(`Payment ID:       ${receiptData.paymentId}`);
   console.log(`Order ID:         ${receiptData.orderId}`);
+  console.log(`Invoice URL:      ${receiptData.invoiceUrl || 'N/A'}`);
   console.log(`Date:             ${receiptData.paidAt}`);
-  console.log(`Status:           CAPTURED / ESCROW SECURED`);
-  console.log(`Gateway:          Secured by Razorpay`);
+  console.log(`Gateway:          Processed via Razorpay`);
   console.log(`============================================================\n`);
 
   const clientEmail = receiptData.client.email;
