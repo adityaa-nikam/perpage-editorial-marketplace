@@ -246,9 +246,9 @@
       </div>
     </div>
 
-    <!-- Deals Listing (Minimal Tile-Wise List Stack) -->
+    <!-- Deals Listing (2-Column Grid on md+, Stacked on mobile) -->
     <% if (safeDeals.length > 0) { %>
-      <div class="flex flex-col gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5">
         <% safeDeals.forEach((deal, index) => { %>
           <% 
             const isIncoming = safeView === 'incoming';
@@ -265,7 +265,7 @@
             const ratePerPage = (deal.pages && deal.totalPrice) ? Math.round(deal.totalPrice / deal.pages) : null;
           %>
 
-          <article class="card card-ticket p-4 sm:p-6 flex flex-col justify-between space-y-4" x-data="{ expanded: false }">
+          <article class="card card-ticket p-4 sm:p-5 flex flex-col justify-between h-full space-y-4" x-data="{ expanded: false }">
             
             <!-- Top Content Container -->
             <div class="space-y-4">
