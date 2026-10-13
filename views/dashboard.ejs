@@ -602,7 +602,7 @@
                         <!-- Review Button -->
                         <button 
                           type="button" 
-                          @click="openReviewModal('<%= deal._id %>', '<%= deal.writerName || 'Editor' %>', '<%= deal.writerId?._id || deal.writerId %>')" 
+                          @click="openReviewModal('<%= deal._id %>', '<%= (counterpartName || 'Editor').replace(/'/g, "\\'") %>')" 
                           class="btn btn-secondary btn-sm text-xs py-1.5 px-3 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40"
                           id="review-btn-<%= deal._id %>"
                         >
@@ -1187,6 +1187,9 @@
             Done
           </button>
         </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Review & Rating Modal -->
   <div 
@@ -1439,8 +1442,9 @@
       submitAccept(event) {
         const btn = event.target.querySelector('button[type="submit"]');
         if (btn) {
-          btn.disabled = true;
           btn.setAttribute('aria-busy', 'true');
+          btn.innerHTML = `<svg class="w-3.5 h-3.5 animate-spin mr-1 inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg> Accepting...`;
+          setTimeout(() => { btn.disabled = true; }, 0);
         }
       },
 

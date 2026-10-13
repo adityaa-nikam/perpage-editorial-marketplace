@@ -872,18 +872,16 @@ router.post('/accept/:id', checkAuthenticated, async (req, res) => {
           clientUser = deal.userId;
         }
         if (clientUser && clientUser.email) {
-          try {
-            await sendOrderAcceptedEmail({ client: clientUser, editor: req.user, deal });
-          } catch (mailErr) {
+          sendOrderAcceptedEmail({ client: clientUser, editor: req.user, deal }).catch(mailErr => {
             console.error('Accept email dispatch error:', mailErr.message);
-          }
+          });
         }
       } catch (notifErr) {
         console.error('Accept notification error:', notifErr.message);
       }
     }
 
-    res.redirect('/dashboard?accepted=1');
+    return res.redirect('/dashboard?view=incoming&status=active&accepted=1');
   } catch (err) {
     console.error('Deal accept error:', err.message);
     res.redirect('/dashboard?error=invalid_state');

@@ -23,7 +23,10 @@ function getTransporter() {
       auth: {
         user: emailUser,
         pass: emailPass
-      }
+      },
+      pool: true,
+      maxConnections: 3,
+      maxMessages: 100
     });
     return transporter;
   }
@@ -285,39 +288,45 @@ export async function sendRazorpayReceiptEmail({ client, editor, deal, paymentId
   const mailTransporter = getTransporter();
 
   if (mailTransporter) {
+    const dispatchJobs = [];
+
     // 1. Dispatch official Payer Receipt to Client
     if (clientEmail) {
-      try {
-        const clientHtml = generateClientReceiptHtml({ receiptData, client, editor, deal });
-        const clientInfo = await mailTransporter.sendMail({
+      const clientHtml = generateClientReceiptHtml({ receiptData, client, editor, deal });
+      dispatchJobs.push(
+        mailTransporter.sendMail({
           from: `"PerPage Payment Gateway" <${process.env.EMAIL_USER || 'no-reply@perpage.edu'}>`,
           to: clientEmail,
           subject: `Payment receipt for your successful transaction on PerPage (ID: ${receiptData.paymentId})`,
           text: `Thank you for your payment of ₹${receiptData.amount} for Deal #${receiptData.dealShortId}. Payment ID: ${receiptData.paymentId}. Track your review: ${process.env.SITE_URL || 'https://perpage-app.onrender.com'}/dashboard`,
           html: clientHtml
-        });
-        console.log(`✅ [Nodemailer] Client Receipt delivered to ${clientEmail} (${clientInfo.messageId})`);
-      } catch (err) {
-        console.warn(`⚠️ [Nodemailer] Could not send receipt to client ${clientEmail}:`, err.message);
-      }
+        }).then(info => {
+          console.log(`✅ [Nodemailer] Client Receipt delivered to ${clientEmail} (${info.messageId})`);
+        }).catch(err => {
+          console.warn(`⚠️ [Nodemailer] Could not send receipt to client ${clientEmail}:`, err.message);
+        })
+      );
     }
 
     // 2. Dispatch official Escrow Secured alert to Editor
     if (editorEmail && editorEmail !== clientEmail) {
-      try {
-        const editorHtml = generateEditorEscrowHtml({ receiptData, client, editor, deal });
-        const editorInfo = await mailTransporter.sendMail({
+      const editorHtml = generateEditorEscrowHtml({ receiptData, client, editor, deal });
+      dispatchJobs.push(
+        mailTransporter.sendMail({
           from: `"PerPage Milestone Escrow" <${process.env.EMAIL_USER || 'no-reply@perpage.edu'}>`,
           to: editorEmail,
           subject: `Payment Secured in Escrow: ₹${receiptData.amount} for Deal #${receiptData.dealShortId}`,
           text: `Client ${client?.name || 'Client'} has funded Deal #${receiptData.dealShortId} with ₹${receiptData.amount} (Razorpay ID: ${receiptData.paymentId}). You are authorized to begin review. Open queue: ${process.env.SITE_URL || 'https://perpage-app.onrender.com'}/dashboard?view=incoming`,
           html: editorHtml
-        });
-        console.log(`✅ [Nodemailer] Editor Escrow Alert delivered to ${editorEmail} (${editorInfo.messageId})`);
-      } catch (err) {
-        console.warn(`⚠️ [Nodemailer] Could not send escrow alert to editor ${editorEmail}:`, err.message);
-      }
+        }).then(info => {
+          console.log(`✅ [Nodemailer] Editor Escrow Alert delivered to ${editorEmail} (${info.messageId})`);
+        }).catch(err => {
+          console.warn(`⚠️ [Nodemailer] Could not send escrow alert to editor ${editorEmail}:`, err.message);
+        })
+      );
     }
+
+    await Promise.allSettled(dispatchJobs);
   } else {
     console.log(`ℹ️ [Nodemailer] To enable live email delivery, configure EMAIL_USER & EMAIL_PASS in your environment.`);
   }

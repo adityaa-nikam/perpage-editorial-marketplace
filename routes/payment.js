@@ -177,11 +177,41 @@ router.post('/verify', checkAuthenticated, async (req, res) => {
     }
 
     if (deal) {
-      const clientObj = deal.userId || req.user || { name: 'Client', email: req.user?.email || '' };
-      const editorObj = deal.writerId || { name: 'Freelance Editor', email: '' };
+      let clientEmail = (deal.userId && deal.userId.email) || req.user?.email || '';
+      let clientName = (deal.userId && deal.userId.name) || req.user?.name || 'Client';
+      let editorEmail = (deal.writerId && deal.writerId.email) || '';
+      let editorName = (deal.writerId && deal.writerId.name) || 'Editor';
+
+      if (!editorEmail && deal.writerId) {
+        try {
+          const wId = deal.writerId._id || deal.writerId;
+          const wUser = await User.findById(wId).select('name email').lean();
+          if (wUser) {
+            editorEmail = wUser.email;
+            editorName = wUser.name;
+          }
+        } catch (_) {}
+      }
+      if (!clientEmail && deal.userId) {
+        try {
+          const uId = deal.userId._id || deal.userId;
+          const uUser = await User.findById(uId).select('name email').lean();
+          if (uUser) {
+            clientEmail = uUser.email;
+            clientName = uUser.name;
+          }
+        } catch (_) {}
+      }
+      if (!clientEmail && req.user) {
+        clientEmail = req.user.email || '';
+        clientName = req.user.name || clientName;
+      }
+
+      const clientObj = { name: clientName, email: clientEmail };
+      const editorObj = { name: editorName, email: editorEmail };
       const dealShortId = deal._id ? deal._id.toString().slice(-6).toUpperCase() : '000000';
 
-      // 1. Dispatch official Razorpay payment receipt email asynchronously (non-blocking)
+      // 1. Dispatch official Razorpay payment receipt email immediately
       sendRazorpayReceiptEmail({
         client: clientObj,
         editor: editorObj,
