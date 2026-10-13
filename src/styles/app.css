@@ -2772,7 +2772,7 @@ html:not(.dark) .glyph-portal-section {
 
 .glyph-portal-section [data-gp-caption] {
   position: absolute;
-  inset: auto 0 8%;
+  inset: auto 0 clamp(64px, 14vh, 110px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2781,6 +2781,7 @@ html:not(.dark) .glyph-portal-section {
   line-height: 1.4;
   opacity: var(--gp-caption, 1);
   pointer-events: var(--gp-caption-hit, auto);
+  z-index: 20;
 }
 
 .glyph-portal-section [data-gp-front] {
@@ -2997,7 +2998,7 @@ html:not(.dark) .glyph-portal-section {
 
 .gp-front-scroll {
   position: absolute;
-  inset: auto 24px 7%;
+  inset: auto 24px clamp(64px, 14vh, 110px);
   text-align: center;
   color: var(--text-muted);
   font-size: 11px;

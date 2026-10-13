@@ -1314,11 +1314,21 @@
           }
         } catch (e) {}
 
+        // Auto-open review modal if URL contains ?reviewDealId=... (immediately upon deal completion)
+        try {
+          const urlParams = new URLSearchParams(window.location.search);
+          const reviewParam = urlParams.get('reviewDealId');
+          if (reviewParam) {
+            const editorNameParam = urlParams.get('editorName') || 'Editor';
+            this.openReviewModal(reviewParam, editorNameParam);
+          }
+        } catch (e) {}
+
         // Clean notice query code from URL with history.replaceState so refresh does not re-trigger
-        if (hasNotice) {
+        if (hasNotice || window.location.search.includes('reviewDealId')) {
           try {
             const url = new URL(window.location.href);
-            ['created', 'accepted', 'rejected', 'uploaded', 'completed', 'error'].forEach(k => url.searchParams.delete(k));
+            ['created', 'accepted', 'rejected', 'uploaded', 'completed', 'error', 'reviewDealId', 'editorName'].forEach(k => url.searchParams.delete(k));
             window.history.replaceState({}, document.title, url.pathname + (url.search ? url.search : ''));
           } catch (e) {}
         }

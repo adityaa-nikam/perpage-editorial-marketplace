@@ -1063,7 +1063,18 @@ router.post('/:id/complete', checkAuthenticated, async (req, res) => {
       console.warn('Could not dispatch deal complete notification:', notifErr.message);
     }
 
-    return res.redirect('/dashboard?completed=1');
+    // Lookup editor name for smooth direct review modal presentation
+    let editorName = 'Editor';
+    try {
+      if (isDbConnected && deal.writerId) {
+        const writerUser = await User.findById(deal.writerId).select('name');
+        if (writerUser && writerUser.name) {
+          editorName = writerUser.name;
+        }
+      }
+    } catch (_) {}
+
+    return res.redirect(`/dashboard?completed=1&reviewDealId=${deal._id}&editorName=${encodeURIComponent(editorName)}`);
   } catch (err) {
     console.error('Deal complete error:', err.message);
     return res.redirect('/dashboard?error=server');
