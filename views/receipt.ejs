@@ -5,7 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Payment Receipt — Deal #<%= dealShortId %> — PerPage</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="stylesheet" href="/styles/app.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/app.css<%= locals.assetVersion ? ('?v=' + locals.assetVersion) : '' %>">
   <style>
     @media print {
       body {
@@ -92,7 +95,7 @@
 
         <div class="text-right flex flex-col items-end">
           <div class="flex items-center gap-1 text-[#0284c7] font-bold text-lg leading-none">
-            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M13.5 2L6 14h5.5l-2 8L20 9.5h-6.5L15 2h-1.5z"/></svg>
+            <svg class="w-5 h-5 fill-current shrink-0" width="20" height="20" viewBox="0 0 24 24"><path d="M13.5 2L6 14h5.5l-2 8L20 9.5h-6.5L15 2h-1.5z"/></svg>
             <span class="tracking-tight font-extrabold text-[#0284c7]">Razorpay</span>
           </div>
           <span class="text-[10px] text-gray-400 block mt-1">Invoicing and payments powered by Razorpay</span>
