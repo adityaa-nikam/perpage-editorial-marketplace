@@ -1585,7 +1585,10 @@
               'Content-Type': 'application/json',
               'Accept': 'application/json'
             },
-            body: JSON.stringify({ dealId })
+            body: JSON.stringify({ 
+              dealId,
+              origin: window.location.origin
+            })
           });
 
           const data = await res.json();

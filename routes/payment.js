@@ -172,7 +172,41 @@ router.post('/create-payment-link', checkAuthenticated, async (req, res) => {
       });
     }
 
-    const siteUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '');
+    // Accurately resolve base URL avoiding accidental localhost redirects in production
+    function resolveBaseUrl(r) {
+      const clientOrigin = typeof r.body?.origin === 'string' ? r.body.origin.trim() : '';
+      if (clientOrigin && (clientOrigin.startsWith('http://') || clientOrigin.startsWith('https://'))) {
+        if (!clientOrigin.includes('localhost') && !clientOrigin.includes('127.0.0.1')) {
+          return clientOrigin.replace(/\/+$/, '');
+        }
+      }
+
+      const host = r.get('host');
+      if (host && !host.includes('localhost') && !host.includes('127.0.0.1')) {
+        const proto = r.headers['x-forwarded-proto'] || r.protocol || 'https';
+        return `${proto}://${host}`.replace(/\/+$/, '');
+      }
+
+      if (process.env.RENDER || process.env.NODE_ENV === 'production') {
+        if (process.env.SITE_URL && !process.env.SITE_URL.includes('localhost')) {
+          return process.env.SITE_URL.replace(/\/+$/, '');
+        }
+        return 'https://perpage-app.onrender.com';
+      }
+
+      if (process.env.SITE_URL && !process.env.SITE_URL.includes('localhost')) {
+        return process.env.SITE_URL.replace(/\/+$/, '');
+      }
+
+      if (clientOrigin) {
+        return clientOrigin.replace(/\/+$/, '');
+      }
+
+      const proto = r.protocol || 'http';
+      return host ? `${proto}://${host}`.replace(/\/+$/, '') : 'http://localhost:3000';
+    }
+
+    const siteUrl = resolveBaseUrl(req);
     const dealShortId = deal._id ? deal._id.toString().slice(-6).toUpperCase() : '000000';
     const clientName = deal.userId?.name || req.user?.name || 'Client';
     const clientEmail = deal.userId?.email || req.user?.email || 'client@example.com';
