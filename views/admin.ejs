@@ -267,24 +267,48 @@
                           </a>
                         <% } %>
 
-                        <!-- Force Complete -->
-                        <% if (deal.status !== 'completed' && !isRefunded) { %>
+                        <!-- Force Complete (for active/incomplete deals) -->
+                        <% if (deal.status !== 'completed' && !isRefunded && deal.status !== 'cancelled') { %>
                           <form method="POST" action="/admin/deals/<%= deal._id %>/force-complete" onsubmit="return confirm('Force complete Deal #<%= shortId %>? This marks the work as accepted.');" class="inline">
-                            <button type="submit" class="btn btn-secondary btn-sm text-[10px] py-1 px-2">
+                            <button type="submit" class="btn btn-secondary btn-sm text-[10px] py-1 px-2" title="Force complete order">
                               Force Complete
                             </button>
                           </form>
                         <% } %>
 
-                        <!-- Cancel & Refund (Dispute Handling) -->
+                        <!-- Mark as Paid (for offline/direct payment deals) -->
+                        <% if (!isPaid && !isRefunded && deal.status !== 'cancelled') { %>
+                          <form method="POST" action="/admin/deals/<%= deal._id %>/mark-paid" onsubmit="return confirm('Mark Deal #<%= shortId %> as paid (offline/direct settlement)?');" class="inline">
+                            <button type="submit" class="btn btn-secondary btn-sm text-[10px] py-1 px-2" title="Mark payment collected offline">
+                              Mark Paid
+                            </button>
+                          </form>
+                        <% } %>
+
+                        <!-- Cancel Deal (for unpaid deals) -->
+                        <% if (!isPaid && deal.status !== 'cancelled' && !isRefunded) { %>
+                          <form method="POST" action="/admin/deals/<%= deal._id %>/cancel" onsubmit="return confirm('Cancel Deal #<%= shortId %>?');" class="inline">
+                            <button type="submit" class="btn btn-sm text-[10px] py-1 px-2 border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer" title="Cancel this deal">
+                              Cancel
+                            </button>
+                          </form>
+                        <% } %>
+
+                        <!-- Cancel & Refund (for paid deals via Razorpay) -->
                         <% if (isPaid && !isRefunded) { %>
                           <button 
                             type="button" 
                             @click="openRefundModal('<%= deal._id %>', '<%= shortId %>', <%= deal.totalPrice %>)" 
                             class="btn btn-sm text-[10px] py-1 px-2 border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
+                            title="Issue full Razorpay refund"
                           >
                             Refund
                           </button>
+                        <% } %>
+
+                        <!-- Cancelled state tag -->
+                        <% if (deal.status === 'cancelled') { %>
+                          <span class="text-[10px] text-[var(--text-muted)] font-mono">Voided</span>
                         <% } %>
                       </div>
                     </td>

@@ -240,6 +240,55 @@ router.post('/deals/:dealId/force-complete', async (req, res) => {
 });
 
 /**
+ * POST /admin/deals/:dealId/mark-paid
+ * Action: Manually mark an unpaid deal as Paid (for offline/cash/direct settlements)
+ */
+router.post('/deals/:dealId/mark-paid', async (req, res) => {
+  try {
+    const { dealId } = req.params;
+    const deal = await Deal.findById(dealId);
+    if (!deal) {
+      return res.redirect('/admin?tab=deals&error=deal_not_found');
+    }
+
+    deal.paymentStatus = 'paid';
+    deal.razorpayPaymentId = deal.razorpayPaymentId || `pay_manual_${Date.now()}`;
+    deal.paidAt = new Date();
+    if (deal.status === 'pending' || deal.status === 'accepted') {
+      deal.status = 'in-progress';
+    }
+    await deal.save();
+
+    return res.redirect('/admin?tab=deals&success=paid_marked');
+  } catch (err) {
+    console.error('❌ Admin Mark Paid Error:', err);
+    return res.redirect('/admin?tab=deals&error=action_failed');
+  }
+});
+
+/**
+ * POST /admin/deals/:dealId/cancel
+ * Action: Cancel an unpaid or abandoned deal
+ */
+router.post('/deals/:dealId/cancel', async (req, res) => {
+  try {
+    const { dealId } = req.params;
+    const deal = await Deal.findById(dealId);
+    if (!deal) {
+      return res.redirect('/admin?tab=deals&error=deal_not_found');
+    }
+
+    deal.status = 'cancelled';
+    await deal.save();
+
+    return res.redirect('/admin?tab=deals&success=deal_cancelled');
+  } catch (err) {
+    console.error('❌ Admin Cancel Deal Error:', err);
+    return res.redirect('/admin?tab=deals&error=action_failed');
+  }
+});
+
+/**
  * POST /admin/editors/:editorId/toggle-verify
  * Action: Toggle editor verified badge
  */
@@ -331,7 +380,9 @@ function getSuccessMessage(code) {
     completed: 'Deal was successfully force-completed by administration.',
     verified_updated: 'Editor verification badge updated successfully.',
     suspended_updated: 'Account status (active/suspended) updated successfully.',
-    payout_marked: 'Payout status marked as Settled / Paid Out.'
+    payout_marked: 'Payout status marked as Settled / Paid Out.',
+    paid_marked: 'Deal payment marked as collected (Paid into Escrow).',
+    deal_cancelled: 'Deal was cancelled.'
   };
   return map[code] || 'Operation completed successfully.';
 }
