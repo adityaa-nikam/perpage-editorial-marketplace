@@ -177,12 +177,22 @@
                     <% } %>
                   </div>
                   <div class="min-w-0">
-                    <h2 class="type-h3 text-base truncate font-semibold text-[var(--text-ink)]">
-                      <a href="/writers/<%= writer._id %>" class="hover:text-[var(--accent)] transition-colors focus-ring rounded">
+                    <h2 class="type-h3 text-base truncate font-semibold text-[var(--text-ink)] flex items-center gap-1.5">
+                      <a href="/writers/<%= writer._id %>" class="hover:text-[var(--accent)] transition-colors focus-ring rounded truncate">
                         <%= writer.name %>
                       </a>
+                      <% if (writer.isVerified) { %>
+                        <span title="Verified Editor by Platform Administration" class="inline-flex items-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                          <%- icon('shield-check', { class: 'w-4 h-4 text-emerald-600 dark:text-emerald-400' }) %>
+                        </span>
+                      <% } %>
                     </h2>
                     <div class="mt-1 flex items-center gap-1.5 flex-wrap">
+                      <% if (writer.isVerified) { %>
+                        <span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
+                          <%- icon('shield-check', { class: 'w-2.5 h-2.5 text-emerald-600 dark:text-emerald-400' }) %> Verified
+                        </span>
+                      <% } %>
                       <% if (completedCount > 0) { %>
                         <span class="badge badge-neutral text-[11px] tabular-nums">
                           Completed: <%= completedCount %>

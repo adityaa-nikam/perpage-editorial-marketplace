@@ -1222,7 +1222,14 @@
                     <% } %>
                   </div>
                   <div class="min-w-0">
-                    <h3 class="type-h4 text-base text-[var(--text-ink)] leading-snug truncate"><%= writer.name || 'Freelance Editor' %></h3>
+                    <div class="flex items-center gap-1.5 min-w-0">
+                      <h3 class="type-h4 text-base text-[var(--text-ink)] leading-snug truncate"><%= writer.name || 'Freelance Editor' %></h3>
+                      <% if (writer.isVerified) { %>
+                        <span title="Verified Editor by Platform Administration" class="inline-flex items-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                          <%- icon('shield-check', { class: 'w-4 h-4 text-emerald-600 dark:text-emerald-400' }) %>
+                        </span>
+                      <% } %>
+                    </div>
                     <div class="text-xs text-[var(--text-muted)]">Freelance Editor</div>
                   </div>
                 </div>

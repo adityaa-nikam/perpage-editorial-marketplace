@@ -150,96 +150,116 @@
                     <span><%= (top2.name || 'E').slice(0, 2).toUpperCase() %></span>
                   <% } %>
                 </div>
-                <div>
+                <div class="flex items-center justify-center gap-1 min-w-0">
                   <h3 class="font-bold text-sm sm:text-base text-[var(--text-ink)] truncate"><%= top2.name %></h3>
-                  <p class="text-[11px] text-[var(--text-muted)] line-clamp-1"><%= top2.bio || 'Editorial Fellow' %></p>
-                </div>
-              </div>
-
-              <div class="flex items-center justify-center gap-3 pt-2 border-t border-[var(--border-color)] text-xs">
-                <span class="font-semibold text-[var(--text-ink)]">
-                  🥈 <%= top2.completedCount %> completed
-                </span>
-                <% if (top2.averageRating > 0) { %>
-                  <span class="text-amber-500 font-semibold">★ <%= Number(top2.averageRating).toFixed(1) %></span>
-                <% } %>
-              </div>
-            </div>
-
-            <div class="pt-3 flex items-center gap-2">
-              <a href="/writers/<%= top2._id %>" class="btn btn-secondary btn-sm flex-1 text-center text-xs py-1">Profile</a>
-              <a href="/deal?writerId=<%= top2._id %>" class="btn btn-primary btn-sm flex-1 text-center text-xs py-1">Hire</a>
-            </div>
-          </div>
-
-          <!-- Rank 1: Gold (Center & Tallest) -->
-          <div class="podium-card podium-card-gold p-5 sm:p-6 flex flex-col justify-between order-1 md:order-2 md:-translate-y-2 min-h-[285px]">
-            <div class="space-y-3">
-              <div class="flex items-start justify-between">
-                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-extrabold text-xs shadow-xs border border-amber-300/40">
-                  🥇 #1 Champion
-                </span>
-                <span class="text-xs font-semibold text-[var(--text-ink)] tabular-nums">
-                  <%= top1.pricePerPage > 0 ? ('₹' + top1.pricePerPage + '/page') : 'Flexible' %>
-                </span>
-              </div>
-
-              <div class="text-center space-y-2 py-1">
-                <div class="relative w-16 h-16 mx-auto">
-                  <div class="w-16 h-16 rounded-full ring-4 ring-amber-400 dark:ring-amber-500 overflow-hidden bg-[var(--bg-surface-muted)] flex items-center justify-center font-bold text-lg text-[var(--text-ink)] shadow-md">
-                    <% if (top1.profilePic) { %>
-                      <img src="<%= top1.profilePic %>" alt="<%= top1.name %>" class="w-full h-full object-cover">
-                    <% } else { %>
-                      <span><%= (top1.name || 'E').slice(0, 2).toUpperCase() %></span>
-                    <% } %>
-                  </div>
-                  <span class="absolute -bottom-1.5 -right-1 text-xl select-none">🥇</span>
-                </div>
-
-                <div>
-                  <h3 class="font-extrabold text-base sm:text-lg text-[var(--text-ink)] truncate"><%= top1.name %></h3>
-                  <p class="text-[11px] text-[var(--text-muted)] line-clamp-1"><%= top1.bio || 'Lead Editorial Contender' %></p>
-                </div>
-              </div>
-
-              <div class="flex items-center justify-center gap-3 pt-2 border-t border-[var(--border-color)] text-xs">
-                <div class="font-bold text-[var(--text-ink)] bg-amber-500/10 px-2.5 py-0.5 rounded-full">
-                  🔥 <span class="tabular-nums"><%= top1.completedCount %> works completed</span>
-                </div>
-                <% if (top1.averageRating > 0) { %>
-                  <span class="text-amber-500 font-bold">★ <%= Number(top1.averageRating).toFixed(1) %></span>
-                <% } %>
-              </div>
-            </div>
-
-            <div class="pt-3 flex items-center gap-2">
-              <a href="/writers/<%= top1._id %>" class="btn btn-secondary btn-sm flex-1 text-center text-xs py-1">Profile</a>
-              <a href="/deal?writerId=<%= top1._id %>" class="btn btn-primary btn-sm flex-1 text-center text-xs py-1 font-bold">Hire #1</a>
-            </div>
-          </div>
-
-          <!-- Rank 3: Bronze (Right) -->
-          <div class="podium-card podium-card-bronze p-4 sm:p-5 flex flex-col justify-between order-3 md:order-3 min-h-[250px]">
-            <div class="space-y-3">
-              <div class="flex items-start justify-between">
-                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 font-bold text-xs">
-                  🥉 3rd Place
-                </span>
-                <span class="text-xs font-semibold text-[var(--text-ink)] tabular-nums">
-                  <%= top3.pricePerPage > 0 ? ('₹' + top3.pricePerPage + '/page') : 'Flexible' %>
-                </span>
-              </div>
-
-              <div class="text-center space-y-1.5 py-1">
-                <div class="w-14 h-14 mx-auto rounded-full ring-2 ring-amber-600/40 dark:ring-amber-600/30 overflow-hidden bg-[var(--bg-surface-muted)] flex items-center justify-center font-bold text-base text-[var(--text-ink)]">
-                  <% if (top3.profilePic) { %>
-                    <img src="<%= top3.profilePic %>" alt="<%= top3.name %>" class="w-full h-full object-cover">
-                  <% } else { %>
-                    <span><%= (top3.name || 'E').slice(0, 2).toUpperCase() %></span>
+                  <% if (top2.isVerified) { %>
+                    <span title="Verified Editor" class="inline-flex items-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                      <%- icon('shield-check', { class: 'w-3.5 h-3.5' }) %>
+                    </span>
                   <% } %>
                 </div>
-                <div>
+                <p class="text-[11px] text-[var(--text-muted)] line-clamp-1"><%= top2.bio || 'Editorial Fellow' %></p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center gap-3 pt-2 border-t border-[var(--border-color)] text-xs">
+              <span class="font-semibold text-[var(--text-ink)]">
+                🥈 <%= top2.completedCount %> completed
+              </span>
+              <% if (top2.averageRating > 0) { %>
+                <span class="text-amber-500 font-semibold">★ <%= Number(top2.averageRating).toFixed(1) %></span>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="pt-3 flex items-center gap-2">
+            <a href="/writers/<%= top2._id %>" class="btn btn-secondary btn-sm flex-1 text-center text-xs py-1">Profile</a>
+            <a href="/deal?writerId=<%= top2._id %>" class="btn btn-primary btn-sm flex-1 text-center text-xs py-1">Hire</a>
+          </div>
+        </div>
+
+        <!-- Rank 1: Gold (Center & Tallest) -->
+        <div class="podium-card podium-card-gold p-5 sm:p-6 flex flex-col justify-between order-1 md:order-2 md:-translate-y-2 min-h-[285px]">
+          <div class="space-y-3">
+            <div class="flex items-start justify-between">
+              <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 font-extrabold text-xs shadow-xs border border-amber-300/40">
+                🥇 #1 Champion
+              </span>
+              <span class="text-xs font-semibold text-[var(--text-ink)] tabular-nums">
+                <%= top1.pricePerPage > 0 ? ('₹' + top1.pricePerPage + '/page') : 'Flexible' %>
+              </span>
+            </div>
+
+            <div class="text-center space-y-2 py-1">
+              <div class="relative w-16 h-16 mx-auto">
+                <div class="w-16 h-16 rounded-full ring-4 ring-amber-400 dark:ring-amber-500 overflow-hidden bg-[var(--bg-surface-muted)] flex items-center justify-center font-bold text-lg text-[var(--text-ink)] shadow-md">
+                  <% if (top1.profilePic) { %>
+                    <img src="<%= top1.profilePic %>" alt="<%= top1.name %>" class="w-full h-full object-cover">
+                  <% } else { %>
+                    <span><%= (top1.name || 'E').slice(0, 2).toUpperCase() %></span>
+                  <% } %>
+                </div>
+                <span class="absolute -bottom-1.5 -right-1 text-xl select-none">🥇</span>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-center gap-1 min-w-0">
+                  <h3 class="font-extrabold text-base sm:text-lg text-[var(--text-ink)] truncate"><%= top1.name %></h3>
+                  <% if (top1.isVerified) { %>
+                    <span title="Verified Editor" class="inline-flex items-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                      <%- icon('shield-check', { class: 'w-4 h-4' }) %>
+                    </span>
+                  <% } %>
+                </div>
+                <p class="text-[11px] text-[var(--text-muted)] line-clamp-1"><%= top1.bio || 'Lead Editorial Contender' %></p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-center gap-3 pt-2 border-t border-[var(--border-color)] text-xs">
+              <div class="font-bold text-[var(--text-ink)] bg-amber-500/10 px-2.5 py-0.5 rounded-full">
+                🔥 <span class="tabular-nums"><%= top1.completedCount %> works completed</span>
+              </div>
+              <% if (top1.averageRating > 0) { %>
+                <span class="text-amber-500 font-bold">★ <%= Number(top1.averageRating).toFixed(1) %></span>
+              <% } %>
+            </div>
+          </div>
+
+          <div class="pt-3 flex items-center gap-2">
+            <a href="/writers/<%= top1._id %>" class="btn btn-secondary btn-sm flex-1 text-center text-xs py-1">Profile</a>
+            <a href="/deal?writerId=<%= top1._id %>" class="btn btn-primary btn-sm flex-1 text-center text-xs py-1 font-bold">Hire #1</a>
+          </div>
+        </div>
+
+        <!-- Rank 3: Bronze (Right) -->
+        <div class="podium-card podium-card-bronze p-4 sm:p-5 flex flex-col justify-between order-3 md:order-3 min-h-[250px]">
+          <div class="space-y-3">
+            <div class="flex items-start justify-between">
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-900 dark:text-amber-200 font-bold text-xs">
+                🥉 3rd Place
+              </span>
+              <span class="text-xs font-semibold text-[var(--text-ink)] tabular-nums">
+                <%= top3.pricePerPage > 0 ? ('₹' + top3.pricePerPage + '/page') : 'Flexible' %>
+              </span>
+            </div>
+
+            <div class="text-center space-y-1.5 py-1">
+              <div class="w-14 h-14 mx-auto rounded-full ring-2 ring-amber-600/40 dark:ring-amber-600/30 overflow-hidden bg-[var(--bg-surface-muted)] flex items-center justify-center font-bold text-base text-[var(--text-ink)]">
+                <% if (top3.profilePic) { %>
+                  <img src="<%= top3.profilePic %>" alt="<%= top3.name %>" class="w-full h-full object-cover">
+                <% } else { %>
+                  <span><%= (top3.name || 'E').slice(0, 2).toUpperCase() %></span>
+                <% } %>
+              </div>
+              <div>
+                <div class="flex items-center justify-center gap-1 min-w-0">
                   <h3 class="font-bold text-sm sm:text-base text-[var(--text-ink)] truncate"><%= top3.name %></h3>
+                  <% if (top3.isVerified) { %>
+                    <span title="Verified Editor" class="inline-flex items-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                      <%- icon('shield-check', { class: 'w-3.5 h-3.5' }) %>
+                    </span>
+                  <% } %>
+                </div>
                   <p class="text-[11px] text-[var(--text-muted)] line-clamp-1"><%= top3.bio || 'Editorial Fellow' %></p>
                 </div>
               </div>
@@ -315,6 +335,11 @@
                     <a href="/writers/<%= editor._id %>" class="font-bold text-xs sm:text-sm text-[var(--text-ink)] hover:text-[var(--accent)] transition-colors truncate">
                       <%= editor.name %>
                     </a>
+                    <% if (editor.isVerified) { %>
+                      <span title="Verified Editor by Platform Administration" class="inline-flex items-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                        <%- icon('shield-check', { class: 'w-3.5 h-3.5' }) %>
+                      </span>
+                    <% } %>
                     <% if (editor.trophy) { %>
                       <span class="text-xs select-none"><%= editor.trophy %></span>
                     <% } %>

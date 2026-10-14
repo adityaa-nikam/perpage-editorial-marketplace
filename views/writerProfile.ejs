@@ -58,6 +58,11 @@
               <div class="flex flex-wrap items-center gap-2.5">
                 <h1 class="type-h2"><%= writer.name %></h1>
                 <span class="badge badge-neutral text-xs">Editor</span>
+                <% if (writer.isVerified) { %>
+                  <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 shadow-xs" title="Verified Editor by Platform Administration">
+                    <%- icon('shield-check', { class: 'w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400' }) %> Verified
+                  </span>
+                <% } %>
               </div>
 
               <div class="flex flex-wrap items-center gap-3 text-xs text-[var(--text-muted)]">
