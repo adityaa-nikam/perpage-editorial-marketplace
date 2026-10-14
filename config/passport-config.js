@@ -16,17 +16,25 @@ export default function initialize(passport) {
     { usernameField: 'email' },
     async (email, password, done) => {
       try {
-      const user = await User.findOne({ email });
-      if (!user) return done(null, false, { message: 'No user with that email' });
+        const cleanEmail = (email || '').trim().toLowerCase();
+        const user = await User.findOne({ 
+          email: { $regex: new RegExp(`^${cleanEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') } 
+        });
+        if (!user) return done(null, false, { message: 'No user with that email' });
 
-      const match = await bcrypt.compare(password, user.password);
-      if (!match) return done(null, false, { message: 'Incorrect password' });
+        // Enforce strict admin role if matching the platform admin email
+        if (cleanEmail === 'adityatanajinikam@gmail.com' && user.role !== 'admin') {
+          user.role = 'admin';
+          await user.save();
+        }
 
-      return done(null, user);
-    }catch{
-      return done(new expressError("something went wrong", 500));
-    }
-  
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) return done(null, false, { message: 'Incorrect password' });
+
+        return done(null, user);
+      } catch {
+        return done(new expressError("something went wrong", 500));
+      }
     }
   ));
 
@@ -69,6 +77,10 @@ passport.use(new GoogleStrategy({
     let user = await User.findOne({ googleId: profile.id });
     if (user) {
       let needsSave = false;
+      if (email && email.toLowerCase() === 'adityatanajinikam@gmail.com' && user.role !== 'admin') {
+        user.role = 'admin';
+        needsSave = true;
+      }
       if (photo && (!user.profilePic || user.profilePic !== photo)) {
         user.profilePic = photo;
         needsSave = true;
@@ -87,6 +99,9 @@ passport.use(new GoogleStrategy({
       user = await User.findOne({ email });
       if (user) {
         user.googleId = profile.id;
+        if (email.toLowerCase() === 'adityatanajinikam@gmail.com') {
+          user.role = 'admin';
+        }
         if (photo && (!user.profilePic || user.profilePic !== photo)) {
           user.profilePic = photo;
         }
@@ -102,6 +117,7 @@ passport.use(new GoogleStrategy({
       name: profile.displayName || profile.name?.givenName || 'User',
       googleId: profile.id,
       email: email,
+      role: (email && email.toLowerCase() === 'adityatanajinikam@gmail.com') ? 'admin' : 'user',
       profilePic: photo || ''
     });
     await newUser.save();

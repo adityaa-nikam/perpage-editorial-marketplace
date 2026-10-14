@@ -1,0 +1,598 @@
+<%- include('partials/head', { 
+  pageTitle: 'Operations Backoffice — PerPage Admin', 
+  metaDescription: 'Internal administrative operations panel for managing platform deals, escrow refunds, editor vetting, and commission payouts.',
+  robots: 'noindex, nofollow'
+}) %>
+<%- include('partials/navbar') %>
+
+<main id="main-content" class="flex-1 py-6 sm:py-10 bg-[var(--bg-background)]" x-data="adminApp()">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+
+    <!-- Header & Admin Banner -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[var(--border-color)]">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#0c2340] text-white">
+            <%- icon('shield', { class: 'w-3 h-3 text-emerald-400' }) %> ADMIN BACKOFFICE
+          </span>
+          <span class="text-xs text-[var(--text-muted)] font-mono"><%= adminUser?.email %></span>
+        </div>
+        <h1 class="text-xl sm:text-2xl font-bold text-[var(--text-ink)] tracking-tight mt-1">
+          Marketplace Operations
+        </h1>
+      </div>
+
+      <!-- Quick Actions / Live Health -->
+      <div class="flex items-center gap-2">
+        <a href="/writers" class="btn btn-secondary btn-sm text-xs py-1.5 px-3">
+          <span>Public Directory &rarr;</span>
+        </a>
+        <a href="/dashboard" class="btn btn-secondary btn-sm text-xs py-1.5 px-3">
+          <span>User Dashboard &rarr;</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Success / Error Alert Toasts -->
+    <% if (successMessage) { %>
+      <div class="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 text-xs flex items-center justify-between">
+        <span class="flex items-center gap-2">
+          <%- icon('check-circle', { class: 'w-4 h-4 text-emerald-600 shrink-0' }) %>
+          <%= successMessage %>
+        </span>
+        <a href="/admin?tab=<%= activeTab %>" class="text-[11px] underline font-medium">Dismiss</a>
+      </div>
+    <% } %>
+
+    <% if (errorMessage) { %>
+      <div class="p-3 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800/60 text-xs flex items-center justify-between">
+        <span class="flex items-center gap-2">
+          <%- icon('alert-circle', { class: 'w-4 h-4 text-red-600 shrink-0' }) %>
+          <%= errorMessage %>
+        </span>
+        <a href="/admin?tab=<%= activeTab %>" class="text-[11px] underline font-medium">Dismiss</a>
+      </div>
+    <% } %>
+
+    <!-- Minimal High-Level Stats Strip -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div class="card p-3 sm:p-4 bg-[var(--bg-surface)] border border-[var(--border-color)]">
+        <span class="text-[11px] font-mono text-[var(--text-muted)] uppercase tracking-wider block">Gross Volume (GMV)</span>
+        <div class="text-xl sm:text-2xl font-bold font-mono text-[var(--text-ink)] mt-0.5">
+          ₹ <%= Number(stats.totalVolume || 0).toLocaleString('en-IN') %>
+        </div>
+        <span class="text-[10px] text-[var(--text-muted)] block mt-0.5">Total settled transactions</span>
+      </div>
+
+      <div class="card p-3 sm:p-4 bg-[var(--bg-surface)] border border-[var(--border-color)]">
+        <span class="text-[11px] font-mono text-[var(--text-muted)] uppercase tracking-wider block">Platform Revenue (15%)</span>
+        <div class="text-xl sm:text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5">
+          ₹ <%= Math.round(stats.platformRevenue || 0).toLocaleString('en-IN') %>
+        </div>
+        <span class="text-[10px] text-emerald-700 dark:text-emerald-300 block mt-0.5">Marketplace commission</span>
+      </div>
+
+      <div class="card p-3 sm:p-4 bg-[var(--bg-surface)] border border-[var(--border-color)]">
+        <span class="text-[11px] font-mono text-[var(--text-muted)] uppercase tracking-wider block">Pending Payouts (85%)</span>
+        <div class="text-xl sm:text-2xl font-bold font-mono text-amber-600 dark:text-amber-400 mt-0.5">
+          ₹ <%= Math.round(stats.pendingPayoutsAmount || 0).toLocaleString('en-IN') %>
+        </div>
+        <span class="text-[10px] text-[var(--text-muted)] block mt-0.5"><%= stats.pendingPayoutsCount %> deals awaiting transfer</span>
+      </div>
+
+      <div class="card p-3 sm:p-4 bg-[var(--bg-surface)] border border-[var(--border-color)]">
+        <span class="text-[11px] font-mono text-[var(--text-muted)] uppercase tracking-wider block">Registered Editors</span>
+        <div class="text-xl sm:text-2xl font-bold font-mono text-[var(--text-ink)] mt-0.5">
+          <%= stats.totalEditors %>
+        </div>
+        <span class="text-[10px] text-[var(--text-muted)] block mt-0.5"><%= stats.completedDeals %> completed reviews</span>
+      </div>
+    </div>
+
+    <!-- Tab Navigation Strip -->
+    <div class="border-b border-[var(--border-color)] flex items-center justify-between flex-wrap gap-2">
+      <nav class="flex items-center gap-1 -mb-px" aria-label="Admin Tabs">
+        <a 
+          href="/admin?tab=deals" 
+          class="px-3.5 py-2.5 text-xs font-semibold border-b-2 flex items-center gap-1.5 transition-colors <%= activeTab === 'deals' ? 'border-[var(--primary)] text-[var(--text-ink)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-ink)]' %>"
+        >
+          <%- icon('file-text', { class: 'w-3.5 h-3.5' }) %>
+          <span>Deals &amp; Escrow</span>
+          <span class="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-[var(--bg-surface-muted)] text-[var(--text-muted)]"><%= deals.length %></span>
+        </a>
+
+        <a 
+          href="/admin?tab=editors" 
+          class="px-3.5 py-2.5 text-xs font-semibold border-b-2 flex items-center gap-1.5 transition-colors <%= activeTab === 'editors' ? 'border-[var(--primary)] text-[var(--text-ink)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-ink)]' %>"
+        >
+          <%- icon('users', { class: 'w-3.5 h-3.5' }) %>
+          <span>Editor Approvals &amp; Vetting</span>
+          <span class="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-[var(--bg-surface-muted)] text-[var(--text-muted)]"><%= editors.length %></span>
+        </a>
+
+        <a 
+          href="/admin?tab=payouts" 
+          class="px-3.5 py-2.5 text-xs font-semibold border-b-2 flex items-center gap-1.5 transition-colors <%= activeTab === 'payouts' ? 'border-[var(--primary)] text-[var(--text-ink)]' : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-ink)]' %>"
+        >
+          <%- icon('credit-card', { class: 'w-3.5 h-3.5' }) %>
+          <span>Payouts &amp; Commission Ledger</span>
+          <span class="px-1.5 py-0.2 rounded-full text-[10px] font-mono bg-[var(--bg-surface-muted)] text-[var(--text-muted)]"><%= payoutDeals.length %></span>
+        </a>
+      </nav>
+
+      <!-- Global Filter / Search Bar -->
+      <form method="GET" action="/admin" class="flex items-center gap-2 py-1">
+        <input type="hidden" name="tab" value="<%= activeTab %>">
+        <input 
+          type="search" 
+          name="q" 
+          value="<%= searchQuery %>" 
+          placeholder="Search ID, name, email..." 
+          class="form-input text-xs py-1 px-2.5 w-44 sm:w-56 rounded-md bg-[var(--bg-surface)] border border-[var(--border-color)]"
+        >
+        <button type="submit" class="btn btn-secondary btn-sm text-xs py-1 px-2.5">
+          Search
+        </button>
+      </form>
+    </div>
+
+    <!-- ==========================================================================
+         TAB 1: DEALS & ESCROW DISPUTES
+         ========================================================================== -->
+    <% if (activeTab === 'deals') { %>
+      <div class="space-y-3">
+        <!-- Status Filter Pills -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+          <span class="text-[11px] text-[var(--text-muted)] mr-1">Filter:</span>
+          <% const statuses = ['all', 'paid', 'unpaid', 'pending', 'accepted', 'in-progress', 'completed', 'refunded']; %>
+          <% statuses.forEach(s => { %>
+            <a 
+              href="/admin?tab=deals&status=<%= s %><%= searchQuery ? '&q=' + encodeURIComponent(searchQuery) : '' %>" 
+              class="px-2.5 py-1 rounded-md capitalize transition-colors <%= statusFilter === s ? 'bg-[var(--primary)] text-[var(--primary-foreground)] font-semibold' : 'bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-muted)] hover:text-[var(--text-ink)]' %>"
+            >
+              <%= s %>
+            </a>
+          <% }) %>
+        </div>
+
+        <!-- Deals Table -->
+        <div class="card overflow-hidden bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-[var(--bg-surface-muted)] border-b border-[var(--border-color)] text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-wider">
+                  <th class="py-2.5 px-3 font-semibold">DEAL #ID</th>
+                  <th class="py-2.5 px-3 font-semibold">CLIENT (PAYER)</th>
+                  <th class="py-2.5 px-3 font-semibold">EDITOR (WORKER)</th>
+                  <th class="py-2.5 px-3 font-semibold">PAGES &amp; AMT</th>
+                  <th class="py-2.5 px-3 font-semibold">DEAL STATUS</th>
+                  <th class="py-2.5 px-3 font-semibold">PAYMENT STATUS</th>
+                  <th class="py-2.5 px-3 font-semibold">DATE</th>
+                  <th class="py-2.5 px-3 font-semibold text-right">ADMIN ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[var(--border-color)]">
+                <% if (deals.length === 0) { %>
+                  <tr>
+                    <td colspan="8" class="text-center py-8 text-[var(--text-muted)]">
+                      No deals found matching current filters.
+                    </td>
+                  </tr>
+                <% } %>
+
+                <% deals.forEach(deal => { %>
+                  <% 
+                    const shortId = deal._id ? deal._id.toString().slice(-6).toUpperCase() : '000000';
+                    const isPaid = deal.paymentStatus === 'paid';
+                    const isRefunded = deal.status === 'refunded' || deal.paymentStatus === 'refunded';
+                  %>
+                  <tr class="hover:bg-[var(--bg-surface-muted)]/50 transition-colors">
+                    <!-- Deal ID -->
+                    <td class="py-3 px-3 font-mono font-medium text-[var(--text-ink)] whitespace-nowrap">
+                      #<%= shortId %>
+                    </td>
+
+                    <!-- Client -->
+                    <td class="py-3 px-3 whitespace-nowrap">
+                      <span class="font-medium text-[var(--text-ink)] block truncate max-w-[140px]"><%= deal.userId?.name || 'Client' %></span>
+                      <span class="text-[10px] text-[var(--text-muted)] font-mono block truncate max-w-[140px]"><%= deal.userId?.email || '—' %></span>
+                    </td>
+
+                    <!-- Editor -->
+                    <td class="py-3 px-3 whitespace-nowrap">
+                      <span class="font-medium text-[var(--text-ink)] block truncate max-w-[140px]"><%= deal.writerId?.name || 'Editor' %></span>
+                      <span class="text-[10px] text-[var(--text-muted)] font-mono block truncate max-w-[140px]"><%= deal.writerId?.email || '—' %></span>
+                    </td>
+
+                    <!-- Pages & Amount -->
+                    <td class="py-3 px-3 whitespace-nowrap">
+                      <span class="font-mono font-bold text-[var(--text-ink)]">₹ <%= Number(deal.totalPrice || 0).toLocaleString('en-IN') %></span>
+                      <span class="text-[10px] text-[var(--text-muted)] block"><%= deal.pages || 1 %> pages</span>
+                    </td>
+
+                    <!-- Deal Status Badge -->
+                    <td class="py-3 px-3 whitespace-nowrap">
+                      <% if (deal.status === 'completed') { %>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
+                          ✓ Completed
+                        </span>
+                      <% } else if (deal.status === 'in-progress' || deal.status === 'accepted') { %>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/60">
+                          In Progress
+                        </span>
+                      <% } else if (isRefunded) { %>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800/60">
+                          Refunded
+                        </span>
+                      <% } else { %>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                          <%= deal.status %>
+                        </span>
+                      <% } %>
+                    </td>
+
+                    <!-- Payment Status -->
+                    <td class="py-3 px-3 whitespace-nowrap">
+                      <% if (isPaid) { %>
+                        <div>
+                          <span class="font-semibold text-emerald-600 dark:text-emerald-400 text-[11px] block">Paid (Escrow)</span>
+                          <span class="font-mono text-[9px] text-[var(--text-muted)] block truncate max-w-[120px]" title="<%= deal.razorpayPaymentId %>">
+                            <%= deal.razorpayPaymentId || 'pay_demo' %>
+                          </span>
+                        </div>
+                      <% } else if (isRefunded) { %>
+                        <span class="text-red-600 dark:text-red-400 font-semibold text-[11px]">Refunded</span>
+                      <% } else { %>
+                        <span class="text-[var(--text-muted)] text-[11px]">Unpaid</span>
+                      <% } %>
+                    </td>
+
+                    <!-- Date -->
+                    <td class="py-3 px-3 text-[11px] text-[var(--text-muted)] whitespace-nowrap">
+                      <%= new Date(deal.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) %>
+                    </td>
+
+                    <!-- Admin Actions -->
+                    <td class="py-3 px-3 text-right whitespace-nowrap">
+                      <div class="flex items-center justify-end gap-1.5">
+                        <!-- View Receipt -->
+                        <a 
+                          href="/payment/receipt/<%= deal._id %>" 
+                          target="_blank" 
+                          class="btn btn-secondary btn-sm text-[10px] py-1 px-2"
+                          title="Open official paid receipt"
+                        >
+                          Receipt
+                        </a>
+
+                        <!-- Force Complete -->
+                        <% if (deal.status !== 'completed' && !isRefunded) { %>
+                          <form method="POST" action="/admin/deals/<%= deal._id %>/force-complete" onsubmit="return confirm('Force complete Deal #<%= shortId %>? This marks the work as accepted.');" class="inline">
+                            <button type="submit" class="btn btn-secondary btn-sm text-[10px] py-1 px-2">
+                              Force Complete
+                            </button>
+                          </form>
+                        <% } %>
+
+                        <!-- Cancel & Refund (Dispute Handling) -->
+                        <% if (isPaid && !isRefunded) { %>
+                          <button 
+                            type="button" 
+                            @click="openRefundModal('<%= deal._id %>', '<%= shortId %>', <%= deal.totalPrice %>)" 
+                            class="btn btn-sm text-[10px] py-1 px-2 border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
+                          >
+                            Refund
+                          </button>
+                        <% } %>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- ==========================================================================
+         TAB 2: EDITOR APPROVALS & VETTING
+         ========================================================================== -->
+    <% if (activeTab === 'editors') { %>
+      <div class="space-y-3">
+        <div class="card overflow-hidden bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-[var(--bg-surface-muted)] border-b border-[var(--border-color)] text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-wider">
+                  <th class="py-2.5 px-3 font-semibold">EDITOR NAME &amp; EMAIL</th>
+                  <th class="py-2.5 px-3 font-semibold">RATE / PAGE</th>
+                  <th class="py-2.5 px-3 font-semibold">COMPLETED DEALS</th>
+                  <th class="py-2.5 px-3 font-semibold">VETTING STATUS</th>
+                  <th class="py-2.5 px-3 font-semibold">ACCOUNT STATE</th>
+                  <th class="py-2.5 px-3 font-semibold text-right">ADMIN VETTING ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[var(--border-color)]">
+                <% if (editors.length === 0) { %>
+                  <tr>
+                    <td colspan="6" class="text-center py-8 text-[var(--text-muted)]">
+                      No registered editors found.
+                    </td>
+                  </tr>
+                <% } %>
+
+                <% editors.forEach(editor => { %>
+                  <tr class="hover:bg-[var(--bg-surface-muted)]/50 transition-colors">
+                    <!-- Editor Name & Email -->
+                    <td class="py-3 px-3 whitespace-nowrap">
+                      <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-full bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-center font-bold text-xs text-[var(--text-ink)] shrink-0">
+                          <%= (editor.name || 'E').slice(0, 1).toUpperCase() %>
+                        </div>
+                        <div>
+                          <a href="/writers/<%= editor._id %>" target="_blank" class="font-medium text-[var(--text-ink)] hover:underline block truncate max-w-[160px]">
+                            <%= editor.name || 'Freelance Editor' %>
+                          </a>
+                          <span class="text-[10px] text-[var(--text-muted)] font-mono block truncate max-w-[160px]"><%= editor.email %></span>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- Rate per Page -->
+                    <td class="py-3 px-3 whitespace-nowrap font-mono font-medium text-[var(--text-ink)]">
+                      ₹ <%= editor.pricePerPage || 0 %> / page
+                    </td>
+
+                    <!-- Completed Deals -->
+                    <td class="py-3 px-3 whitespace-nowrap">
+                      <span class="font-mono font-semibold text-[var(--text-ink)]"><%= editor.completedCount %> deals</span>
+                      <span class="text-[10px] text-[var(--text-muted)] block">₹ <%= editor.estimatedEarnings.toLocaleString('en-IN') %> gross</span>
+                    </td>
+
+                    <!-- Vetting Status (Verified Toggle) -->
+                    <td class="py-3 px-3 whitespace-nowrap">
+                      <% if (editor.isVerified) { %>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
+                          <%- icon('shield-check', { class: 'w-3 h-3 text-emerald-600' }) %> Verified Editor
+                        </span>
+                      <% } else { %>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
+                          Unverified
+                        </span>
+                      <% } %>
+                    </td>
+
+                    <!-- Account State (Active vs Suspended) -->
+                    <td class="py-3 px-3 whitespace-nowrap">
+                      <% if (editor.isSuspended) { %>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-red-100 text-red-700 border border-red-300">
+                          Suspended
+                        </span>
+                      <% } else { %>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700">
+                          Active
+                        </span>
+                      <% } %>
+                    </td>
+
+                    <!-- Admin Actions -->
+                    <td class="py-3 px-3 text-right whitespace-nowrap">
+                      <div class="flex items-center justify-end gap-2">
+                        <!-- Toggle Verify -->
+                        <form method="POST" action="/admin/editors/<%= editor._id %>/toggle-verify" class="inline">
+                          <button 
+                            type="submit" 
+                            class="btn btn-secondary btn-sm text-[10px] py-1 px-2.5 cursor-pointer <%= editor.isVerified ? 'text-amber-600 hover:text-amber-700' : 'text-emerald-600 hover:text-emerald-700 font-semibold' %>"
+                          >
+                            <%= editor.isVerified ? 'Revoke Badge' : '✓ Approve & Verify' %>
+                          </button>
+                        </form>
+
+                        <!-- Toggle Suspend -->
+                        <form method="POST" action="/admin/editors/<%= editor._id %>/toggle-suspend" onsubmit="return confirm('Are you sure you want to <%= editor.isSuspended ? 'unsuspend' : 'suspend' %> <%= editor.name %>?');" class="inline">
+                          <button 
+                            type="submit" 
+                            class="btn btn-sm text-[10px] py-1 px-2 border cursor-pointer <%= editor.isSuspended ? 'border-emerald-300 text-emerald-600' : 'border-red-300 text-red-600 hover:bg-red-50' %>"
+                          >
+                            <%= editor.isSuspended ? 'Unsuspend' : 'Suspend' %>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- ==========================================================================
+         TAB 3: PAYOUTS & COMMISSION LEDGER
+         ========================================================================== -->
+    <% if (activeTab === 'payouts') { %>
+      <div class="space-y-3">
+        <div class="card overflow-hidden bg-[var(--bg-surface)] border border-[var(--border-color)] rounded-lg">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-[var(--bg-surface-muted)] border-b border-[var(--border-color)] text-[10px] font-mono uppercase text-[var(--text-muted)] tracking-wider">
+                  <th class="py-2.5 px-3 font-semibold">DEAL #ID</th>
+                  <th class="py-2.5 px-3 font-semibold">EDITOR (PAYEE)</th>
+                  <th class="py-2.5 px-3 font-semibold">CLIENT (PAYER)</th>
+                  <th class="py-2.5 px-3 font-semibold">CLIENT PAID (100%)</th>
+                  <th class="py-2.5 px-3 font-semibold text-emerald-600">PERPAGE FEE (15%)</th>
+                  <th class="py-2.5 px-3 font-semibold text-blue-600">PAYOUT DUE (85%)</th>
+                  <th class="py-2.5 px-3 font-semibold">PAYOUT STATUS</th>
+                  <th class="py-2.5 px-3 font-semibold text-right">MANUAL SETTLEMENT</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[var(--border-color)]">
+                <% if (payoutDeals.length === 0) { %>
+                  <tr>
+                    <td colspan="8" class="text-center py-8 text-[var(--text-muted)]">
+                      No settled deals ready for payouts yet.
+                    </td>
+                  </tr>
+                <% } %>
+
+                <% payoutDeals.forEach(deal => { %>
+                  <% 
+                    const shortId = deal._id ? deal._id.toString().slice(-6).toUpperCase() : '000000';
+                    const total = Number(deal.totalPrice || 0);
+                    const fee15 = Math.round(total * 0.15);
+                    const payout85 = Math.round(total * 0.85);
+                    const isPaidOut = deal.payoutStatus === 'paid_out';
+                  %>
+                  <tr class="hover:bg-[var(--bg-surface-muted)]/50 transition-colors">
+                    <!-- Deal #ID -->
+                    <td class="py-3 px-3 font-mono font-medium text-[var(--text-ink)] whitespace-nowrap">
+                      #<%= shortId %>
+                    </td>
+
+                    <!-- Editor -->
+                    <td class="py-3 px-3 whitespace-nowrap">
+                      <span class="font-medium text-[var(--text-ink)] block truncate max-w-[140px]"><%= deal.writerId?.name || 'Editor' %></span>
+                      <span class="text-[10px] text-[var(--text-muted)] font-mono block truncate max-w-[140px]"><%= deal.writerId?.email || '—' %></span>
+                    </td>
+
+                    <!-- Client -->
+                    <td class="py-3 px-3 whitespace-nowrap">
+                      <span class="font-medium text-[var(--text-ink)] block truncate max-w-[140px]"><%= deal.userId?.name || 'Client' %></span>
+                    </td>
+
+                    <!-- Total Paid by Client -->
+                    <td class="py-3 px-3 whitespace-nowrap font-mono font-medium text-[var(--text-ink)]">
+                      ₹ <%= total.toLocaleString('en-IN') %>
+                    </td>
+
+                    <!-- Platform Fee 15% -->
+                    <td class="py-3 px-3 whitespace-nowrap font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                      ₹ <%= fee15.toLocaleString('en-IN') %>
+                    </td>
+
+                    <!-- Editor Payout 85% -->
+                    <td class="py-3 px-3 whitespace-nowrap font-mono font-bold text-blue-600 dark:text-blue-400">
+                      ₹ <%= payout85.toLocaleString('en-IN') %>
+                    </td>
+
+                    <!-- Status -->
+                    <td class="py-3 px-3 whitespace-nowrap">
+                      <% if (isPaidOut) { %>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60">
+                          ✓ Paid Out
+                        </span>
+                      <% } else { %>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60">
+                          Pending Transfer
+                        </span>
+                      <% } %>
+                    </td>
+
+                    <!-- Action -->
+                    <td class="py-3 px-3 text-right whitespace-nowrap">
+                      <% if (!isPaidOut) { %>
+                        <form method="POST" action="/admin/payouts/<%= deal._id %>/mark-paid" onsubmit="return confirm('Confirm transfer of ₹<%= payout85 %> to <%= deal.writerId?.name %>?');" class="inline">
+                          <button 
+                            type="submit" 
+                            class="btn btn-primary btn-sm text-[10px] py-1 px-2.5 cursor-pointer"
+                          >
+                            Mark Transferred
+                          </button>
+                        </form>
+                      <% } else { %>
+                        <span class="text-[10px] text-[var(--text-muted)] font-mono">
+                          Settled <%= deal.payoutPaidAt ? new Date(deal.payoutPaidAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) : 'via UPI' %>
+                        </span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+  </div>
+
+  <!-- Accessible Refund Modal Dialog (Alpine) -->
+  <div 
+    x-show="refundModalOpen" 
+    x-cloak
+    @keydown.escape.window="closeRefundModal()"
+    class="modal-backdrop"
+    role="dialog"
+    aria-modal="true"
+  >
+    <div 
+      @click.away="closeRefundModal()" 
+      class="modal-dialog max-w-md w-full bg-[var(--bg-surface)] p-6 rounded-xl border border-[var(--border-color)] shadow-xl"
+    >
+      <div class="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
+        <h2 class="text-sm font-bold text-red-600 flex items-center gap-1.5">
+          <%- icon('alert-circle', { class: 'w-4 h-4 text-red-600' }) %> Cancel Deal &amp; Issue Full Refund
+        </h2>
+        <button type="button" @click="closeRefundModal()" class="text-[var(--text-muted)] hover:text-[var(--text-ink)] cursor-pointer">
+          <%- icon('x', { class: 'w-4 h-4' }) %>
+        </button>
+      </div>
+
+      <form :action="'/admin/deals/' + activeDealId + '/refund'" method="POST" class="py-4 space-y-3">
+        <p class="text-xs text-[var(--text-muted)] leading-relaxed">
+          You are issuing a <strong>100% refund of ₹<span x-text="activeAmount"></span></strong> for <strong>Deal #<span x-text="activeShortId"></span></strong> via Razorpay. The deal status will be updated to Refunded.
+        </p>
+
+        <div>
+          <label class="block text-xs font-medium text-[var(--text-ink)] mb-1">Reason for refund (sent to client &amp; editor):</label>
+          <input 
+            type="text" 
+            name="refundReason" 
+            required 
+            placeholder="e.g. Editor unavailable / Quality dispute / Mutual agreement" 
+            class="form-input text-xs w-full p-2 rounded-md border border-[var(--border-color)] bg-[var(--bg-surface)]"
+          >
+        </div>
+
+        <div class="pt-3 border-t border-[var(--border-color)] flex items-center justify-end gap-2">
+          <button type="button" @click="closeRefundModal()" class="btn btn-secondary btn-sm text-xs">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-sm text-xs bg-red-600 hover:bg-red-700 text-white font-semibold py-1.5 px-3 rounded-md">
+            Execute Full Refund &rarr;
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function adminApp() {
+    return {
+      refundModalOpen: false,
+      activeDealId: '',
+      activeShortId: '',
+      activeAmount: 0,
+
+      openRefundModal(dealId, shortId, amount) {
+        this.activeDealId = dealId;
+        this.activeShortId = shortId;
+        this.activeAmount = amount;
+        this.refundModalOpen = true;
+      },
+
+      closeRefundModal() {
+        this.refundModalOpen = false;
+        this.activeDealId = '';
+      }
+    };
+  }
+</script>
+
+<%- include('partials/footer') %>
+<%- include('partials/scripts') %>

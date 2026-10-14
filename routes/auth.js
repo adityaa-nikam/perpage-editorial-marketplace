@@ -97,9 +97,17 @@ function redirectAfterLogin(req, res) {
     delete req.session.returnTo;
   }
   
-  // Default target based on role
-  const isEditor = req.user && req.user.role === 'writer';
-  const roleDefault = isEditor ? '/dashboard' : '/writers';
+  // Default target based on role:
+  // - Admin directly lands on /admin Operations Backoffice
+  // - Editors ('writer') directly see their work dashboard (/dashboard)
+  // - Clients ('user') directly see the Editors directory (/writers)
+  let roleDefault = '/writers';
+  const userEmail = req.user?.email ? req.user.email.toLowerCase() : '';
+  if (req.user?.role === 'admin' || userEmail === 'adityatanajinikam@gmail.com') {
+    roleDefault = '/admin';
+  } else if (req.user?.role === 'writer') {
+    roleDefault = '/dashboard';
+  }
   
   const target = getSafeRedirect(returnTo, roleDefault);
   if (req.session && typeof req.session.save === 'function') {

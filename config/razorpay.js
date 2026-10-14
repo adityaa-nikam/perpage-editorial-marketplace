@@ -119,11 +119,34 @@ export async function createRazorpayPaymentLink({
   };
 }
 
+/**
+ * Issues a full or partial refund for a Razorpay payment.
+ */
+export async function refundRazorpayPayment({ paymentId, amount, notes = {} }) {
+  if (instance && paymentId && paymentId.startsWith('pay_')) {
+    const params = { notes };
+    if (amount) {
+      params.amount = Math.round(Number(amount) * 100);
+    }
+    return await instance.payments.refund(paymentId, params);
+  }
+
+  // Fallback simulation for test mode
+  return {
+    id: `rfnd_test_${Date.now()}`,
+    entity: 'refund',
+    amount: amount ? Math.round(Number(amount) * 100) : 0,
+    status: 'processed',
+    payment_id: paymentId
+  };
+}
+
 export default {
   RAZORPAY_KEY_ID,
   RAZORPAY_KEY_SECRET,
   getRazorpay,
   createRazorpayOrder,
   createRazorpayPaymentLink,
+  refundRazorpayPayment,
   verifyRazorpaySignature
 };

@@ -33,6 +33,8 @@ import writerRoutes from './routes/writers.js';
 import paymentRoutes from './routes/payment.js';
 import notificationsRoutes from './routes/notifications.js';
 import leaderboardRoutes from './routes/leaderboard.js';
+import adminRoutes from './routes/admin.js';
+import { ensureAdminUser } from './utils/ensureAdminUser.js';
 
 dotenv.config();
 
@@ -336,6 +338,7 @@ app.use('/leaderboard', leaderboardRoutes); // /leaderboard (Editor rankings)
 app.use('/api/leaderboard', (req, res, next) => { req.url = '/api'; leaderboardRoutes(req, res, next); });
 app.use('/payment', paymentRoutes);       // /payment (Razorpay checkout & verify)
 app.use('/api/notifications', notificationsRoutes); // /api/notifications (in-app notifications)
+app.use('/admin', adminRoutes);           // /admin (Operations Backoffice & Escrow Ledger)
 
 // Default Route - Directly renders home page
 app.use('/', homeRoutes);
@@ -469,6 +472,9 @@ const startServer = async () => {
     try {
       await connectDB();
       console.log('✅ Database connection successful');
+
+      // Ensure platform admin exists and role is strictly maintained
+      await ensureAdminUser();
 
       // Start database monitoring after successful initial connection
       startDatabaseMonitor();

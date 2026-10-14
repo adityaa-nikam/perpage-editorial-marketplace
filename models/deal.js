@@ -18,7 +18,7 @@ const dealSchema = new mongoose.Schema({
   finalFileLink: String,
   status: {
     type: String,
-    enum: ['pending', 'accepted', 'in-progress', 'submitted', 'completed', 'rejected'],
+    enum: ['pending', 'accepted', 'in-progress', 'submitted', 'completed', 'rejected', 'refunded', 'cancelled'],
     default: 'pending'
   },
   pages: {
@@ -52,6 +52,14 @@ const dealSchema = new mongoose.Schema({
     enum: ['unpaid', 'paid', 'refunded'],
     default: 'unpaid'
   },
+  payoutStatus: {
+    type: String,
+    enum: ['unpaid', 'pending', 'paid_out'],
+    default: 'unpaid'
+  },
+  payoutPaidAt: Date,
+  refundId: String,
+  refundedAt: Date,
   razorpayOrderId: String,
   razorpayPaymentId: String,
   razorpayPaymentLinkId: String,

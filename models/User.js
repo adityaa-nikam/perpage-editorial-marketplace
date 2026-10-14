@@ -19,6 +19,8 @@ const UserSchema = new mongoose.Schema({
   pricePerPage: { type: Number, default: 0 },
   averageRating: { type: Number, default: 0 },
   reviewCount: { type: Number, default: 0 },
+  isVerified: { type: Boolean, default: false },
+  isSuspended: { type: Boolean, default: false },
   createdAt: {
     type: Date,
     default: Date.now
