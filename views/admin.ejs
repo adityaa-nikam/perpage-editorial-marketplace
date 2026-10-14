@@ -256,14 +256,16 @@
                     <td class="py-3 px-3 text-right whitespace-nowrap">
                       <div class="flex items-center justify-end gap-1.5">
                         <!-- View Receipt -->
-                        <a 
-                          href="/payment/receipt/<%= deal._id %>" 
-                          target="_blank" 
-                          class="btn btn-secondary btn-sm text-[10px] py-1 px-2"
-                          title="Open official paid receipt"
-                        >
-                          Receipt
-                        </a>
+                        <% if (isPaid || isRefunded) { %>
+                          <a 
+                            href="/payment/receipt/<%= deal._id %>?format=html" 
+                            target="_blank" 
+                            class="btn btn-secondary btn-sm text-[10px] py-1 px-2"
+                            title="Open official paid receipt"
+                          >
+                            Receipt
+                          </a>
+                        <% } %>
 
                         <!-- Force Complete -->
                         <% if (deal.status !== 'completed' && !isRefunded) { %>

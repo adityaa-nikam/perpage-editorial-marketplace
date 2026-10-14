@@ -589,9 +589,10 @@ router.get('/receipt/:dealId', checkAuthenticated, async (req, res) => {
     const currentUserId = req.user && (req.user._id || req.user.id);
     const clientUserId = deal.userId?._id ? deal.userId._id.toString() : deal.userId?.toString();
     const editorUserId = deal.writerId?._id ? deal.writerId._id.toString() : deal.writerId?.toString();
+    const isAdmin = req.user?.role === 'admin' || (req.user?.email && req.user.email.toLowerCase() === 'adityatanajinikam@gmail.com');
 
-    // Allow both the paying client and the assigned editor to access the receipt
-    if (currentUserId && currentUserId.toString() !== clientUserId && currentUserId.toString() !== editorUserId) {
+    // Allow paying client, assigned editor, or platform admin to access the receipt
+    if (!isAdmin && currentUserId && currentUserId.toString() !== clientUserId && currentUserId.toString() !== editorUserId) {
       return res.status(403).json({ error: 'forbidden', message: 'You are not authorized to view this receipt.' });
     }
 
