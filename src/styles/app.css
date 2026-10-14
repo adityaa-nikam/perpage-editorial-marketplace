@@ -3281,46 +3281,81 @@ html:not(.dark) .glyph-portal-section {
 
 .podium-card {
   position: relative;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  background: var(--bg-surface, var(--card));
+  border: 1px solid var(--border-color, var(--border));
+  border-radius: 1.25rem;
+  transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 250ms cubic-bezier(0.16, 1, 0.3, 1), border-color 250ms ease;
+  overflow: hidden;
+}
+
+.podium-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  pointer-events: none;
+  z-index: 2;
 }
 
 .podium-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.12);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 32px -12px rgba(0, 0, 0, 0.12), 0 8px 16px -8px rgba(0, 0, 0, 0.06);
 }
 
 .podium-card-gold {
-  border-color: rgba(234, 179, 8, 0.45);
-  background: linear-gradient(180deg, rgba(254, 240, 138, 0.12) 0%, var(--card) 100%);
-  box-shadow: 0 4px 20px -4px rgba(234, 179, 8, 0.18);
+  border-color: rgba(245, 158, 11, 0.5);
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(251, 191, 36, 0.18) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(254, 243, 199, 0.35) 0%, var(--bg-surface, var(--card)) 100%);
+  box-shadow: 0 10px 30px -10px rgba(245, 158, 11, 0.28), 0 0 0 1px rgba(245, 158, 11, 0.18);
+}
+.podium-card-gold::before {
+  background: linear-gradient(90deg, #fef08a 0%, #f59e0b 50%, #d97706 100%);
 }
 .dark .podium-card-gold {
-  border-color: rgba(234, 179, 8, 0.35);
-  background: linear-gradient(180deg, rgba(234, 179, 8, 0.08) 0%, var(--card) 100%);
-  box-shadow: 0 4px 24px -4px rgba(234, 179, 8, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.14) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, var(--bg-surface, var(--card)) 100%);
+  box-shadow: 0 12px 32px -10px rgba(245, 158, 11, 0.22), 0 0 0 1px rgba(245, 158, 11, 0.2);
 }
 
 .podium-card-silver {
-  border-color: rgba(148, 163, 184, 0.45);
-  background: linear-gradient(180deg, rgba(241, 245, 249, 0.25) 0%, var(--card) 100%);
-  box-shadow: 0 4px 16px -4px rgba(148, 163, 184, 0.15);
+  border-color: rgba(148, 163, 184, 0.5);
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(203, 213, 225, 0.25) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(248, 250, 252, 0.45) 0%, var(--bg-surface, var(--card)) 100%);
+  box-shadow: 0 8px 24px -10px rgba(100, 116, 139, 0.16), 0 0 0 1px rgba(148, 163, 184, 0.15);
+}
+.podium-card-silver::before {
+  background: linear-gradient(90deg, #f1f5f9 0%, #94a3b8 50%, #64748b 100%);
 }
 .dark .podium-card-silver {
-  border-color: rgba(148, 163, 184, 0.3);
-  background: linear-gradient(180deg, rgba(148, 163, 184, 0.06) 0%, var(--card) 100%);
+  border-color: rgba(148, 163, 184, 0.35);
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(148, 163, 184, 0.12) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(148, 163, 184, 0.06) 0%, var(--bg-surface, var(--card)) 100%);
+  box-shadow: 0 8px 24px -10px rgba(148, 163, 184, 0.14);
 }
 
 .podium-card-bronze {
-  border-color: rgba(217, 119, 6, 0.35);
-  background: linear-gradient(180deg, rgba(254, 215, 170, 0.12) 0%, var(--card) 100%);
-  box-shadow: 0 4px 16px -4px rgba(217, 119, 6, 0.12);
+  border-color: rgba(217, 119, 6, 0.4);
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(253, 186, 116, 0.2) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(255, 237, 213, 0.3) 0%, var(--bg-surface, var(--card)) 100%);
+  box-shadow: 0 8px 24px -10px rgba(180, 83, 9, 0.18), 0 0 0 1px rgba(217, 119, 6, 0.15);
+}
+.podium-card-bronze::before {
+  background: linear-gradient(90deg, #fed7aa 0%, #d97706 50%, #b45309 100%);
 }
 .dark .podium-card-bronze {
-  border-color: rgba(217, 119, 6, 0.25);
-  background: linear-gradient(180deg, rgba(217, 119, 6, 0.06) 0%, var(--card) 100%);
+  border-color: rgba(217, 119, 6, 0.3);
+  background: 
+    radial-gradient(circle at 50% 0%, rgba(217, 119, 6, 0.12) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(217, 119, 6, 0.06) 0%, var(--bg-surface, var(--card)) 100%);
+  box-shadow: 0 8px 24px -10px rgba(217, 119, 6, 0.14);
 }
 
 .leaderboard-row {
