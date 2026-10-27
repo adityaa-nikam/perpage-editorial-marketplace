@@ -9,6 +9,7 @@ dist/
 build/
 .DS_Store
 Thumbs.db
+.vscode/
 
 # Generated screenshots & visual test assets
 *.log
