@@ -14,41 +14,7 @@
   }
 %>
 
-<!-- Brand Intro Loader (First visit per session only, maximum 800ms visible) -->
-<div id="brand-intro" aria-hidden="true">
-  <div class="flex flex-col items-center">
-    <div class="intro-letter">
-      P
-      <svg class="absolute -bottom-2 left-0 w-full h-3 overflow-visible" viewBox="0 0 40 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M 2 4 Q 10 1, 20 5 T 38 4" class="intro-underline-path" />
-      </svg>
-    </div>
-  </div>
-</div>
-<script nonce="<%= locals.cspNonce || '' %>">
-  (function() {
-    try {
-      var isReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var isBot = navigator.webdriver || window.location.search.indexOf('noloader') !== -1;
-      var alreadySeen = sessionStorage.getItem('perpage_intro_seen');
-      var introEl = document.getElementById('brand-intro');
-      if (isReduced || isBot || alreadySeen) {
-        if (introEl) introEl.remove();
-      } else {
-        sessionStorage.setItem('perpage_intro_seen', '1');
-        setTimeout(function() {
-          if (introEl) {
-            introEl.classList.add('fade-out');
-            setTimeout(function() { introEl.remove(); }, 250);
-          }
-        }, 700);
-      }
-    } catch (e) {
-      var el = document.getElementById('brand-intro');
-      if (el) el.remove();
-    }
-  })();
-</script>
+
 
 <main id="main-content" class="space-y-20 sm:space-y-28 py-10 sm:py-16">
 
@@ -178,25 +144,24 @@
             <span>Freelance Editor</span>
           </div>
 
-          <!-- Interactive 3D Spline Canvas Container (Clean, Zero-Glitch) -->
+          <!-- Interactive 3D Spline Canvas Container (Clean, Zero-Glitch, Instant Visible) -->
           <div class="hero-3d-viewport relative w-full aspect-[1228/970]">
-            <!-- Interactive WebGL Spline 3D Canvas -->
-            <canvas id="hero-spline-canvas" class="hero-spline-canvas" aria-label="Interactive 3D Workspace"></canvas>
+            <!-- Instant Pristine 3D Cutout Artwork (Guarantees zero blank screen at first paint) -->
+            <picture id="hero-laptop-fallback" class="hero-laptop-picture relative z-2 w-full block">
+              <source srcset="/img/laptop-hero.webp" type="image/webp">
+              <img 
+                src="/img/laptop-hero.png" 
+                alt="PerPage Editorial Marketplace 3D Workspace" 
+                width="1228" 
+                height="970" 
+                class="hero-artwork-img hero-float-active"
+                loading="eager"
+                decoding="async"
+              />
+            </picture>
 
-            <!-- Accessible No-JS Fallback Only -->
-            <noscript>
-              <style>.hero-3d-stage { opacity: 1 !important; }</style>
-              <picture class="relative z-1 w-full block">
-                <source srcset="/img/laptop-hero.webp" type="image/webp">
-                <img 
-                  src="/img/laptop-hero.png" 
-                  alt="PerPage Editorial Marketplace 3D Workspace" 
-                  width="1228" 
-                  height="970"
-                  class="hero-artwork-img"
-                />
-              </picture>
-            </noscript>
+            <!-- Interactive WebGL Spline 3D Canvas (Fades in over artwork when initialized) -->
+            <canvas id="hero-spline-canvas" class="hero-spline-canvas" aria-label="Interactive 3D Workspace"></canvas>
           </div>
         </div>
       </div>
@@ -204,16 +169,31 @@
   </div>
 </section>
 
-  <!-- Interactive Spline 3D Scene Initialization with Clean, Glitch-Free Auto-Open Animation -->
+  <!-- Interactive Spline 3D Scene Initialization with Session-Aware One-Time Entrance Animation -->
   <script type="module" nonce="<%= locals.cspNonce || '' %>">
     (async function() {
       const stage = document.querySelector('.hero-3d-stage');
       const canvas = document.getElementById('hero-spline-canvas');
-      if (!canvas) return;
+      const fallbackImg = document.getElementById('hero-laptop-fallback');
+      if (!stage || !canvas) return;
+
+      // Check if user has already seen the 3D laptop animation in this session
+      let hasAnimated = false;
+      try {
+        hasAnimated = sessionStorage.getItem('perpage_laptop_seen') === '1';
+      } catch (_) {}
+
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Only trigger the entrance animation on the user's FIRST load of the website
+      if (!hasAnimated && !prefersReducedMotion) {
+        stage.classList.add('hero-anim-first-load');
+        try {
+          sessionStorage.setItem('perpage_laptop_seen', '1');
+        } catch (_) {}
+      }
 
       try {
-        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
         // Dynamically load Spline runtime and local binary scene data
         const [{ Application }, { sceneData }] = await Promise.all([
           import('https://cdn.spline.design/@splinetool/runtime@2.0.79/build/runtime.js'),
@@ -242,37 +222,32 @@
           if (app._renderer.setClearColor) app._renderer.setClearColor(0x000000, 0);
         }
 
-        // 3. Reveal canvas and floor shadow synchronously in unified composition
-        if (stage) stage.classList.add('ready');
+        // 3. Reveal canvas and sync with fallback artwork
         canvas.classList.add('loaded');
+        if (fallbackImg) {
+          setTimeout(() => {
+            fallbackImg.style.opacity = '0';
+          }, 350);
+        }
 
-        // 4. Automatically trigger the laptop open animation
-        if (!prefersReducedMotion) {
+        // 4. Trigger the laptop open animation ONLY on first visit; keep open on subsequent navigations
+        if (!hasAnimated && !prefersReducedMotion) {
           setTimeout(() => {
             ['Laptop', 'OPEN LAPTOP', 'Laptop with keyboard'].forEach(name => {
               try { app.emitEvent('mouseDown', name); } catch (_) {}
               try { app.emitEvent('click', name); } catch (_) {}
             });
-          }, 250);
+          }, 350);
+        } else {
+          // Immediately place laptop into open resting state without replaying the slow sequence
+          ['Laptop', 'OPEN LAPTOP', 'Laptop with keyboard'].forEach(name => {
+            try { app.emitEvent('mouseDown', name); } catch (_) {}
+          });
         }
       } catch (err) {
-        console.warn('3D Spline fallback active:', err);
-        const viewport = document.querySelector('.hero-3d-viewport');
-        if (viewport && !viewport.querySelector('img')) {
-          viewport.innerHTML = `
-            <picture class="relative z-1 w-full block">
-              <source srcset="/img/laptop-hero.webp" type="image/webp">
-              <img 
-                src="/img/laptop-hero.png" 
-                alt="PerPage Editorial Marketplace 3D Workspace" 
-                width="1228" 
-                height="970"
-                class="hero-artwork-img hero-float-active"
-              />
-            </picture>
-          `;
-        }
-        if (stage) stage.classList.add('ready');
+        // Fallback: If Spline CDN is blocked or unavailable, the high-res 3D artwork is already visible
+        console.info('3D Spline fallback active; retaining high-resolution artwork');
+        if (canvas) canvas.remove();
       }
     })();
   </script>

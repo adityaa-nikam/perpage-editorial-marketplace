@@ -3955,12 +3955,36 @@ html:not(.dark) .glyph-portal-section {
   justify-content: center;
   overflow: visible;
   pointer-events: none;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .hero-3d-stage.ready {
   opacity: 1;
+}
+
+/* First visit only: smooth 3D perspective entrance animation */
+.hero-3d-stage.hero-anim-first-load {
+  animation: heroLaptopEntrance 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes heroLaptopEntrance {
+  0% {
+    opacity: 0;
+    transform: perspective(1000px) rotateX(10deg) translateY(24px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1000px) rotateX(0deg) translateY(0) scale(1);
+  }
+}
+
+.hero-laptop-picture {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: block;
+  transition: opacity 0.4s ease-out;
 }
 
 /* Floor Shadow: Skewed ellipse matching the isometric plane under objects */
