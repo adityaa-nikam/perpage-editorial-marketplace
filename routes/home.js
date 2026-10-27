@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import { User } from '../models/User.js';
+import { REAL_EDITORS } from '../config/editorsData.js';
 
 const router = express.Router();
 
@@ -23,6 +24,11 @@ const renderHome = async (req, res) => {
       console.warn('⚠️ Could not fetch featured writers (DB error):', err.message);
       featuredWriters = [];
     }
+  }
+
+  // Fallback for dev / offline preview or if database has no seeded writers yet
+  if (featuredWriters.length === 0 && process.env.NODE_ENV !== 'production' && req.query.empty !== '1') {
+    featuredWriters = REAL_EDITORS.slice(0, 3);
   }
 
   // Development environment previews for acceptance testing

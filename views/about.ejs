@@ -238,22 +238,38 @@
         Browse freelance editors, calculate your upfront rate, and submit your draft in minutes.
       </p>
 
-      <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+      <div class="cta-button-group pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
         <% if (locals.user) { %>
-          <a href="/dashboard" class="btn btn-primary btn-lg">
-            Go to dashboard
-            <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+          <a 
+            href="/dashboard" 
+            class="btn-pill-primary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-sm whitespace-nowrap shadow-md cursor-pointer transition-all hover:opacity-95"
+            style="background-color: #f97316; color: #ffffff; border: 1px solid #ea580c; height: 48px; text-decoration: none;"
+          >
+            <span>Go to dashboard</span>
+            <%- icon('arrow-right', { class: 'w-4 h-4 shrink-0' }) %>
           </a>
-          <a href="/writers" class="btn btn-secondary btn-lg">
-            Browse editors
+          <a 
+            href="/writers" 
+            class="btn-pill-secondary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-sm whitespace-nowrap shadow-xs cursor-pointer transition-all bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700"
+            style="height: 48px; text-decoration: none;"
+          >
+            <span>Browse editors</span>
           </a>
         <% } else { %>
-          <a href="/writers" class="btn btn-primary btn-lg">
-            Browse editors
-            <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+          <a 
+            href="/writers" 
+            class="btn-pill-primary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-sm whitespace-nowrap shadow-md cursor-pointer transition-all hover:opacity-95"
+            style="background-color: #f97316; color: #ffffff; border: 1px solid #ea580c; height: 48px; text-decoration: none;"
+          >
+            <span>Browse editors</span>
+            <%- icon('arrow-right', { class: 'w-4 h-4 shrink-0' }) %>
           </a>
-          <a href="/register" class="btn btn-secondary btn-lg">
-            Create an account
+          <a 
+            href="/register" 
+            class="btn-pill-secondary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-sm whitespace-nowrap shadow-xs cursor-pointer transition-all bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700"
+            style="height: 48px; text-decoration: none;"
+          >
+            <span>Create an account</span>
           </a>
         <% } %>
       </div>

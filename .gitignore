@@ -9,3 +9,14 @@ dist/
 build/
 .DS_Store
 Thumbs.db
+
+# Generated screenshots & visual test assets
+*.log
+docs/**/*.png
+docs/**/*.jpg
+docs/**/CONTACT_SHEET.html
+docs/deal-card/
+docs/refinement/
+docs/screenshots/
+docs/visual-8-2/
+

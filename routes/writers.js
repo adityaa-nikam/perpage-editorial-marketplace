@@ -13,72 +13,9 @@ function escapeRegex(text) {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// Mock writers for local development & automated headless tests when DB is offline
-const MOCK_WRITERS = [
-  {
-    _id: new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9c0d1'),
-    name: 'Dr. Eleanor Vance',
-    bio: 'Specializing in behavioral economics, public policy analysis, and empirical research frameworks. Oxford DPhil graduate.',
-    pricePerPage: 150,
-    profilePic: '',
-    role: 'writer',
-    createdAt: new Date('2023-04-15')
-  },
-  {
-    _id: new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9c0d2'),
-    name: 'Prof. Liam Davies',
-    bio: 'Academic author with extensive background in comparative literature, archival research, and qualitative critique.',
-    pricePerPage: 120,
-    profilePic: '',
-    role: 'writer',
-    createdAt: new Date('2023-08-20')
-  },
-  {
-    _id: new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9c0d3'),
-    name: 'Sophia Chen',
-    bio: 'Biotechnology graduate researcher focusing on clinical trial syntheses, molecular biology, and APA formatting.',
-    pricePerPage: 180,
-    profilePic: '',
-    role: 'writer',
-    createdAt: new Date('2024-01-10')
-  },
-  {
-    _id: new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9c0d4'),
-    name: 'Marcus Thorne',
-    bio: 'Senior editor and researcher in international relations, diplomatic history, and geopolitical risk assessments.',
-    pricePerPage: 210,
-    profilePic: '',
-    role: 'writer',
-    createdAt: new Date('2024-03-05')
-  },
-  {
-    _id: new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9c0d5'),
-    name: 'Amina Al-Mansoor',
-    bio: 'Postdoctoral fellow in sociology and ethnographic field methods with emphasis on urban studies.',
-    pricePerPage: 140,
-    profilePic: '',
-    role: 'writer',
-    createdAt: new Date('2024-05-12')
-  },
-  {
-    _id: new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9c0d6'),
-    name: 'Julian Ross',
-    bio: 'Cognitive neuroscience specialist offering manuscript proofing, statistical methodology reviews, and literature scoping.',
-    pricePerPage: 175,
-    profilePic: '',
-    role: 'writer',
-    createdAt: new Date('2024-07-22')
-  },
-  {
-    _id: new mongoose.Types.ObjectId('64f1a2b3c4d5e6f7a8b9c0d7'),
-    name: 'Kavita Patel',
-    bio: '', // Intentionally empty bio for testing empty bio state
-    pricePerPage: 0, // Intentionally unset rate for testing unset rate state
-    profilePic: '',
-    role: 'writer',
-    createdAt: new Date('2024-09-01')
-  }
-];
+import { REAL_EDITORS, COMPLETED_DEALS_MAPPING } from '../config/editorsData.js';
+
+const MOCK_WRITERS = REAL_EDITORS;
 
 // GET /writers - Directory listing with search, sort, and pagination
 router.get('/', async (req, res) => {
@@ -210,16 +147,11 @@ router.get('/', async (req, res) => {
         } else if (sort === 'price_desc') {
           filtered.sort((a, b) => b.pricePerPage - a.pricePerPage);
         } else if (sort === 'completed') {
-          const mockCounts = {
-            '64f1a2b3c4d5e6f7a8b9c0d1': 14,
-            '64f1a2b3c4d5e6f7a8b9c0d2': 9,
-            '64f1a2b3c4d5e6f7a8b9c0d3': 5,
-            '64f1a2b3c4d5e6f7a8b9c0d4': 2,
-            '64f1a2b3c4d5e6f7a8b9c0d5': 1,
-            '64f1a2b3c4d5e6f7a8b9c0d6': 0,
-            '64f1a2b3c4d5e6f7a8b9c0d7': 0
-          };
-          filtered.sort((a, b) => (mockCounts[b._id.toString()] || 0) - (mockCounts[a._id.toString()] || 0));
+          filtered.sort((a, b) => (COMPLETED_DEALS_MAPPING[b._id.toString()] || 0) - (COMPLETED_DEALS_MAPPING[a._id.toString()] || 0));
+        } else if (sort === 'rating') {
+          filtered.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
+        } else if (sort === 'newest') {
+          filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         }
 
         totalCount = filtered.length;
@@ -229,18 +161,9 @@ router.get('/', async (req, res) => {
 
         writers = filtered.slice(skip, skip + PAGE_SIZE);
 
-        // Prepopulate sample completed deals counts
-        const mockCounts = {
-          '64f1a2b3c4d5e6f7a8b9c0d1': 14,
-          '64f1a2b3c4d5e6f7a8b9c0d2': 9,
-          '64f1a2b3c4d5e6f7a8b9c0d3': 5,
-          '64f1a2b3c4d5e6f7a8b9c0d4': 2,
-          '64f1a2b3c4d5e6f7a8b9c0d5': 1,
-          '64f1a2b3c4d5e6f7a8b9c0d6': 0,
-          '64f1a2b3c4d5e6f7a8b9c0d7': 0
-        };
+        // Prepopulate completed deals counts from authentic editorial mapping
         writers.forEach(w => {
-          completedDealsMap[w._id.toString()] = mockCounts[w._id.toString()] || 0;
+          completedDealsMap[w._id.toString()] = COMPLETED_DEALS_MAPPING[w._id.toString()] || 0;
         });
       }
     }
@@ -318,16 +241,7 @@ router.get('/:id', async (req, res) => {
     if (!writer && process.env.NODE_ENV !== 'production') {
       writer = MOCK_WRITERS.find(w => w._id.toString() === id);
       if (writer) {
-        const mockCounts = {
-          '64f1a2b3c4d5e6f7a8b9c0d1': 14,
-          '64f1a2b3c4d5e6f7a8b9c0d2': 9,
-          '64f1a2b3c4d5e6f7a8b9c0d3': 5,
-          '64f1a2b3c4d5e6f7a8b9c0d4': 2,
-          '64f1a2b3c4d5e6f7a8b9c0d5': 1,
-          '64f1a2b3c4d5e6f7a8b9c0d6': 0,
-          '64f1a2b3c4d5e6f7a8b9c0d7': 0
-        };
-        completedCount = mockCounts[writer._id.toString()] || 0;
+        completedCount = COMPLETED_DEALS_MAPPING[writer._id.toString()] || 0;
       }
     }
 
@@ -356,6 +270,14 @@ router.get('/:id', async (req, res) => {
         const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
         averageRating = Math.round((sum / reviews.length) * 10) / 10;
       }
+    }
+
+    // Dev preview fallback reviews
+    if (reviews.length === 0 && writer.sampleReviews && writer.sampleReviews.length > 0) {
+      reviews = writer.sampleReviews;
+      reviewCount = reviews.length;
+      const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
+      averageRating = Math.round((sum / reviews.length) * 10) / 10;
     }
 
     // SEO canonical URL (clean)

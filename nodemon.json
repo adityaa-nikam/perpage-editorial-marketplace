@@ -1,0 +1,15 @@
+{
+  "watch": ["index.js", "routes", "models", "middleware", "utils", "views"],
+  "ext": "js,mjs,cjs,json,ejs",
+  "ignore": [
+    "scratch/*",
+    "tests/*",
+    "public/css/*",
+    "public/img/*",
+    "node_modules/*",
+    "*.log",
+    "*.png",
+    "*.webp"
+  ],
+  "delay": "1000ms"
+}

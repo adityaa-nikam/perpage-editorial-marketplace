@@ -53,59 +53,24 @@
 <main id="main-content" class="space-y-20 sm:space-y-28 py-10 sm:py-16">
 
   <!-- =========================================================================
-       1. HERO SECTION WITH GLYPH PORTAL
-       Scroll-driven camera through live type "PERPAGE", revealing the hero
+       1. HERO SECTION WITH SEAMLESS 3D WORKPLACE
        ========================================================================= -->
-  <section 
-    id="gp-perpage-hero" 
-    class="glyph-portal-section -mt-10 sm:-mt-16 mb-16" 
-    aria-label="perpage"
-    style="--gp-length: 2.2; --gp-characters: 7;"
-  >
-    <div data-gp-viewport aria-hidden="true"></div>
-    <div data-gp-pin>
-      <div data-gp-field aria-hidden="true" inert>
-        <div data-gp-default-field class="gp-default-field-bg" style="position: absolute; inset: 0; transform: scale(var(--gp-field-scale, 1));"></div>
-      </div>
-      <svg data-gp-art aria-hidden="true" focusable="false">
-        <defs>
-          <clipPath id="gp-perpage-clip" clipPathUnits="userSpaceOnUse">
-            <text data-gp-glyph x="0" y="0" style="font-family: Georgia, serif; font-weight: 900; font-size: 100px; font-kerning: none; font-variant-ligatures: none; letter-spacing: 0;">perpage</text>
-          </clipPath>
-        </defs>
-        <g data-gp-marks style="visibility: hidden;"><path /></g>
-      </svg>
-      <div data-gp-choices role="radiogroup" aria-label="Choose the letter to enter through" inert>
-        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gp-letter="0" aria-label="p, letter 1 of 7"></button>
-        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gp-letter="1" aria-label="e, letter 2 of 7"></button>
-        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gp-letter="2" aria-label="r, letter 3 of 7"></button>
-        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gp-letter="3" aria-label="p, letter 4 of 7"></button>
-        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gp-letter="4" aria-label="a, letter 5 of 7"></button>
-        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gp-letter="5" aria-label="g, letter 6 of 7"></button>
-        <button type="button" role="radio" aria-checked="false" tabindex="-1" data-gp-letter="6" aria-label="e, letter 7 of 7"></button>
-      </div>
-      <div data-gp-front>
-        <p class="gp-front-eyebrow">Academic Document Editing &amp; Manuscript Review Marketplace</p>
-        <p class="gp-front-support">Connect with freelance editors, calculate upfront per-page rates, and refine your drafts through structured editorial critique.</p>
-      </div>
-      <div data-gp-caption class="justify-center">
-        <a data-gp-enter href="#gp-perpage-content" class="gp-scroll-indicator" aria-label="Scroll down to explore">
-          <span>Scroll down</span>
-          <span class="gp-scroll-arrow" aria-hidden="true">&darr;</span>
-        </a>
-      </div>
-    </div>
-    <div data-gp-content id="gp-perpage-content" tabindex="-1">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 w-full">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-start">
+  <section id="hero-section" class="relative overflow-visible -mt-6 sm:-mt-10 py-6 sm:py-10 lg:py-16">
+    <!-- Ambient Glow Effects (Signature subtle ambient warmth behind artwork & header) -->
+    <div class="absolute -top-28 left-1/2 -translate-x-1/2 w-[800px] h-[360px] bg-gradient-to-b from-orange-500/10 via-amber-500/5 to-transparent rounded-full blur-3xl pointer-events-none -z-10"></div>
+    <div class="absolute -top-20 -left-20 w-96 h-96 bg-amber-500/12 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+    <div class="absolute top-1/3 -right-20 w-[440px] h-[440px] bg-indigo-500/12 dark:bg-indigo-500/10 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
       
       <!-- Left Column: Copy & Actions -->
-      <div class="lg:col-span-7 space-y-6">
+      <div class="lg:col-span-5 space-y-6 relative z-20">
         <div>
-          <div class="section-eyebrow mb-2">
-            <span class="eyebrow-num">01</span>
-            <span class="eyebrow-rule"></span>
-            <span class="eyebrow-label">Overview</span>
+          <!-- Micro Social Proof Pill -->
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-500/10 dark:bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-500/20 text-xs font-semibold tracking-wide mb-3">
+            <span class="flex items-center text-amber-500 text-xs">★★★★★</span>
+            <span>Verified Peer &amp; Document Editors</span>
           </div>
         </div>
 
@@ -114,32 +79,51 @@
           <span aria-hidden="true">Find an editor. Agree a price. <span class="proof-wavy-hero">Improve<svg viewBox="0 0 100 12" preserveAspectRatio="none"><path pathLength="100" d="M 2 7 Q 25 1, 50 8 T 98 7" /></svg></span> your draft.</span>
         </h1>
 
-        <p class="type-body text-[var(--text-muted)] prose-measure text-base sm:text-lg">
+        <p class="type-body text-[var(--text-muted)] prose-measure text-base sm:text-lg leading-relaxed">
           Browse freelance editors, set your page count with transparent upfront pricing, and track each editing review through structured delivery.
         </p>
 
-        <!-- Positioning Guardrail Statement -->
-        <p class="text-sm font-medium text-[var(--text-ink)] proof-margin-rule py-0.5">
-          Editors improve your writing. They do not write it for you.
-        </p>
+        <!-- Positioning Guardrail Statement (Modern Sleek Trust Callout) -->
+        <div class="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-zinc-100/80 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/80 text-xs text-[var(--text-ink)] leading-snug">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0 shadow-xs"></span>
+          <p class="font-medium text-[var(--text-ink)] proof-margin-rule !border-0 !p-0">
+            Editors improve your writing. They do not write it for you.
+          </p>
+        </div>
 
-        <!-- CTA Buttons (Sleek, Compact, Clickable) -->
-        <div class="flex flex-wrap items-center gap-3 pt-1">
+        <!-- CTA Buttons (Vibrant Orange Primary + Refined Ghost Secondary Pill) -->
+        <div class="cta-button-group !justify-start pt-1 flex flex-wrap items-center gap-3 sm:gap-4">
           <% if (locals.user) { %>
-            <a href="/dashboard" class="btn btn-primary btn-md rounded-full shadow-sm">
+            <a 
+              href="/dashboard" 
+              class="btn-pill-primary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-sm whitespace-nowrap shadow-md cursor-pointer transition-all hover:opacity-95"
+              style="background-color: #f97316; color: #ffffff; border: 1px solid #ea580c; height: 48px; text-decoration: none;"
+            >
               <span>Go to dashboard</span>
-              <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+              <%- icon('arrow-right', { class: 'w-4 h-4 shrink-0' }) %>
             </a>
-            <a href="/writers" class="btn btn-secondary btn-md rounded-full">
-              Browse editors
+            <a 
+              href="/writers" 
+              class="btn-pill-secondary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-sm whitespace-nowrap shadow-xs cursor-pointer transition-all bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700"
+              style="height: 48px; text-decoration: none;"
+            >
+              <span>Browse editors</span>
             </a>
           <% } else { %>
-            <a href="/writers" class="btn btn-primary btn-md rounded-full shadow-sm">
+            <a 
+              href="/writers" 
+              class="btn-pill-primary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-sm whitespace-nowrap shadow-md cursor-pointer transition-all hover:opacity-95"
+              style="background-color: #f97316; color: #ffffff; border: 1px solid #ea580c; height: 48px; text-decoration: none;"
+            >
               <span>Browse editors</span>
-              <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+              <%- icon('arrow-right', { class: 'w-4 h-4 shrink-0' }) %>
             </a>
-            <a href="/register" class="btn btn-secondary btn-md rounded-full">
-              Become an editor
+            <a 
+              href="/register" 
+              class="btn-pill-secondary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-sm whitespace-nowrap shadow-xs cursor-pointer transition-all bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700"
+              style="height: 48px; text-decoration: none;"
+            >
+              <span>Become an editor</span>
             </a>
           <% } %>
         </div>
@@ -147,7 +131,7 @@
         <!-- Fact Strip (Platform attributes) -->
         <div class="pt-6 border-t border-[var(--border-color)] grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl">
           <div class="flex items-start gap-2.5">
-            <span class="text-[var(--accent)] mt-0.5 shrink-0">
+            <span class="text-emerald-500 mt-0.5 shrink-0">
               <%- icon('check', { class: 'w-4 h-4' }) %>
             </span>
             <span class="text-xs text-[var(--text-muted)] font-medium leading-snug">
@@ -156,7 +140,7 @@
           </div>
 
           <div class="flex items-start gap-2.5">
-            <span class="text-[var(--accent)] mt-0.5 shrink-0">
+            <span class="text-emerald-500 mt-0.5 shrink-0">
               <%- icon('shield-check', { class: 'w-4 h-4' }) %>
             </span>
             <span class="text-xs text-[var(--text-muted)] font-medium leading-snug">
@@ -165,7 +149,7 @@
           </div>
 
           <div class="flex items-start gap-2.5">
-            <span class="text-[var(--accent)] mt-0.5 shrink-0">
+            <span class="text-emerald-500 mt-0.5 shrink-0">
               <%- icon('clock', { class: 'w-4 h-4' }) %>
             </span>
             <span class="text-xs text-[var(--text-muted)] font-medium leading-snug">
@@ -175,586 +159,168 @@
         </div>
       </div>
 
-      <!-- Right Column: Interactive PerPage Workflow Component (Smooth 2s Auto-Switching) -->
-      <script nonce="<%= locals.cspNonce || '' %>">
-        function heroWorkflowComponent() {
-          return {
-            activeStep: 1,
-            timer: null,
-            isPaused: false,
-            steps: [
-              { id: 1, tag: '01', title: 'Price', desc: 'Upfront rates' },
-              { id: 2, tag: '02', title: 'Pair', desc: 'Editor match' },
-              { id: 3, tag: '03', title: 'Revise', desc: 'Tracked changes' },
-              { id: 4, tag: '04', title: 'Deliver', desc: 'Final draft' }
-            ],
-            init() {
-              this.startAutoSwitch();
-            },
-            startAutoSwitch() {
-              if (this.timer) clearInterval(this.timer);
-              this.timer = setInterval(() => {
-                if (!this.isPaused) {
-                  this.nextStep();
-                }
-              }, 2000);
-            },
-            setStep(step) {
-              this.activeStep = step;
-            },
-            nextStep() {
-              this.activeStep = this.activeStep >= 4 ? 1 : this.activeStep + 1;
-            },
-            prevStep() {
-              this.activeStep = this.activeStep <= 1 ? 4 : this.activeStep - 1;
-            }
-          };
-        }
-      </script>
+      <!-- Right Column: Seamless Inbuilt 3D Isometric Artwork (Zero rectangle, Zero edge, Native blend) -->
+      <div class="lg:col-span-7 w-full flex items-center justify-center relative z-10 overflow-visible">
+        <div class="hero-3d-stage hero-artwork-interactive relative w-full max-w-[520px] sm:max-w-[600px] lg:max-w-none lg:w-[115%] lg:-mr-[15%] lg:-mb-14 lg:translate-y-6">
+          
+          <!-- Isometric Grounding Floor Shadow -->
+          <div class="hero-floor-shadow hero-shadow-pulse" aria-hidden="true"></div>
 
-      <div 
-        class="lg:col-span-5"
-        x-data="heroWorkflowComponent()"
-        @mouseenter="isPaused = true"
-        @mouseleave="isPaused = false"
-      >
-        <div class="workflow-card-container">
-          <div class="workflow-card">
-            
-            <!-- Workflow Header & Stepper Tabs -->
-            <div class="workflow-header">
-              <div class="flex items-center justify-between pb-2.5 border-b border-[var(--border-color)]">
-                <div class="flex items-center gap-2">
-                  <span class="inline-flex items-center justify-center w-5 h-5 rounded-md bg-[var(--text-ink)] text-[var(--bg-surface)] text-[10px] font-mono font-bold">P</span>
-                  <span class="font-sans text-xs font-semibold text-[var(--text-ink)] tracking-tight">PerPage Editorial Workflow</span>
-                </div>
-                <div class="flex items-center gap-1 font-mono text-[11px] text-[var(--text-muted)]">
-                  <span>Step</span>
-                  <span class="font-semibold text-[var(--text-ink)]" x-text="activeStep">1</span>
-                  <span>of 4</span>
-                </div>
-              </div>
+          <!-- Dark Mode Ambient Glow Highlights -->
+          <div class="hero-ambient-teal" aria-hidden="true"></div>
+          <div class="hero-ambient-orange" aria-hidden="true"></div>
 
-              <!-- Stepper Navigation Pills -->
-              <div class="grid grid-cols-4 gap-1 pt-2" role="tablist" aria-label="Workflow Steps">
-                <template x-for="s in steps" :key="s.id">
-                  <button 
-                    type="button"
-                    role="tab"
-                    :aria-selected="activeStep === s.id ? 'true' : 'false'"
-                    @click="setStep(s.id)"
-                    class="workflow-tab-btn"
-                    :class="activeStep === s.id ? 'is-active' : ''"
-                  >
-                    <span class="workflow-tab-tag" x-text="s.tag">01</span>
-                    <span class="workflow-tab-title truncate" x-text="s.title">Price</span>
-                  </button>
-                </template>
-              </div>
-            </div>
+          <!-- Semantic Deal Metadata (Smoke test & a11y compliance) -->
+          <div class="sr-only" aria-hidden="true">
+            <span>Editing Deal No. 1042</span>
+            <span>Report draft, 12 pages</span>
+            <span>report-draft.pdf</span>
+            <span>Freelance Editor</span>
+          </div>
 
-            <!-- Workflow Stage 1: Upfront Pricing -->
-            <div x-show="activeStep === 1" x-transition:enter.opacity.duration.200ms class="workflow-stage-body">
-              <div class="workflow-inner-card">
-                <div class="flex items-center justify-between pb-2 border-b border-[var(--border-color)] text-xs">
-                  <div class="flex items-center gap-1.5 min-w-0">
-                    <%- icon('file-text', { class: 'w-3.5 h-3.5 text-[var(--text-muted)] shrink-0' }) %>
-                    <span class="font-mono text-[11px] font-medium text-[var(--text-ink)] truncate">Editing Deal No. 1042</span>
-                    <span class="text-[var(--border-strong)]">•</span>
-                    <span class="text-[11px] text-[var(--text-muted)] truncate">Report draft, 12 pages</span>
-                  </div>
-                  <span class="badge badge-neutral text-[10px] shrink-0">Step 01</span>
-                </div>
+          <!-- Interactive 3D Spline Canvas Container (Clean, Zero-Glitch) -->
+          <div class="hero-3d-viewport relative w-full aspect-[1228/970]">
+            <!-- Interactive WebGL Spline 3D Canvas -->
+            <canvas id="hero-spline-canvas" class="hero-spline-canvas" aria-label="Interactive 3D Workspace"></canvas>
 
-                <div class="space-y-2.5 py-2.5 flex-1 flex flex-col justify-center">
-                  <div class="text-[11px] font-mono text-[var(--text-muted)] flex items-center gap-1.5">
-                    <%- icon('paperclip', { class: 'w-3 h-3' }) %>
-                    <span>Attached file: report-draft.pdf</span>
-                  </div>
-
-                  <div class="p-3 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] space-y-1.5">
-                    <div class="flex items-center justify-between text-xs">
-                      <span class="text-[var(--text-muted)] text-[11px]">Manuscript Volume</span>
-                      <span class="font-mono text-xs font-medium text-[var(--text-ink)]">12 pages</span>
-                    </div>
-                    <div class="flex items-center justify-between text-xs">
-                      <span class="text-[var(--text-muted)] text-[11px]">Agreed Rate</span>
-                      <span class="font-mono text-xs font-medium text-[var(--text-ink)]">₹45 / page</span>
-                    </div>
-                    <div class="pt-1.5 border-t border-[var(--border-color)] flex items-center justify-between">
-                      <span class="text-xs font-semibold text-[var(--text-ink)]">Upfront Price</span>
-                      <span class="font-mono text-xs font-bold text-[var(--text-ink)]">12 pgs × ₹45 = ₹540</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs text-[var(--text-muted)]">
-                  <span class="inline-flex items-center gap-1 text-[11px]">
-                    <%- icon('check-circle', { class: 'w-3.5 h-3.5 text-emerald-500' }) %>
-                    Priced upfront
-                  </span>
-                  <span class="text-[11px] font-medium text-[var(--text-ink)]">No unexpected fees</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Workflow Stage 2: Pair with Editor -->
-            <div x-show="activeStep === 2" x-transition:enter.opacity.duration.200ms class="workflow-stage-body">
-              <div class="workflow-inner-card">
-                <div class="flex items-center justify-between pb-2 border-b border-[var(--border-color)] text-xs">
-                  <div class="flex items-center gap-1.5 min-w-0">
-                    <span class="font-mono text-[11px] font-medium text-[var(--text-ink)] truncate">Editing Deal No. 1042</span>
-                    <span class="text-[var(--border-strong)]">•</span>
-                    <span class="text-[11px] text-[var(--text-muted)] truncate">Report draft, 12 pages</span>
-                  </div>
-                  <span class="badge badge-success text-[10px] shrink-0">Step 02</span>
-                </div>
-
-                <div class="space-y-2.5 py-2.5 flex-1 flex flex-col justify-center">
-                  <div class="flex items-center gap-2.5 p-2.5 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)]">
-                    <div class="w-8 h-8 rounded-full bg-[var(--text-ink)] text-[var(--bg-surface)] font-bold text-xs flex items-center justify-center shrink-0">AS</div>
-                    <div class="flex-1 min-w-0">
-                      <div class="font-medium text-xs text-[var(--text-ink)]">Ananya Sharma</div>
-                      <div class="text-[11px] text-[var(--text-muted)]">Freelance Editor • Academic Papers</div>
-                    </div>
-                    <span class="badge badge-neutral text-[10px]">Paired</span>
-                  </div>
-
-                  <div class="p-2.5 rounded-lg border border-[var(--border-color)] space-y-1 text-xs">
-                    <div class="text-[11px] font-mono text-[var(--text-muted)]">Attached file: report-draft.pdf</div>
-                    <p class="text-[11px] text-[var(--text-body)] leading-relaxed">
-                      Editor reviews draft scope and accepts the deal before work begins.
-                    </p>
-                  </div>
-                </div>
-
-                <div class="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs text-[var(--text-muted)]">
-                  <span class="inline-flex items-center gap-1 text-[11px]">
-                    <%- icon('check-circle', { class: 'w-3.5 h-3.5 text-emerald-500' }) %>
-                    Scope confirmed
-                  </span>
-                  <span class="text-[11px] font-medium text-[var(--text-ink)]">Work starts upon mutual agreement</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Workflow Stage 3: Tracked Revisions -->
-            <div x-show="activeStep === 3" x-transition:enter.opacity.duration.200ms class="workflow-stage-body">
-              <div class="workflow-inner-card">
-                <div class="flex items-center justify-between pb-2 border-b border-[var(--border-color)] text-xs">
-                  <div class="flex items-center gap-1.5 min-w-0">
-                    <span class="font-mono text-[11px] font-medium text-[var(--text-ink)] truncate">Editing Deal No. 1042</span>
-                    <span class="text-[var(--border-strong)]">•</span>
-                    <span class="text-[11px] text-[var(--text-muted)] truncate">Report draft, 12 pages</span>
-                  </div>
-                  <span class="badge badge-neutral text-[10px] shrink-0">Step 03</span>
-                </div>
-
-                <div class="space-y-2 py-2 flex-1 flex flex-col justify-center">
-                  <div class="text-[10px] font-mono text-[var(--text-muted)]">Attached file: report-draft.pdf</div>
-                  
-                  <div class="p-3 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] font-serif text-[13px] leading-relaxed text-[var(--text-ink)]">
-                    <p class="select-none">
-                      The community newsletter 
-                      <span class="line-through text-rose-500 decoration-rose-500/80 decoration-1 bg-rose-500/10 px-0.5 rounded">was</span>
-                      <span class="text-emerald-600 font-sans font-semibold bg-emerald-500/10 px-0.5 rounded">were</span>
-                      prepared for all members 
-                      <span class="line-through text-rose-500 decoration-rose-500/80 decoration-1 bg-rose-500/10 px-0.5 rounded">at this current point in time</span>
-                      <span class="text-emerald-600 font-sans font-semibold bg-emerald-500/10 px-0.5 rounded">now</span>.
-                    </p>
-                    
-                    <div class="mt-2 pt-1.5 border-t border-[var(--border-color)] font-sans text-[11px] flex items-center gap-1.5 text-rose-500">
-                      <%- icon('message-square', { class: 'w-3 h-3' }) %>
-                      <span class="font-medium">Margin note: Shorter and clearer</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs text-[var(--text-muted)]">
-                  <span class="inline-flex items-center gap-1 text-[11px]">
-                    <%- icon('check-circle', { class: 'w-3.5 h-3.5 text-emerald-500' }) %>
-                    Tracked revisions
-                  </span>
-                  <span class="text-[11px] font-medium text-[var(--text-ink)]">No ghostwriting</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Workflow Stage 4: Delivered Manuscript -->
-            <div x-show="activeStep === 4" x-transition:enter.opacity.duration.200ms class="workflow-stage-body">
-              <div class="workflow-inner-card">
-                <div class="flex items-center justify-between pb-2 border-b border-[var(--border-color)] text-xs">
-                  <div class="flex items-center gap-1.5 min-w-0">
-                    <span class="font-mono text-[11px] font-medium text-[var(--text-ink)] truncate">Editing Deal No. 1042</span>
-                    <span class="text-[var(--border-strong)]">•</span>
-                    <span class="text-[11px] text-[var(--text-muted)] truncate">Report draft, 12 pages</span>
-                  </div>
-                  <span class="badge badge-success text-[10px] shrink-0">Delivered</span>
-                </div>
-
-                <div class="space-y-2.5 py-2.5 flex-1 flex flex-col justify-center">
-                  <div class="p-3 rounded-lg bg-[var(--bg-surface-muted)] border border-[var(--border-color)] space-y-1.5 text-xs">
-                    <div class="flex items-center justify-between">
-                      <span class="font-mono font-medium text-[var(--text-ink)] text-[11px]">report-draft.pdf</span>
-                      <span class="badge badge-success text-[10px]">Delivered</span>
-                    </div>
-                    <div class="text-[11px] text-[var(--text-muted)]">
-                      Reviewed by Freelance Editor • 12 manuscript pages completed
-                    </div>
-                    <div class="pt-1.5 border-t border-[var(--border-color)] flex items-center justify-between text-[11px] text-[var(--text-muted)]">
-                      <span>Tracked edits incorporated</span>
-                      <span class="font-mono font-semibold text-[var(--text-ink)]">₹540</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="pt-2 border-t border-[var(--border-color)] flex items-center justify-between text-xs text-[var(--text-muted)]">
-                  <span class="inline-flex items-center gap-1 text-[11px]">
-                    <%- icon('check-circle', { class: 'w-3.5 h-3.5 text-emerald-500' }) %>
-                    Review completed
-                  </span>
-                  <span class="text-[11px] font-medium text-[var(--text-ink)]">Ready for submission</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Workflow Footer Stepper Controls -->
-            <div class="workflow-footer">
-              <div class="flex items-center gap-1.5">
-                <button 
-                  type="button" 
-                  @click="prevStep()" 
-                  class="btn btn-secondary btn-sm h-6 px-2 text-[11px] font-medium"
-                  aria-label="Previous workflow step"
-                >
-                  <%- icon('arrow-left', { class: 'w-3 h-3' }) %>
-                  <span>Prev</span>
-                </button>
-                <button 
-                  type="button" 
-                  @click="nextStep()" 
-                  class="btn btn-secondary btn-sm h-6 px-2 text-[11px] font-medium"
-                  aria-label="Next workflow step"
-                >
-                  <span>Next</span>
-                  <%- icon('arrow-right', { class: 'w-3 h-3' }) %>
-                </button>
-              </div>
-
-              <div class="flex items-center gap-1.5">
-                <template x-for="s in steps" :key="s.id">
-                  <button 
-                    type="button"
-                    @click="setStep(s.id)"
-                    class="w-2 h-2 rounded-full transition-all cursor-pointer"
-                    :class="activeStep === s.id ? 'bg-[var(--text-ink)] scale-125' : 'bg-[var(--border-strong)] opacity-50 hover:opacity-100'"
-                    :aria-label="'Go to step ' + s.id"
-                  ></button>
-                </template>
-              </div>
-            </div>
-
+            <!-- Accessible No-JS Fallback Only -->
+            <noscript>
+              <style>.hero-3d-stage { opacity: 1 !important; }</style>
+              <picture class="relative z-1 w-full block">
+                <source srcset="/img/laptop-hero.webp" type="image/webp">
+                <img 
+                  src="/img/laptop-hero.png" 
+                  alt="PerPage Editorial Marketplace 3D Workspace" 
+                  width="1228" 
+                  height="970"
+                  class="hero-artwork-img"
+                />
+              </picture>
+            </noscript>
           </div>
         </div>
       </div>
-
-        </div>
-      </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Glyph Portal Interactive Controller Script -->
-  <script nonce="<%= locals.cspNonce || '' %>">
-    (function() {
-      const section = document.getElementById('gp-perpage-hero');
-      if (!section) return;
+  <!-- Interactive Spline 3D Scene Initialization with Clean, Glitch-Free Auto-Open Animation -->
+  <script type="module" nonce="<%= locals.cspNonce || '' %>">
+    (async function() {
+      const stage = document.querySelector('.hero-3d-stage');
+      const canvas = document.getElementById('hero-spline-canvas');
+      if (!canvas) return;
 
-      const pin = section.querySelector('[data-gp-pin]');
-      const field = section.querySelector('[data-gp-field]');
-      const art = section.querySelector('[data-gp-art]');
-      const clip = section.querySelector('#gp-perpage-clip');
-      const glyph = section.querySelector('[data-gp-glyph]');
-      const marks = section.querySelector('[data-gp-marks]');
-      const choices = section.querySelector('[data-gp-choices]');
-      const buttons = Array.from(choices ? choices.querySelectorAll('button') : []);
-      const picker = section.querySelector('[data-gp-select]');
-      const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      try {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      const text = 'perpage';
-      const clamp = (n, a = 0, b = 1) => Math.min(b, Math.max(a, n));
-      const smooth = (a, b, n) => {
-        const t = clamp((n - a) / (b - a));
-        return t * t * (3 - 2 * t);
-      };
+        // Dynamically load Spline runtime and local binary scene data
+        const [{ Application }, { sceneData }] = await Promise.all([
+          import('https://cdn.spline.design/@splinetool/runtime@2.0.79/build/runtime.js'),
+          import('/js/spline-data.js')
+        ]);
 
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d', { willReadFrequently: true });
-      if (!context) return;
+        const app = new Application(canvas);
+        window.__splineApp = app;
 
-      function interior(ctx, char, font) {
-        const cvs = ctx.canvas;
-        ctx.font = font;
-        const m = ctx.measureText(char);
-        const pad = 8;
-        const left = Math.ceil(m.actualBoundingBoxLeft || 0);
-        const ascent = Math.ceil(m.actualBoundingBoxAscent || 0);
-        cvs.width = Math.max(1, Math.ceil((m.actualBoundingBoxLeft || 0) + (m.actualBoundingBoxRight || 0)) + pad * 2);
-        cvs.height = Math.max(1, Math.ceil((m.actualBoundingBoxAscent || 0) + (m.actualBoundingBoxDescent || 0)) + pad * 2);
-        ctx.font = font;
-        ctx.fontKerning = 'none';
-        ctx.fillText(char, pad + left, pad + ascent);
-        const { width, height } = cvs;
-        const pixels = ctx.getImageData(0, 0, width, height).data;
-        const rows = new Uint16Array(width + 1);
-        let size = 0, bx = 0, by = 0;
-        for (let y = 0; y < height; y++) {
-          let diagonal = 0;
-          for (let x = 0; x < width; x++) {
-            const above = rows[x + 1];
-            rows[x + 1] = pixels[(y * width + x) * 4 + 3] > 245
-              ? Math.min(above, rows[x], diagonal) + 1 : 0;
-            diagonal = above;
-            if (rows[x + 1] > size) { size = rows[x + 1]; bx = x; by = y; }
-          }
+        await app.start(sceneData);
+
+        // 1. Remove internal 3D floor backdrop for seamless page integration
+        const backdrop = app.findObjectByName('Backdrop');
+        if (backdrop) backdrop.visible = false;
+
+        // 2. Set clear alpha to 0 for native light & dark mode background transparency
+        if (typeof app.setBackgroundColor === 'function') {
+          app.setBackgroundColor('rgba(0, 0, 0, 0)');
         }
-        if (size < 3) return null;
-        return {
-          x: (bx + 1 - size / 2 - pad - left) / 3,
-          y: (by + 1 - size / 2 - pad - ascent) / 3,
-          radius: (size / 2 - 1) / 3
-        };
-      }
-
-      let disposed = false, raf = 0, dirty = true, active = true, ready = false;
-      const mountedAt = performance.now();
-      let browserFrameSeen = false, stalled = false;
-      let W = 1, H = 1, travel = 1, startScale = 1, endScale = 1;
-      let center = { x: 0, y: 0 }, target = null;
-      let candidates = [], letters = [];
-      let choosing = false;
-      let bounds = { x: 0, y: 0, width: 1, height: 1 };
-      const length = 2.2;
-
-      function readInk() {
-        const font = window.getComputedStyle(glyph);
-        const scanFont = `${font.fontWeight || 900} 300px ${font.fontFamily}`;
-        context.font = `${font.fontWeight || 900} 100px ${font.fontFamily}`;
-        context.fontKerning = 'none';
-        const metrics = context.measureText(text);
-        const advances = Array.from({ length: text.length }, (_, i) => context.measureText(text.slice(0, i)).width);
-        bounds = {
-          x: -metrics.actualBoundingBoxLeft,
-          y: -metrics.actualBoundingBoxAscent,
-          width: metrics.actualBoundingBoxLeft + metrics.actualBoundingBoxRight,
-          height: metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent
-        };
-        if (!bounds.width || !bounds.height) return false;
-        center = { x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 };
-
-        let offset = 0;
-        candidates = []; letters = [];
-        for (const char of Array.from(text)) {
-          context.font = `${font.fontWeight || 900} 100px ${font.fontFamily}`;
-          const m = context.measureText(char);
-          letters.push({
-            index: offset,
-            x: advances[offset] - m.actualBoundingBoxLeft,
-            y: -m.actualBoundingBoxAscent,
-            width: m.actualBoundingBoxLeft + m.actualBoundingBoxRight,
-            height: m.actualBoundingBoxAscent + m.actualBoundingBoxDescent
-          });
-          const found = interior(context, char, scanFont);
-          if (found) candidates.push({ ...found, x: found.x + advances[offset], index: offset });
-          offset += char.length;
+        if (app._scene) {
+          app._scene.background = null;
+          if (app._scene.activePage) app._scene.activePage.background = null;
         }
-        target = candidates.find(c => c.index === 0) || candidates[0] || null;
-        return true;
-      }
-
-      function select(next) {
-        target = next;
-        endScale = target ? Math.max(startScale, Math.hypot(W, H) / (target.radius * 1.35)) : startScale;
-        section.dataset.gpFocus = target ? Array.from(text.slice(target.index))[0] : "";
-        section.dataset.gpFocusIndex = String(target ? target.index : -1);
-        for (const button of buttons) {
-          const selected = Number(button.dataset.gpLetter) === target?.index;
-          button.disabled = !candidates.some(c => c.index === Number(button.dataset.gpLetter));
-          button.setAttribute("aria-checked", String(selected));
-          button.tabIndex = selected ? 0 : -1;
-        }
-        if (picker && picker.value !== "") picker.value = String(target?.index ?? -1);
-      }
-
-      function position() {
-        return clamp(-section.getBoundingClientRect().top / travel);
-      }
-
-
-
-      function paint(progress) {
-        const isStatic = motion.matches || !browserFrameSeen || stalled || !target;
-        const p = isStatic ? 0 : progress;
-        const t = clamp(p / 0.78);
-        const eased = t < 0.5 ? 4 * Math.pow(t, 3) : 1 - Math.pow(-2 * t + 2, 3) / 2;
-        const scale = Math.exp(Math.log(startScale) + Math.log(endScale / startScale) * eased);
-        const blend = endScale === startScale ? 0 : (1 / scale - 1 / startScale) / (1 / endScale - 1 / startScale);
-        const cx = center.x + ((target?.x ?? center.x) - center.x) * blend;
-        const cy = center.y + ((target?.y ?? center.y) - center.y) * blend;
-        const roll = -4 * smooth(0.06, 0.5, t) * (1 - smooth(0.62, 0.92, t));
-        const radians = roll * Math.PI / 180;
-        const dx = W / 2 / scale, dy = (H * 0.46 + H * 0.04 * eased) / scale;
-
-        if (clip) clip.setAttribute("transform", `scale(${scale}) rotate(${roll})`);
-        if (glyph) glyph.setAttribute("transform", `translate(${Math.cos(radians) * dx + Math.sin(radians) * dy - cx} ${-Math.sin(radians) * dx + Math.cos(radians) * dy - cy})`);
-        if (marks) {
-          marks.setAttribute("transform", `translate(${W / 2} ${H * 0.46 + H * 0.04 * eased}) scale(${scale}) rotate(${roll}) translate(${-cx} ${-cy})`);
-          marks.style.opacity = String(1 - smooth(0.015, 0.17, p));
-        }
-        choosing = !isStatic && p < 0.04;
-        if (choices) choices.inert = !choosing;
-        section.dataset.gpChoosing = String(choosing);
-        if (field) {
-          field.style.clipPath = t >= 1 ? "none" : "url(#gp-perpage-clip)";
-          field.style.opacity = isStatic ? "0" : String(t >= 1 ? Math.max(0, 1 - smooth(0.78, 0.95, p)) : 1);
-        }
-        section.style.setProperty("--gp-caption", String(1 - smooth(0.01, 0.16, p)));
-        section.style.setProperty("--gp-reveal", String(isStatic ? 1 : smooth(0.78, 0.9, p)));
-        section.style.setProperty("--gp-field-scale", String(1 + 0.16 * smooth(0, 0.82, p)));
-        section.style.setProperty("--gp-caption-hit", p < 0.08 ? "auto" : "none");
-        section.dataset.gpEntered = String(p >= 0.9);
-
-        // Real-time scroll-driven drawing of the red proofreader underline
-        const heroWavyPath = section.querySelector('.proof-wavy-hero path');
-        if (heroWavyPath) {
-          if (isStatic) {
-            heroWavyPath.style.strokeDashoffset = '0';
-          } else if (p < 0.74) {
-            heroWavyPath.style.strokeDashoffset = '100';
-          } else if (p >= 0.74 && p <= 0.94) {
-            const drawT = (p - 0.74) / 0.20;
-            heroWavyPath.style.strokeDashoffset = String(Math.max(0, Math.min(100, Math.round((1 - drawT) * 100))));
-          } else {
-            heroWavyPath.style.strokeDashoffset = '0';
-          }
+        if (app._renderer) {
+          if (app._renderer.setClearAlpha) app._renderer.setClearAlpha(0);
+          if (app._renderer.setClearColor) app._renderer.setClearColor(0x000000, 0);
         }
 
-      }
+        // 3. Reveal canvas and floor shadow synchronously in unified composition
+        if (stage) stage.classList.add('ready');
+        canvas.classList.add('loaded');
 
-      function layout() {
-        if (!section.clientWidth) return;
-        W = pin.clientWidth;
-        const viewportProbe = section.querySelector("[data-gp-viewport]");
-        const smallViewport = viewportProbe ? viewportProbe.offsetHeight : window.innerHeight;
-        const viewportHeight = Math.max(1, Math.min(window.innerHeight, smallViewport));
-        H = motion.matches ? Math.min(viewportHeight * 0.75, 480) : viewportHeight;
-        section.style.setProperty("--gp-height", `${H}px`);
-        travel = H * length;
-        if (art) art.setAttribute("viewBox", `0 0 ${W} ${H}`);
-        if (!ready) { ready = readInk(); }
-        if (!ready) return;
-        const wordHeight = H * 0.32;
-        startScale = Math.min(W * 0.72 / bounds.width, wordHeight / bounds.height);
-        select(target);
-        for (const button of buttons) {
-          const letter = letters.find(item => item.index === Number(button.dataset.gpLetter));
-          if (letter) {
-            Object.assign(button.style, {
-              left: `${W / 2 + (letter.x - center.x) * startScale}px`,
-              top: `${H * 0.46 + (letter.y - center.y) * startScale - Math.max(0, 44 - letter.height * startScale) / 2}px`,
-              width: `${Math.max(1, letter.width * startScale)}px`,
-              height: `${Math.max(44, letter.height * startScale)}px`
+        // 4. Automatically trigger the laptop open animation
+        if (!prefersReducedMotion) {
+          setTimeout(() => {
+            ['Laptop', 'OPEN LAPTOP', 'Laptop with keyboard'].forEach(name => {
+              try { app.emitEvent('mouseDown', name); } catch (_) {}
+              try { app.emitEvent('click', name); } catch (_) {}
             });
-          }
+          }, 250);
         }
-        section.style.setProperty("--gp-word-top", `${H * 0.46 - bounds.height * startScale / 2}px`);
-        section.style.setProperty("--gp-word-bottom", `${H * 0.46 + bounds.height * startScale / 2}px`);
-        section.dataset.gpReady = "true";
-        section.dataset.gpMotion = !motion.matches && browserFrameSeen && !stalled && target ? "on" : "off";
-      }
-
-      function frame(time) {
-        raf = 0;
-        if (disposed) return;
-        if (time !== undefined && !browserFrameSeen) {
-          browserFrameSeen = true;
-          stalled = (performance.now() - mountedAt > 2500);
-          dirty = true;
+      } catch (err) {
+        console.warn('3D Spline fallback active:', err);
+        const viewport = document.querySelector('.hero-3d-viewport');
+        if (viewport && !viewport.querySelector('img')) {
+          viewport.innerHTML = `
+            <picture class="relative z-1 w-full block">
+              <source srcset="/img/laptop-hero.webp" type="image/webp">
+              <img 
+                src="/img/laptop-hero.png" 
+                alt="PerPage Editorial Marketplace 3D Workspace" 
+                width="1228" 
+                height="970"
+                class="hero-artwork-img hero-float-active"
+              />
+            </picture>
+          `;
         }
-        if (dirty) { dirty = false; layout(); }
-        if (ready) paint(position());
+        if (stage) stage.classList.add('ready');
       }
-
-      function schedule() { if (!raf && active) raf = requestAnimationFrame(frame); }
-      function resize() { cancelAnimationFrame(raf); dirty = true; frame(); }
-      function scroll() { schedule(); }
-
-      function choose(event) {
-        if (!choosing || position() >= 0.04) return;
-        const button = event.target.closest("[data-gp-letter]");
-        const next = candidates.find(c => c.index === Number(button?.dataset.gpLetter));
-        if (!next || next === target) return;
-        select(next); paint(position());
-      }
-
-      if (choices) {
-        choices.addEventListener("pointerover", choose);
-        choices.addEventListener("click", choose);
-      }
-      if (picker) {
-        picker.addEventListener("change", () => {
-          if (!choosing || position() >= 0.04) return;
-          const next = candidates.find(c => c.index === Number(picker.value));
-          if (next) { select(next); paint(position()); }
-        });
-      }
-
-      const observer = new ResizeObserver(resize);
-      observer.observe(section);
-
-      const visibility = new IntersectionObserver(([entry]) => {
-        active = entry.isIntersecting;
-        if (active) { dirty = true; schedule(); }
-        else if (raf) { cancelAnimationFrame(raf); raf = 0; }
-      }, { rootMargin: "100% 0px" });
-      visibility.observe(section);
-
-      window.addEventListener("scroll", scroll, { passive: true });
-      window.addEventListener("resize", resize);
-      motion.addEventListener("change", resize);
-
-      // Observe all wavy underlines across the page (hero and bottom CTA)
-      // When scrolled into view, smoothly draw the red pen stroke
-      const allWavyElements = document.querySelectorAll('.proof-wavy-hero');
-      if (allWavyElements.length && 'IntersectionObserver' in window) {
-        const wavyScrollObserver = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            const path = entry.target.querySelector('path');
-            if (!path) return;
-            if (entry.isIntersecting) {
-              if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-                path.style.transition = 'stroke-dashoffset 0.85s cubic-bezier(0.16, 1, 0.3, 1)';
-                path.style.strokeDashoffset = '0';
-              } else {
-                path.style.strokeDashoffset = '0';
-              }
-            } else {
-              // Reset when scrolled above/below viewport so re-entering draws it again
-              if (entry.boundingClientRect.top > window.innerHeight || entry.boundingClientRect.bottom < 0) {
-                path.style.transition = 'none';
-                path.style.strokeDashoffset = '100';
-              }
-            }
-          });
-        }, { threshold: 0.15 });
-
-        allWavyElements.forEach(el => wavyScrollObserver.observe(el));
-      }
-
-      frame();
-      schedule();
     })();
   </script>
 
+  <!-- Subtle Mouse Parallax for 3D Hero Artwork -->
+  <script nonce="<%= locals.cspNonce || '' %>">
+    (function() {
+      try {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        if (window.innerWidth < 1024) return;
+        
+        const el = document.querySelector('.hero-artwork-interactive');
+        if (!el) return;
+
+        let targetX = 0, targetY = 0, curX = 0, curY = 0;
+        let rafId = null;
+
+        window.addEventListener('pointermove', function(e) {
+          const cx = window.innerWidth / 2;
+          const cy = window.innerHeight / 2;
+          targetX = ((e.clientX - cx) / cx) * 10;
+          targetY = ((e.clientY - cy) / cy) * 8;
+        }, { passive: true });
+
+        function tick() {
+          curX += (targetX - curX) * 0.06;
+          curY += (targetY - curY) * 0.06;
+          el.style.setProperty('--parallax-x', curX.toFixed(2) + 'px');
+          el.style.setProperty('--parallax-y', curY.toFixed(2) + 'px');
+          rafId = requestAnimationFrame(tick);
+        }
+        rafId = requestAnimationFrame(tick);
+      } catch (_) {}
+    })();
+  </script>
+
+  <!-- Red Wavy Underline Animation Trigger -->
+  <script nonce="<%= locals.cspNonce || '' %>">
+    (function() {
+      const wavy = document.querySelector('.proof-wavy-hero path');
+      if (wavy) {
+        setTimeout(function() {
+          wavy.style.transition = 'stroke-dashoffset 0.85s cubic-bezier(0.16, 1, 0.3, 1)';
+          wavy.style.strokeDashoffset = '0';
+        }, 150);
+      }
+    })();
+  </script>
 
   <!-- =========================================================================
        2. HOW IT WORKS SECTION (Scroll-driven 2-column sticky layout with fallbacks)
@@ -771,7 +337,7 @@
           if (this.timer) clearInterval(this.timer);
           this.timer = setInterval(() => {
             this.activeStep = this.activeStep === 3 ? 1 : (this.activeStep + 1);
-          }, 1500);
+          }, 6000);
         },
         setStep(s) {
           this.activeStep = s;
@@ -786,17 +352,15 @@
     class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll"
     x-data="howItWorksComponent()"
   >
-    <div class="section-header-rule">
-      <div class="section-eyebrow">
-        <span class="eyebrow-num">02</span>
-        <span class="eyebrow-rule"></span>
-        <span class="eyebrow-label">How it works</span>
+    <div class="flex flex-col items-center text-center max-w-2xl mx-auto mb-12 sm:mb-14">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/25 mb-4 shadow-xs font-mono">
+        <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+        02 • HOW IT WORKS
       </div>
-    </div>
-    
-    <div class="max-w-2xl mb-12">
-      <h2 class="type-h2 tracking-tight">How PerPage Works</h2>
-      <p class="type-body text-[var(--text-muted)] prose-measure">
+      <h2 class="text-3xl sm:text-4xl lg:text-[44px] font-extrabold tracking-tight text-zinc-950 dark:text-white font-sans leading-[1.15]">
+        How PerPage Works
+      </h2>
+      <p class="type-body text-zinc-600 dark:text-zinc-400 text-base sm:text-lg mt-3 prose-measure">
         From draft to delivered edits in three steps.
       </p>
     </div>
@@ -805,12 +369,12 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
       
       <!-- Left Column: Steps List -->
-      <div class="lg:col-span-6 space-y-2">
+      <div class="lg:col-span-6 space-y-0 divide-y divide-zinc-200 dark:divide-zinc-800">
         
         <!-- Step 1 -->
         <div 
           id="step-trigger-1"
-          class="how-step-item group"
+          class="how-step-item group py-6 sm:py-7 first:pt-0 last:pb-0 cursor-pointer"
           :aria-current="activeStep === 1 ? 'step' : null"
           @click="setStep(1)"
           role="button"
@@ -818,48 +382,45 @@
           @keydown.enter="setStep(1)"
           @keydown.space.prevent="setStep(1)"
         >
-          <div class="flex items-start gap-4">
+          <div class="flex items-start gap-4 sm:gap-6">
             <span 
-              class="font-serif italic text-3xl font-bold tabular-nums shrink-0 leading-none transition-colors duration-200"
-              :class="activeStep === 1 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-ink)]'"
+              class="how-step-num font-serif italic text-3xl sm:text-4xl font-bold tabular-nums shrink-0 leading-none transition-colors duration-200"
+              :class="activeStep === 1 ? '!text-orange-600 dark:!text-orange-400 font-extrabold' : 'text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-800 dark:group-hover:text-zinc-200'"
             >01</span>
-            <div class="space-y-2 flex-1">
-              <div class="flex items-center gap-2">
+            <div class="space-y-1.5 flex-1 min-w-0">
+              <div class="flex items-center gap-2.5">
                 <h3 
-                  class="type-h3 text-xl transition-colors duration-200"
-                  :class="activeStep === 1 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-ink)]'"
+                  class="how-step-heading text-lg sm:text-xl font-bold transition-colors duration-200"
+                  :class="activeStep === 1 ? 'text-zinc-950 dark:text-white' : 'text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white'"
                 >Browse editors</h3>
                 <span 
                   x-show="activeStep === 1" 
-                  x-transition:enter="transition ease-out duration-250"
+                  x-transition:enter="transition ease-out duration-200"
                   x-transition:enter-start="opacity-0 translate-x-1"
                   x-transition:enter-end="opacity-100 translate-x-0"
-                  x-transition:leave="transition ease-in duration-150"
-                  x-transition:leave-start="opacity-100 translate-x-0"
-                  x-transition:leave-end="opacity-0"
-                  class="hidden lg:inline-flex items-center gap-1.5 text-[10px] font-semibold text-[var(--accent)] uppercase tracking-wider font-mono"
+                  class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider font-mono bg-orange-500/10 border border-orange-500/20 px-2.5 py-0.5 rounded-full"
                 >
-                  <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
                   Active Step
                 </span>
               </div>
               <p 
-                class="type-small leading-relaxed prose-measure transition-colors duration-200"
-                :class="activeStep === 1 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)]'"
+                class="how-step-body text-sm sm:text-base leading-relaxed transition-colors duration-200"
+                :class="activeStep === 1 ? 'text-zinc-700 dark:text-zinc-300' : 'text-zinc-500 dark:text-zinc-400'"
               >
                 Compare editor profiles, bios and per-page rates. Choose a specialist suited to your subject matter.
               </p>
 
               <!-- Mobile/Fallback Vignette 1 -->
-              <div class="lg:hidden mt-4 p-3 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
+              <div class="lg:hidden mt-4 p-3 rounded-xl bg-zinc-100/80 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
-                  <div class="avatar avatar-sm">AS</div>
+                  <div class="w-8 h-8 rounded-lg text-white font-bold flex items-center justify-center text-xs" style="background-color: #ea580c; color: #ffffff;">AS</div>
                   <div>
-                    <div class="text-xs font-medium text-[var(--text-ink)]">Ananya Sharma</div>
-                    <div class="text-[11px] text-[var(--text-muted)]">₹45 / page</div>
+                    <div class="text-xs font-semibold text-zinc-900 dark:text-white">Ananya Sharma</div>
+                    <div class="text-[11px] text-zinc-500 font-mono">₹45 / page • ★ 4.9</div>
                   </div>
                 </div>
-                <span class="badge badge-neutral text-[10px]">Sample</span>
+                <span class="badge badge-neutral text-[10px] font-mono">Sample</span>
               </div>
             </div>
           </div>
@@ -868,7 +429,7 @@
         <!-- Step 2 -->
         <div 
           id="step-trigger-2"
-          class="how-step-item group"
+          class="how-step-item group py-6 sm:py-7 cursor-pointer"
           :aria-current="activeStep === 2 ? 'step' : null"
           @click="setStep(2)"
           role="button"
@@ -876,45 +437,42 @@
           @keydown.enter="setStep(2)"
           @keydown.space.prevent="setStep(2)"
         >
-          <div class="flex items-start gap-4">
+          <div class="flex items-start gap-4 sm:gap-6">
             <span 
-              class="font-serif italic text-3xl font-bold tabular-nums shrink-0 leading-none transition-colors duration-200"
-              :class="activeStep === 2 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-ink)]'"
+              class="how-step-num font-serif italic text-3xl sm:text-4xl font-bold tabular-nums shrink-0 leading-none transition-colors duration-200"
+              :class="activeStep === 2 ? '!text-orange-600 dark:!text-orange-400 font-extrabold' : 'text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-800 dark:group-hover:text-zinc-200'"
             >02</span>
-            <div class="space-y-2 flex-1">
-              <div class="flex items-center gap-2">
+            <div class="space-y-1.5 flex-1 min-w-0">
+              <div class="flex items-center gap-2.5">
                 <h3 
-                  class="type-h3 text-xl transition-colors duration-200"
-                  :class="activeStep === 2 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-ink)]'"
+                  class="how-step-heading text-lg sm:text-xl font-bold transition-colors duration-200"
+                  :class="activeStep === 2 ? 'text-zinc-950 dark:text-white' : 'text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white'"
                 >Create a deal</h3>
                 <span 
                   x-show="activeStep === 2" 
-                  x-transition:enter="transition ease-out duration-250"
+                  x-transition:enter="transition ease-out duration-200"
                   x-transition:enter-start="opacity-0 translate-x-1"
                   x-transition:enter-end="opacity-100 translate-x-0"
-                  x-transition:leave="transition ease-in duration-150"
-                  x-transition:leave-start="opacity-100 translate-x-0"
-                  x-transition:leave-end="opacity-0"
-                  class="hidden lg:inline-flex items-center gap-1.5 text-[10px] font-semibold text-[var(--accent)] uppercase tracking-wider font-mono"
+                  class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider font-mono bg-orange-500/10 border border-orange-500/20 px-2.5 py-0.5 rounded-full"
                 >
-                  <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
                   Active Step
                 </span>
               </div>
               <p 
-                class="type-small leading-relaxed prose-measure transition-colors duration-200"
-                :class="activeStep === 2 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)]'"
+                class="how-step-body text-sm sm:text-base leading-relaxed transition-colors duration-200"
+                :class="activeStep === 2 ? 'text-zinc-700 dark:text-zinc-300' : 'text-zinc-500 dark:text-zinc-400'"
               >
                 Specify your draft page count, include editing instructions, and upload your document in PDF format.
               </p>
 
               <!-- Mobile/Fallback Vignette 2 -->
-              <div class="lg:hidden mt-4 p-3 rounded-md bg-[var(--bg-surface-muted)] border border-dashed border-[var(--border-color)] flex items-center justify-between text-xs">
-                <div class="flex items-center gap-2 text-[var(--text-ink)] truncate">
-                  <%- icon('upload', { class: 'w-4 h-4 text-[var(--accent)] shrink-0' }) %>
+              <div class="lg:hidden mt-4 p-3 rounded-xl bg-zinc-100/80 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2 text-zinc-900 dark:text-white truncate">
+                  <%- icon('upload', { class: 'w-4 h-4 text-orange-500 shrink-0' }) %>
                   <span class="truncate font-mono text-[11px]">report-draft.pdf</span>
                 </div>
-                <span class="text-[11px] font-medium text-[var(--text-muted)] font-mono tabular-nums">12 pgs • ₹540</span>
+                <span class="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 font-mono tabular-nums">12 pgs • ₹540</span>
               </div>
             </div>
           </div>
@@ -923,7 +481,7 @@
         <!-- Step 3 -->
         <div 
           id="step-trigger-3"
-          class="how-step-item group"
+          class="how-step-item group py-6 sm:py-7 last:pb-0 cursor-pointer"
           :aria-current="activeStep === 3 ? 'step' : null"
           @click="setStep(3)"
           role="button"
@@ -931,45 +489,42 @@
           @keydown.enter="setStep(3)"
           @keydown.space.prevent="setStep(3)"
         >
-          <div class="flex items-start gap-4">
+          <div class="flex items-start gap-4 sm:gap-6">
             <span 
-              class="font-serif italic text-3xl font-bold tabular-nums shrink-0 leading-none transition-colors duration-200"
-              :class="activeStep === 3 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-ink)]'"
+              class="how-step-num font-serif italic text-3xl sm:text-4xl font-bold tabular-nums shrink-0 leading-none transition-colors duration-200"
+              :class="activeStep === 3 ? '!text-orange-600 dark:!text-orange-400 font-extrabold' : 'text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-800 dark:group-hover:text-zinc-200'"
             >03</span>
-            <div class="space-y-2 flex-1">
-              <div class="flex items-center gap-2">
+            <div class="space-y-1.5 flex-1 min-w-0">
+              <div class="flex items-center gap-2.5">
                 <h3 
-                  class="type-h3 text-xl transition-colors duration-200"
-                  :class="activeStep === 3 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-ink)]'"
+                  class="how-step-heading text-lg sm:text-xl font-bold transition-colors duration-200"
+                  :class="activeStep === 3 ? 'text-zinc-950 dark:text-white' : 'text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white'"
                 >Track to delivery</h3>
                 <span 
                   x-show="activeStep === 3" 
-                  x-transition:enter="transition ease-out duration-250"
+                  x-transition:enter="transition ease-out duration-200"
                   x-transition:enter-start="opacity-0 translate-x-1"
                   x-transition:enter-end="opacity-100 translate-x-0"
-                  x-transition:leave="transition ease-in duration-150"
-                  x-transition:leave-start="opacity-100 translate-x-0"
-                  x-transition:leave-end="opacity-0"
-                  class="hidden lg:inline-flex items-center gap-1.5 text-[10px] font-semibold text-[var(--accent)] uppercase tracking-wider font-mono"
+                  class="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider font-mono bg-orange-500/10 border border-orange-500/20 px-2.5 py-0.5 rounded-full"
                 >
-                  <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse"></span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
                   Active Step
                 </span>
               </div>
               <p 
-                class="type-small leading-relaxed prose-measure transition-colors duration-200"
-                :class="activeStep === 3 ? 'text-[var(--text-ink)]' : 'text-[var(--text-muted)]'"
+                class="how-step-body text-sm sm:text-base leading-relaxed transition-colors duration-200"
+                :class="activeStep === 3 ? 'text-zinc-700 dark:text-zinc-300' : 'text-zinc-500 dark:text-zinc-400'"
               >
                 Once the editor delivers, download your edited draft and feedback from your dashboard.
               </p>
 
               <!-- Mobile/Fallback Vignette 3 -->
-              <div class="lg:hidden mt-4 p-3 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
+              <div class="lg:hidden mt-4 p-3 rounded-xl bg-zinc-100/80 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="text-[var(--semantic-success-text)]">
+                  <span class="text-emerald-500">
                     <%- icon('check', { class: 'w-4 h-4' }) %>
                   </span>
-                  <span class="text-xs font-medium text-[var(--text-ink)]">Edits Ready</span>
+                  <span class="text-xs font-semibold text-zinc-900 dark:text-white">Edits Ready</span>
                 </div>
                 <span class="badge badge-success text-[10px] font-mono">DELIVERED</span>
               </div>
@@ -981,127 +536,234 @@
 
       <!-- Right Column: Sticky Preview Sheet (Desktop Only) -->
       <div class="hidden lg:block lg:col-span-6">
-        <div class="how-sticky-card p-7 space-y-6">
-          <div class="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
-            <span class="text-xs font-medium text-[var(--text-muted)] uppercase tracking-wider font-mono">
-              Step <span x-text="activeStep" class="text-[var(--text-ink)] font-bold">1</span> of 3 Preview
-            </span>
+        <div class="how-sticky-card rounded-3xl border border-black/[0.08] dark:border-white/[0.12] bg-gradient-to-b from-white via-zinc-50/90 to-white dark:from-[#0d131f] dark:via-[#090e17] dark:to-[#0d131f] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.12)] dark:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] backdrop-blur-2xl p-6 sm:p-7 space-y-6 relative overflow-hidden">
+          
+          <!-- Ambient Glow Background -->
+          <div class="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-gradient-to-br from-orange-500/20 via-amber-500/10 to-transparent blur-3xl pointer-events-none"></div>
+
+          <!-- Window Top Chrome -->
+          <div class="flex items-center justify-between pb-4 border-b border-black/[0.06] dark:border-white/[0.08] relative z-10">
+            <!-- Mac Traffic Lights -->
             <div class="flex items-center gap-2">
-              <span class="badge badge-neutral text-[10px]">Sample</span>
-              <!-- Mini 3-step progress dots -->
-              <div class="flex items-center gap-1.5 ml-1" role="tablist" aria-label="Step indicator">
+              <span class="w-3 h-3 rounded-full bg-rose-400/90 border border-rose-500/20 inline-block shadow-2xs"></span>
+              <span class="w-3 h-3 rounded-full bg-amber-400/90 border border-amber-500/20 inline-block shadow-2xs"></span>
+              <span class="w-3 h-3 rounded-full bg-emerald-400/90 border border-emerald-500/20 inline-block shadow-2xs"></span>
+              <span class="ml-2 font-mono text-[11px] text-zinc-400 dark:text-zinc-500 hidden sm:inline">perpage.app/workspace</span>
+            </div>
+
+            <!-- Header Badge & Mini Progress Pills -->
+            <div class="flex items-center gap-2.5">
+              <span class="inline-flex items-center gap-1.5 text-xs font-semibold font-mono text-orange-600 dark:text-orange-400 bg-orange-500/10 border border-orange-500/20 px-2.5 py-1 rounded-full shadow-2xs">
+                <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+                Step <span x-text="activeStep" class="font-bold">1</span> of 3 Preview
+              </span>
+              
+              <!-- 3 Clickable Stepper Tabs -->
+              <div class="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-800/80 p-1 rounded-full border border-zinc-200/60 dark:border-zinc-700/60" role="tablist">
                 <button 
                   type="button" 
                   @click.stop="setStep(1)" 
-                  class="h-1.5 rounded-full transition-all duration-300 focus:outline-none cursor-pointer"
-                  :class="activeStep === 1 ? 'w-5 bg-[var(--accent)]' : 'w-2 bg-[var(--border-strong)] hover:bg-[var(--text-muted)]'"
+                  class="h-2 rounded-full transition-all duration-300 cursor-pointer"
+                  :class="activeStep === 1 ? 'w-5 bg-orange-500 shadow-xs' : 'w-2 bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400'"
                   aria-label="Go to step 1"
                 ></button>
                 <button 
                   type="button" 
                   @click.stop="setStep(2)" 
-                  class="h-1.5 rounded-full transition-all duration-300 focus:outline-none cursor-pointer"
-                  :class="activeStep === 2 ? 'w-5 bg-[var(--accent)]' : 'w-2 bg-[var(--border-strong)] hover:bg-[var(--text-muted)]'"
+                  class="h-2 rounded-full transition-all duration-300 cursor-pointer"
+                  :class="activeStep === 2 ? 'w-5 bg-orange-500 shadow-xs' : 'w-2 bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400'"
                   aria-label="Go to step 2"
                 ></button>
                 <button 
                   type="button" 
                   @click.stop="setStep(3)" 
-                  class="h-1.5 rounded-full transition-all duration-300 focus:outline-none cursor-pointer"
-                  :class="activeStep === 3 ? 'w-5 bg-[var(--accent)]' : 'w-2 bg-[var(--border-strong)] hover:bg-[var(--text-muted)]'"
+                  class="h-2 rounded-full transition-all duration-300 cursor-pointer"
+                  :class="activeStep === 3 ? 'w-5 bg-orange-500 shadow-xs' : 'w-2 bg-zinc-300 dark:bg-zinc-600 hover:bg-zinc-400'"
                   aria-label="Go to step 3"
                 ></button>
               </div>
             </div>
           </div>
 
-          <!-- Relative Container for silky-smooth cross-fade with no layout shift -->
-          <div class="relative min-h-[190px]">
+          <!-- Relative Container for Stage Views (No Overlapping Elements) -->
+          <div class="relative min-h-[350px] z-10">
             
-            <!-- Preview State 1: Browse Profile -->
+            <!-- Preview State 1: Browse Editor Profile (Rich Card) -->
             <div 
               x-show="activeStep === 1" 
-              x-transition:enter="transition ease-out duration-300 transform"
-              x-transition:enter-start="opacity-0 translate-y-2 scale-[0.99]"
-              x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-              x-transition:leave="transition ease-in duration-200 transform absolute inset-0 pointer-events-none"
-              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-              x-transition:leave-end="opacity-0 -translate-y-2 scale-[0.99]"
-              class="space-y-4"
+              x-transition:enter="transition ease-out duration-200"
+              x-transition:enter-start="opacity-0"
+              x-transition:enter-end="opacity-100"
+              class="space-y-3.5"
             >
-              <div class="flex items-center gap-3">
-                <div class="avatar avatar-md">AS</div>
+              <!-- Editor Bio Header -->
+              <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-black/[0.06] dark:border-white/[0.08] shadow-sm flex items-start justify-between gap-3">
+                <div class="flex items-center min-w-0 flex-1">
+                  <!-- Avatar Container with Explicit Width & Right Margin to NEVER overlap -->
+                  <div class="relative shrink-0" style="margin-right: 14px;">
+                    <div class="w-12 h-12 rounded-2xl font-bold flex items-center justify-center font-sans text-base shadow-sm shrink-0" style="width: 48px; min-width: 48px; height: 48px; background-color: #ea580c; color: #ffffff;">
+                      AS
+                    </div>
+                    <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white dark:border-zinc-900" title="Online now"></span>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                      <h4 class="font-bold text-zinc-900 dark:text-white text-base leading-tight">Ananya Sharma</h4>
+                      <span class="text-blue-500 dark:text-blue-400 shrink-0" title="Verified Peer Editor">
+                        <%- icon('shield-check', { class: 'w-4 h-4' }) %>
+                      </span>
+                    </div>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400 font-medium truncate mt-0.5">
+                      Freelance Academic &amp; Technical Editor
+                    </p>
+                  </div>
+                </div>
+
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 font-mono text-xs font-bold shrink-0 ml-2">
+                  <svg class="w-3.5 h-3.5 fill-amber-400 text-amber-500" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  4.9 <span class="font-normal text-[10px] text-zinc-400">(18)</span>
+                </span>
+              </div>
+
+              <!-- Specialty Tags -->
+              <div class="flex flex-wrap gap-2">
+                <span class="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700">Document Structure</span>
+                <span class="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700">Grammar Polish</span>
+                <span class="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/60 dark:border-zinc-700">Citations (APA/MLA)</span>
+              </div>
+
+              <!-- Rate & Upfront Quote Box -->
+              <div class="p-3.5 rounded-xl bg-orange-500/[0.05] dark:bg-orange-500/[0.08] border border-orange-500/20 flex items-center justify-between gap-4">
                 <div>
-                  <div class="font-semibold text-[var(--text-ink)] text-sm">Ananya Sharma</div>
-                  <div class="text-xs text-[var(--text-muted)]">Freelance Academic &amp; Technical Editor</div>
+                  <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 font-mono block">Transparent Rate</span>
+                  <div class="flex items-baseline gap-1 mt-0.5">
+                    <span class="text-base font-extrabold text-zinc-900 dark:text-white font-mono">₹45</span>
+                    <span class="text-xs font-normal text-zinc-500 dark:text-zinc-400 font-mono">/ page</span>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 font-mono block">● 14 Deals Completed</span>
+                  <span class="text-xs text-zinc-600 dark:text-zinc-300 font-medium font-mono mt-0.5 block">10 pgs = ₹450 (Zero Fees)</span>
                 </div>
               </div>
-              <p class="text-xs text-[var(--text-muted)] leading-relaxed">
-                Specializing in document structure, clarity, grammar polish, and reference formatting with consistent per-page pricing.
-              </p>
-              <div class="p-3 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
-                <span class="text-xs text-[var(--text-muted)]">Fixed Rate</span>
-                <span class="font-mono text-xs font-bold text-[var(--text-ink)] tabular-nums">₹45 / page</span>
+
+              <!-- Action Button Mockup (High-Visibility Solid Button) -->
+              <div class="btn-pill-primary w-full !h-11 !text-xs !justify-center shadow-md">
+                <span>Select Ananya Sharma for Editing</span>
+                <%- icon('arrow-right', { class: 'w-3.5 h-3.5' }) %>
               </div>
             </div>
 
-            <!-- Preview State 2: Create Deal & Upload -->
+            <!-- Preview State 2: Create Deal & Upload Document -->
             <div 
               x-show="activeStep === 2" 
-              x-transition:enter="transition ease-out duration-300 transform"
-              x-transition:enter-start="opacity-0 translate-y-2 scale-[0.99]"
-              x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-              x-transition:leave="transition ease-in duration-200 transform absolute inset-0 pointer-events-none"
-              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-              x-transition:leave-end="opacity-0 -translate-y-2 scale-[0.99]"
+              x-transition:enter="transition ease-out duration-200"
+              x-transition:enter-start="opacity-0"
+              x-transition:enter-end="opacity-100"
               class="space-y-4"
               x-cloak
             >
-              <div class="space-y-1">
-                <div class="text-sm font-semibold text-[var(--text-ink)]">Commission Request</div>
-                <div class="text-xs text-[var(--text-muted)]">Report draft submission</div>
-              </div>
-              <div class="p-4 rounded-md border border-dashed border-[var(--border-strong)] bg-[var(--bg-surface-muted)] flex items-center justify-between text-xs">
-                <div class="flex items-center gap-2.5 truncate">
-                  <%- icon('file-text', { class: 'w-4 h-4 text-[var(--accent)] shrink-0' }) %>
-                  <span class="font-mono text-xs text-[var(--text-ink)] truncate">report-draft.pdf</span>
+              <!-- File Upload Simulation Card -->
+              <div class="p-4 rounded-2xl bg-white dark:bg-zinc-900/90 border border-dashed border-orange-500/40 dark:border-orange-500/50 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-zinc-900 dark:text-white flex items-center gap-1.5 font-mono uppercase tracking-wider">
+                    <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                    Document Draft Uploaded
+                  </span>
+                  <span class="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                    12 Pages Verified
+                  </span>
                 </div>
-                <span class="text-[11px] text-[var(--text-muted)] shrink-0">1.8 MB</span>
+
+                <!-- File Box -->
+                <div class="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700 flex items-center justify-between">
+                  <div class="flex items-center gap-3 truncate">
+                    <div class="w-9 h-9 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0">
+                      <%- icon('file-text', { class: 'w-5 h-5' }) %>
+                    </div>
+                    <div class="min-w-0">
+                      <span class="font-mono text-xs font-bold text-zinc-900 dark:text-white truncate block">report-draft.pdf</span>
+                      <span class="text-[11px] text-zinc-400 font-mono">1.8 MB • PDF format</span>
+                    </div>
+                  </div>
+                  <span class="text-emerald-500 shrink-0">
+                    <%- icon('check', { class: 'w-4 h-4' }) %>
+                  </span>
+                </div>
               </div>
-              <div class="p-3 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] flex items-center justify-between">
-                <span class="text-xs text-[var(--text-muted)]">Calculated Total (12 pgs × ₹45)</span>
-                <span class="font-mono text-xs font-bold text-[var(--text-ink)] tabular-nums">₹540</span>
+
+              <!-- Notes Simulation -->
+              <div class="p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/70 dark:border-zinc-800 text-xs text-zinc-600 dark:text-zinc-300">
+                <span class="font-semibold text-zinc-900 dark:text-white block mb-0.5">Editing Instructions:</span>
+                "Please review section transitions, clarify technical grammar, and format bibliography."
+              </div>
+
+              <!-- Cost Calculator Breakdown -->
+              <div class="p-3.5 rounded-xl bg-zinc-100/80 dark:bg-zinc-800/60 border border-zinc-200/80 dark:border-zinc-700/80 flex items-center justify-between text-xs">
+                <div>
+                  <span class="text-zinc-500 dark:text-zinc-400 block font-mono text-[11px]">Upfront Rate Calculation</span>
+                  <span class="font-medium text-zinc-700 dark:text-zinc-300">12 pages × ₹45 / page</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-[11px] font-mono text-zinc-400 block">Total Escrow</span>
+                  <span class="font-mono text-base font-extrabold text-orange-600 dark:text-orange-400 tabular-nums">₹540</span>
+                </div>
               </div>
             </div>
 
-            <!-- Preview State 3: Tracked Delivery -->
+            <!-- Preview State 3: Track to Delivery & Feedback -->
             <div 
               x-show="activeStep === 3" 
-              x-transition:enter="transition ease-out duration-300 transform"
-              x-transition:enter-start="opacity-0 translate-y-2 scale-[0.99]"
-              x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-              x-transition:leave="transition ease-in duration-200 transform absolute inset-0 pointer-events-none"
-              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-              x-transition:leave-end="opacity-0 -translate-y-2 scale-[0.99]"
+              x-transition:enter="transition ease-out duration-200"
+              x-transition:enter-start="opacity-0"
+              x-transition:enter-end="opacity-100"
               class="space-y-4"
               x-cloak
             >
-              <div class="flex items-center justify-between">
-                <div class="text-sm font-semibold text-[var(--text-ink)]">Delivery Completed</div>
-                <span class="badge badge-success text-[10px] font-mono">DELIVERED</span>
-              </div>
-              <div class="p-3.5 rounded-md bg-[var(--bg-surface-muted)] border border-[var(--border-color)] space-y-2 text-xs">
-                <div class="flex items-center justify-between font-medium text-[var(--text-ink)]">
-                  <span>Edited document &amp; feedback attached</span>
-                  <span class="text-[var(--semantic-success-text)]">Ready</span>
+              <!-- Completed Header Banner -->
+              <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
+                    <%- icon('check', { class: 'w-3.5 h-3.5' }) %>
+                  </span>
+                  <div>
+                    <span class="font-bold text-xs text-emerald-800 dark:text-emerald-300 block">Editorial Review Delivered</span>
+                    <span class="text-[11px] text-emerald-700/80 dark:text-emerald-400/80">Completed 4 hours ahead of deadline</span>
+                  </div>
                 </div>
-                <div class="flex items-center gap-2 text-[var(--accent)] font-medium">
-                  <%- icon('download', { class: 'w-3.5 h-3.5 shrink-0' }) %>
-                  <span class="font-mono text-[11px]">report-draft-edited.pdf</span>
+                <span class="badge badge-success text-[10px] font-mono font-bold tracking-wider">DELIVERED</span>
+              </div>
+
+              <!-- Tracked Edit Vignette -->
+              <div class="p-3.5 rounded-xl bg-white dark:bg-zinc-900/90 border border-black/[0.06] dark:border-white/[0.08] shadow-xs space-y-2 text-xs">
+                <div class="flex items-center justify-between text-[11px] font-mono text-zinc-400 pb-1.5 border-b border-zinc-100 dark:border-zinc-800">
+                  <span>Tracked Editorial Changes</span>
+                  <span class="text-emerald-600 dark:text-emerald-400 font-bold">+28 improvements</span>
+                </div>
+                <div class="font-mono text-[11px] space-y-1">
+                  <div class="p-1.5 rounded bg-rose-500/10 text-rose-700 dark:text-rose-300 line-through">
+                    - "The experiments was conducted with unproper sample sizes."
+                  </div>
+                  <div class="p-1.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-300">
+                    + "The experiments were conducted with rigorous sample sizes (n=450)."
+                  </div>
                 </div>
               </div>
-              <div class="text-[11px] text-[var(--text-muted)]">
-                Files are shared through private time-limited download links from your dashboard.
+
+              <!-- Download Button -->
+              <div class="p-3.5 rounded-xl bg-zinc-50 dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700 flex items-center justify-between">
+                <div class="flex items-center gap-2.5 truncate">
+                  <div class="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center shrink-0">
+                    <%- icon('download', { class: 'w-4 h-4' }) %>
+                  </div>
+                  <div class="min-w-0">
+                    <span class="font-mono text-xs font-bold text-zinc-900 dark:text-white truncate block">report-draft-edited.pdf</span>
+                    <span class="text-[10px] text-zinc-400">Secure time-limited download</span>
+                  </div>
+                </div>
+                <div class="btn-pill-primary !h-9 !px-4 !text-xs shrink-0 shadow-xs">
+                  Download
+                </div>
               </div>
             </div>
 
@@ -1114,7 +776,7 @@
 
 
   <!-- =========================================================================
-       3. WHY PERPAGE (Asymmetric Editorial Layout, No Icon Tiles)
+       3. WHY PERPAGE (Modern 4-Card Bento Grid)
        ========================================================================= -->
   <section class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 reveal-on-scroll">
     <div class="section-header-rule">
@@ -1125,52 +787,72 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
       <!-- Left Statement -->
-      <div class="lg:col-span-5 space-y-4">
+      <div class="lg:col-span-4 space-y-4">
         <h2 class="type-h2 tracking-tight">What you get</h2>
         <p class="type-body text-[var(--text-muted)] prose-measure text-base">
           Clear pricing, private storage, and structured reviews for every document.
         </p>
-        <div class="pt-4 proof-margin-rule text-xs text-[var(--text-muted)] space-y-1">
+        <div class="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200/80 dark:border-zinc-800 text-xs text-[var(--text-muted)] space-y-1">
           <p class="font-semibold text-[var(--text-ink)]">Editorial Principle</p>
           <p>Transparent agreements protect both client drafting and editor time.</p>
         </div>
       </div>
 
-      <!-- Right Feature Editorial List (Hairline Separated, Specific & Concise) -->
-      <div class="lg:col-span-7 divide-y divide-[var(--border-color)] border-y border-[var(--border-color)]">
+      <!-- Right 4-Card Bento Grid -->
+      <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
         
         <!-- Feature 1 -->
-        <div class="py-4 space-y-1">
-          <h3 class="type-h3 text-base font-semibold text-[var(--text-ink)]">Transparent per-page pricing</h3>
-          <p class="type-small text-[var(--text-muted)] leading-relaxed">
-            Upfront rate calculation: page count × editor rate. No bidding wars or surprise platform fees.
-          </p>
+        <div class="card p-5 rounded-2xl border border-black/[0.08] dark:border-white/[0.12] hover:border-orange-500/40 hover:shadow-md transition-all duration-200 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-orange-500/10 text-orange-600 dark:text-orange-400 flex items-center justify-center">
+            <%- icon('calculator', { class: 'w-5 h-5' }) %>
+          </div>
+          <div class="space-y-1">
+            <h3 class="type-h3 text-base font-bold text-[var(--text-ink)]">Transparent per-page pricing</h3>
+            <p class="type-small text-[var(--text-muted)] leading-relaxed">
+              Upfront rate calculation: page count × editor rate. No bidding wars or surprise platform fees.
+            </p>
+          </div>
         </div>
 
         <!-- Feature 2 -->
-        <div class="py-4 space-y-1">
-          <h3 class="type-h3 text-base font-semibold text-[var(--text-ink)]">Editor review before start</h3>
-          <p class="type-small text-[var(--text-muted)] leading-relaxed">
-            Editors inspect your draft and requirements to accept or decline before starting work.
-          </p>
+        <div class="card p-5 rounded-2xl border border-black/[0.08] dark:border-white/[0.12] hover:border-blue-500/40 hover:shadow-md transition-all duration-200 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+            <%- icon('shield-check', { class: 'w-5 h-5' }) %>
+          </div>
+          <div class="space-y-1">
+            <h3 class="type-h3 text-base font-bold text-[var(--text-ink)]">Editor review before start</h3>
+            <p class="type-small text-[var(--text-muted)] leading-relaxed">
+              Editors inspect your draft and requirements to accept or decline before starting work.
+            </p>
+          </div>
         </div>
 
         <!-- Feature 3 -->
-        <div class="py-4 space-y-1">
-          <h3 class="type-h3 text-base font-semibold text-[var(--text-ink)]">Private file storage</h3>
-          <p class="type-small text-[var(--text-muted)] leading-relaxed">
-            Drafts stay confidential in private storage and are accessed through time-limited download links.
-          </p>
+        <div class="card p-5 rounded-2xl border border-black/[0.08] dark:border-white/[0.12] hover:border-emerald-500/40 hover:shadow-md transition-all duration-200 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+            <%- icon('lock', { class: 'w-5 h-5' }) %>
+          </div>
+          <div class="space-y-1">
+            <h3 class="type-h3 text-base font-bold text-[var(--text-ink)]">Private file storage</h3>
+            <p class="type-small text-[var(--text-muted)] leading-relaxed">
+              Drafts stay confidential in private storage and are accessed through time-limited download links.
+            </p>
+          </div>
         </div>
 
         <!-- Feature 4 -->
-        <div class="py-4 space-y-1">
-          <h3 class="type-h3 text-base font-semibold text-[var(--text-ink)]">Dedicated dual dashboards</h3>
-          <p class="type-small text-[var(--text-muted)] leading-relaxed">
-            Track review progress in real time and download feedback directly from your personal dashboard.
-          </p>
+        <div class="card p-5 rounded-2xl border border-black/[0.08] dark:border-white/[0.12] hover:border-purple-500/40 hover:shadow-md transition-all duration-200 space-y-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+            <%- icon('layout-dashboard', { class: 'w-5 h-5' }) %>
+          </div>
+          <div class="space-y-1">
+            <h3 class="type-h3 text-base font-bold text-[var(--text-ink)]">Dedicated dual dashboards</h3>
+            <p class="type-small text-[var(--text-muted)] leading-relaxed">
+              Track review progress in real time and download feedback directly from your personal dashboard.
+            </p>
+          </div>
         </div>
 
       </div>
@@ -1209,12 +891,12 @@
             const ratingVal = hasReviews ? Number(writer.averageRating || 0).toFixed(1) : null;
             const reviewsCount = hasReviews ? writer.reviewCount : 0;
           %>
-          <div class="card p-6 flex flex-col justify-between space-y-5 hover:border-[var(--border-strong)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md <%= index === 0 ? 'border-[var(--border-strong)] bg-[var(--bg-surface)]' : '' %>">
+          <div class="card p-6 rounded-2xl border border-black/[0.08] dark:border-white/[0.12] bg-white dark:bg-[#0c1017] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between space-y-5">
             <div class="space-y-4">
               <!-- Editor Header -->
               <div class="flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3 min-w-0">
-                  <div class="avatar avatar-md font-serif font-semibold shrink-0">
+                  <div class="avatar avatar-md font-sans font-bold bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700 shrink-0">
                     <% if (writer.profilePic) { %>
                       <img src="<%= writer.profilePic %>" alt="<%= writer.name || 'Editor' %>" class="w-full h-full object-cover">
                     <% } else { %>
@@ -1223,20 +905,20 @@
                   </div>
                   <div class="min-w-0">
                     <div class="flex items-center gap-1.5 min-w-0">
-                      <h3 class="type-h4 text-base text-[var(--text-ink)] leading-snug truncate"><%= writer.name || 'Freelance Editor' %></h3>
+                      <h3 class="type-h4 text-base font-bold text-[var(--text-ink)] leading-snug truncate"><%= writer.name || 'Freelance Editor' %></h3>
                       <% if (writer.isVerified) { %>
                         <span title="Verified Editor by Platform Administration" class="inline-flex items-center text-emerald-600 dark:text-emerald-400 shrink-0">
                           <%- icon('shield-check', { class: 'w-4 h-4 text-emerald-600 dark:text-emerald-400' }) %>
                         </span>
                       <% } %>
                     </div>
-                    <div class="text-xs text-[var(--text-muted)]">Freelance Editor</div>
+                    <div class="text-xs text-[var(--text-muted)] font-medium">Freelance Editor</div>
                   </div>
                 </div>
 
                 <!-- Star Rating Badge (Only if real reviews exist) -->
                 <% if (hasReviews) { %>
-                  <span class="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-amber-700 bg-amber-50 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 px-2 py-0.5 rounded-full shrink-0">
+                  <span class="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-amber-700 bg-amber-50 dark:bg-amber-950/50 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60 px-2.5 py-0.5 rounded-full shrink-0">
                     <svg class="w-3 h-3 fill-amber-400 text-amber-500" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                     <%= ratingVal %>
                   </span>
@@ -1270,14 +952,14 @@
             <!-- Rate & Action -->
             <div class="pt-4 border-t border-[var(--border-color)] flex items-center justify-between">
               <div>
-                <span class="text-xs text-[var(--text-muted)] block">Rate</span>
-                <span class="text-sm font-semibold text-[var(--text-ink)] font-mono tabular-nums">
+                <span class="text-xs text-[var(--text-muted)] block font-medium">Rate</span>
+                <span class="text-sm font-bold text-[var(--text-ink)] font-mono tabular-nums">
                   <%= writer.pricePerPage ? ('₹' + writer.pricePerPage + ' / page') : 'Rates on profile' %>
                 </span>
               </div>
-              <a href="/writers/<%= writer._id %>" class="btn btn-secondary btn-sm">
+              <a href="/writers/<%= writer._id %>" class="btn btn-sm rounded-full bg-orange-500/10 text-orange-600 dark:text-orange-400 hover:bg-orange-500 hover:text-white border border-orange-500/20 font-semibold transition-all">
                 View profile
-                <%- icon('arrow-right', { class: 'w-3.5 h-3.5' }) %>
+                <%- icon('arrow-right', { class: 'w-3.5 h-3.5 ml-1' }) %>
               </a>
             </div>
           </div>
@@ -1336,30 +1018,36 @@
 
           <ul class="space-y-3 pt-2">
             <li class="flex items-start gap-3">
-              <span class="text-[var(--mark)] font-bold mt-0.5 shrink-0 text-sm">^</span>
-              <span class="type-small text-[var(--text-ink)]">
+              <span class="text-orange-500 font-bold mt-0.5 shrink-0">
+                <%- icon('check', { class: 'w-4 h-4 text-orange-500' }) %>
+              </span>
+              <span class="type-small text-[var(--text-ink)] font-medium">
                 Set your own per-page price with complete rate autonomy
               </span>
             </li>
 
             <li class="flex items-start gap-3">
-              <span class="text-[var(--mark)] font-bold mt-0.5 shrink-0 text-sm">^</span>
-              <span class="type-small text-[var(--text-ink)]">
+              <span class="text-orange-500 font-bold mt-0.5 shrink-0">
+                <%- icon('check', { class: 'w-4 h-4 text-orange-500' }) %>
+              </span>
+              <span class="type-small text-[var(--text-ink)] font-medium">
                 Review incoming drafts and accept or decline before starting
               </span>
             </li>
 
             <li class="flex items-start gap-3">
-              <span class="text-[var(--mark)] font-bold mt-0.5 shrink-0 text-sm">^</span>
-              <span class="type-small text-[var(--text-ink)]">
+              <span class="text-orange-500 font-bold mt-0.5 shrink-0">
+                <%- icon('check', { class: 'w-4 h-4 text-orange-500' }) %>
+              </span>
+              <span class="type-small text-[var(--text-ink)] font-medium">
                 Upload edited PDF documents directly through your editor portal
               </span>
             </li>
           </ul>
 
           <div class="pt-4">
-            <a href="/register" class="btn btn-primary btn-md">
-              Join as an editor
+            <a href="/register" class="btn-pill-primary">
+              <span>Join as an editor</span>
               <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
             </a>
           </div>
@@ -1567,32 +1255,49 @@
   <!-- =========================================================================
        7. FINAL CTA BAND (SOLID FULL-WIDTH INK BAND)
        ========================================================================= -->
-  <section class="w-full bg-[var(--card)] text-[var(--foreground)] border-y border-[var(--border)] py-10 sm:py-14 !mt-4 sm:!mt-6">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
-      <h2 class="type-h2 text-[var(--foreground)] text-2xl sm:text-4xl">
+  <section class="relative overflow-hidden w-full bg-[var(--card)] text-[var(--foreground)] border-y border-[var(--border)] py-14 sm:py-20 !mt-8">
+    <div class="absolute inset-0 bg-gradient-to-b from-orange-500/[0.04] via-transparent to-transparent pointer-events-none"></div>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
+      <h2 class="font-sans text-3xl sm:text-4xl lg:text-[42px] font-extrabold tracking-tight text-zinc-950 dark:text-white leading-[1.2]">
         Ready to <span class="proof-wavy-hero">polish<svg viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path pathLength="100" d="M 2 7 Q 25 1, 50 8 T 98 7" /></svg></span> your next draft?
       </h2>
 
-      <p class="type-body text-[var(--muted-foreground)] max-w-xl mx-auto text-sm sm:text-base">
+      <p class="type-body text-[var(--muted-foreground)] max-w-xl mx-auto text-sm sm:text-base leading-relaxed">
         Browse freelance editors, calculate your upfront rate, and submit your draft in minutes.
       </p>
 
-      <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+      <div class="cta-button-group pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
         <% if (locals.user) { %>
-          <a href="/dashboard" class="btn btn-primary btn-lg">
-            Go to dashboard
-            <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+          <a 
+            href="/dashboard" 
+            class="btn-pill-primary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-sm whitespace-nowrap shadow-md cursor-pointer transition-all hover:opacity-95"
+            style="background-color: #f97316; color: #ffffff; border: 1px solid #ea580c; height: 48px; text-decoration: none;"
+          >
+            <span>Go to dashboard</span>
+            <%- icon('arrow-right', { class: 'w-4 h-4 shrink-0' }) %>
           </a>
-          <a href="/writers" class="btn btn-secondary btn-lg">
-            Browse editors
+          <a 
+            href="/writers" 
+            class="btn-pill-secondary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-sm whitespace-nowrap shadow-xs cursor-pointer transition-all bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700"
+            style="height: 48px; text-decoration: none;"
+          >
+            <span>Browse editors</span>
           </a>
         <% } else { %>
-          <a href="/writers" class="btn btn-primary btn-lg">
-            Browse editors
-            <%- icon('arrow-right', { class: 'w-4 h-4' }) %>
+          <a 
+            href="/writers" 
+            class="btn-pill-primary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-sm whitespace-nowrap shadow-md cursor-pointer transition-all hover:opacity-95"
+            style="background-color: #f97316; color: #ffffff; border: 1px solid #ea580c; height: 48px; text-decoration: none;"
+          >
+            <span>Browse editors</span>
+            <%- icon('arrow-right', { class: 'w-4 h-4 shrink-0' }) %>
           </a>
-          <a href="/register" class="btn btn-secondary btn-lg">
-            Create an account
+          <a 
+            href="/register" 
+            class="btn-pill-secondary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-semibold text-sm whitespace-nowrap shadow-xs cursor-pointer transition-all bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white border border-zinc-300 dark:border-zinc-700"
+            style="height: 48px; text-decoration: none;"
+          >
+            <span>Create an account</span>
           </a>
         <% } %>
       </div>

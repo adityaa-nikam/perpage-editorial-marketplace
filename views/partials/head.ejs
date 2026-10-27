@@ -51,7 +51,12 @@
         document.documentElement.classList.add('js');
         var stored = localStorage.getItem('theme');
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (stored === 'dark' || (!stored && prefersDark)) {
+        var urlTheme = (new URLSearchParams(window.location.search)).get('theme');
+        if (urlTheme === 'light') {
+          document.documentElement.classList.remove('dark');
+        } else if (urlTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else if (stored === 'dark' || (!stored && prefersDark)) {
           document.documentElement.classList.add('dark');
         } else {
           document.documentElement.classList.remove('dark');
@@ -85,6 +90,12 @@
 
   <!-- Alpine.js (Pinned version, deferred) -->
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+
+  <!-- Preload 3D Spline Engine & Local Scene Data for Glitch-Free Instant Load -->
+  <link rel="preconnect" href="https://cdn.spline.design" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.spline.design">
+  <link rel="modulepreload" href="https://cdn.spline.design/@splinetool/runtime@2.0.79/build/runtime.js">
+  <link rel="preload" href="/js/spline-data.js" as="script" crossorigin>
 </head>
 <body class="bg-[var(--bg-background)] text-[var(--text-ink)] antialiased min-h-screen flex flex-col font-sans selection:bg-[var(--primary)] selection:text-[var(--primary-foreground)]">
   <!-- Top Navigation Progress Bar -->

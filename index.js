@@ -190,13 +190,14 @@ app.use((req, res, next) => {
           `'nonce-${res.locals.cspNonce}'`,
           "https://cdn.jsdelivr.net",
           "https://checkout.razorpay.com",
+          "https://cdn.spline.design",
           "'unsafe-eval'"
         ],
         styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'", "https://lumberjack.razorpay.com", "https://api.razorpay.com"],
-        frameSrc: ["'self'", "https://api.razorpay.com"],
+        connectSrc: ["'self'", "https://lumberjack.razorpay.com", "https://api.razorpay.com", "https://my.spline.design", "https://*.spline.design", "https://cdn.spline.design"],
+        frameSrc: ["'self'", "https://api.razorpay.com", "https://my.spline.design", "https://*.spline.design"],
         frameAncestors: ["'none'"],
         baseUri: ["'self'"],
         objectSrc: ["'none'"]
@@ -223,8 +224,8 @@ try {
   console.warn('⚠️ Could not compute CSS asset hash:', err.message);
 }
 
-// Static Files with caching headers (7 days for versioned static assets)
-app.use('/css', express.static(path.join(__dirname, 'public', 'css'), { maxAge: '7d' }));
+const isProd = process.env.NODE_ENV === 'production';
+app.use('/css', express.static(path.join(__dirname, 'public', 'css'), { maxAge: isProd ? '7d' : 0 }));
 app.use('/fonts', express.static(path.join(__dirname, 'public', 'fonts'), { maxAge: '7d' }));
 app.use('/img', express.static(path.join(__dirname, 'public', 'img'), { maxAge: '7d' }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -232,11 +233,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 // View Helpers & Global State
 app.locals.icon = icon;
 app.locals.vocab = vocab;
+app.locals.assetVersion = assetVersion;
 
 app.use((req, res, next) => {
   res.locals.user = req.user || null;
   res.locals.vocab = vocab;
-  if (process.env.NODE_ENV !== 'production' && req.query.mockUser === '1') {
+  res.locals.assetVersion = isProd ? assetVersion : (assetVersion + '_' + Date.now().toString(36));
+  if (!isProd && req.query.mockUser === '1') {
     res.locals.user = {
       _id: '64f1a2b3c4d5e6f7a8b9c0d9',
       name: 'Eleanor Vance',
@@ -246,7 +249,6 @@ app.use((req, res, next) => {
     };
   }
   res.locals.currentPath = req.path || '/';
-  res.locals.assetVersion = assetVersion;
   res.locals.siteUrl = SITE_URL;
   res.locals.messages = {
     error: req.query.error || null,
@@ -489,7 +491,7 @@ const startServer = async () => {
     const maxRetries = 3;
 
     const startListening = () => {
-      const server = app.listen(port, () => {
+      const server = app.listen(port, '0.0.0.0', () => {
         console.log(`🚀 Server running at http://localhost:${port}`);
         console.log('✅ Server started successfully');
       });
